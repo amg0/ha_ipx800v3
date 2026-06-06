@@ -18,7 +18,7 @@ Uncomment and customize these badges if you want to use them:
 
 **✨ Develop in the cloud:** Want to contribute or customize this integration? Open it directly in GitHub Codespaces - no local setup required!
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/amg0/ha_integration_ipx?quickstart=1)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/amg0/ha_ipx800v3?quickstart=1)
 
 ## ✨ Caveats
 
@@ -63,7 +63,7 @@ Feature under progress:
 
 Click the button below to open the integration directly in HACS:
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jpawlowski&repository=ha_integration_ipx&category=integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jpawlowski&repository=ha_ipx800v3&category=integration)
 
 Then:
 
@@ -363,14 +363,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-[commits-shield]: https://img.shields.io/github/commit-activity/y/amg0/ha_integration_ipx.svg?style=for-the-badge
-[commits]: https://github.com/amg0/ha_integration_ipx/commits/main
+[commits-shield]: https://img.shields.io/github/commit-activity/y/amg0/ha_ipx800v3.svg?style=for-the-badge
+[commits]: https://github.com/amg0/ha_ipx800v3/commits/main
 [hacs]: https://github.com/hacs/integration
 [hacsbadge]: https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge
-[license-shield]: https://img.shields.io/github/license/amg0/ha_integration_ipx.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/amg0/ha_ipx800v3.svg?style=for-the-badge
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40amg0-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/amg0/ha_integration_ipx.svg?style=for-the-badge
-[releases]: https://github.com/amg0/ha_integration_ipx/releases
+[releases-shield]: https://img.shields.io/github/release/amg0/ha_ipx800v3.svg?style=for-the-badge
+[releases]: https://github.com/amg0/ha_ipx800v3/releases
 [user_profile]: https://github.com/jpawlowski
 [buymecoffee]: https://buymeacoffee.com/amg0
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge

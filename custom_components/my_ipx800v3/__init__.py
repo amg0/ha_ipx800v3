@@ -10,7 +10,7 @@ This integration demonstrates best practices for:
 - Proper error handling and recovery
 
 For more details about this integration, please refer to:
-https://github.com/amg0/ha_integration_ipx
+https://github.com/amg0/ha_ipx800v3
 
 For integration development guidelines:
 https://developers.home-assistant.io/docs/creating_integration_manifest
