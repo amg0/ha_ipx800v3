@@ -1,6 +1,6 @@
 # GitHub Codespaces Development Guide
 
-Integration blueprint is fully compatible with GitHub Codespaces for cloud-based development.
+My IPX800V3 HA Integration is fully compatible with GitHub Codespaces for cloud-based development.
 
 ## Quick Start
 

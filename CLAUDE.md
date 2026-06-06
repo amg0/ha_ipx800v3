@@ -13,10 +13,10 @@ Read `AGENTS.md` completely before starting any work. It contains:
 
 ## Quick Reference
 
-- **Domain:** `ha_integration_domain`
-- **Title:** Integration Blueprint
-- **Class prefix:** `IntegrationBlueprint`
-- **Main code:** `custom_components/ha_integration_domain/`
+- **Domain:** `my_ipx800v3`
+- **Title:** My IPX800V3 HA Integration
+- **Class prefix:** `MyIPX800V3`
+- **Main code:** `custom_components/my_ipx800v3/`
 - **Validate:** `script/check` (type-check + lint + spell)
 - **Test:** `script/test`
 - **Run HA:** `./script/develop`
