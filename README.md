@@ -11,8 +11,6 @@
 
  <!--
 Uncomment and customize these badges if you want to use them:
-
-[![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 [![Discord][discord-shield]][discord]
 -->
 
