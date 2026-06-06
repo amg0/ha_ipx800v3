@@ -35,7 +35,5 @@
 # and device selector parameters will automatically be applied to area.
 reload_data:
   name: Reload Data
-  description: Force a refresh of the integration data from the API
-  target:
-    device:
-      integration: my_ipx800v3
+  description: "Recharge les données de l'intégration IPX800."
+  target: {}

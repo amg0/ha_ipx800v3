@@ -10,7 +10,11 @@ from custom_components.my_ipx800v3.service_actions.example_service import (
     async_handle_reload_data,
 )
 from homeassistant.core import ServiceCall, ServiceResponse, SupportsResponse
-from homeassistant.helpers import device_registry as dr, target as target_helpers
+from homeassistant.helpers import (
+    device_registry as dr,
+    entity_registry as er,  # Add this import
+    target as target_helpers,
+)
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -50,30 +54,46 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         # 1. extract target selection from service call data
         target_selection = target_helpers.TargetSelection(call.data)
         device_registry = dr.async_get(hass)
+        entity_registry = er.async_get(hass)
+
+        # Collect all unique device IDs from both devices and entities
+        device_ids = set(target_selection.device_ids)
+
+        # Resolve entities to devices
+        for entity_id in target_selection.entity_ids:
+            if (entity_entry := entity_registry.async_get(entity_id)) and entity_entry.device_id:
+                device_ids.add(entity_entry.device_id)
+
         processed_entries: dict[str, Any] = {}
 
         # 2. find the proper ConfigEntry for each device_id in the target selection
-        for device_id in target_selection.device_ids:
+        # target_selection.device_ids now includes all devices, not just yours
+        for device_id in device_ids:
             device_entry = device_registry.async_get(device_id)
 
-            if device_entry:
-                # make sure we find the config entry for our domain - a device could be linked to multiple entries from different integrations
-                # device store in attribute `config_entries` (a set of IDs)
-                target_config_entry = None
-                for entry_id in device_entry.config_entries:
-                    current_entry = hass.config_entries.async_get_entry(entry_id)
-                    if current_entry and current_entry.domain == DOMAIN:
-                        target_config_entry = current_entry
-                        break
+            if not device_entry:
+                continue
 
-                if target_config_entry:
+            # CRITICAL: Verify the device actually belongs to your integration
+            # before attempting to process it.
+            if not any(
+                (entry := hass.config_entries.async_get_entry(entry_id)) and entry.domain == DOMAIN
+                for entry_id in device_entry.config_entries
+            ):
+                continue  # Skip devices not belonging to my_ipx800v3
+
+            # If we reach here, we know the device is ours.
+            # Get the config entry properly to pass to your handler
+            for entry_id in device_entry.config_entries:
+                target_config_entry = hass.config_entries.async_get_entry(entry_id)
+                if target_config_entry and target_config_entry.domain == DOMAIN:
                     # 3. call the service function
                     processed_entries[target_config_entry.entry_id] = await async_handle_reload_data(
                         hass, target_config_entry, call
                     )
 
         if not processed_entries:
-            return None
+            return {}
 
         # Return a single response if only one entry was reloaded, otherwise return all
         if len(processed_entries) == 1:
