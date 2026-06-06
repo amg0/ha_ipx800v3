@@ -10,7 +10,7 @@ This integration demonstrates best practices for:
 - Proper error handling and recovery
 
 For more details about this integration, please refer to:
-https://github.com/amg0/ha_ipx800v3
+https://github.com/amg0/ha_integration_ipx
 
 For integration development guidelines:
 https://developers.home-assistant.io/docs/creating_integration_manifest
@@ -21,13 +21,16 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
+from aiohttp import web
+
+from homeassistant.components import webhook
+from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL, CONF_USERNAME, Platform
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
 from homeassistant.loader import async_get_loaded_integration
 
 from .api import MyIPX800V3ApiClient
-from .const import DOMAIN, LOGGER
+from .const import CONF_WEBHOOK_ID, CONF_WEBHOOK_URL, DEFAULT_SCAN_INTERVAL, DOMAIN, LOGGER
 from .coordinator import MyIPX800V3DataUpdateCoordinator
 from .data import MyIPX800V3Data
 from .service_actions import async_setup_services
@@ -39,10 +42,6 @@ if TYPE_CHECKING:
 
 PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
-    Platform.BUTTON,
-    Platform.FAN,
-    Platform.NUMBER,
-    Platform.SELECT,
     Platform.SENSOR,
     Platform.SWITCH,
 ]
@@ -114,20 +113,39 @@ async def async_setup_entry(
     """
     # Initialize client first
     client = MyIPX800V3ApiClient(
-        username=entry.data[CONF_USERNAME],  # From config flow setup
-        password=entry.data[CONF_PASSWORD],  # From config flow setup
+        host=entry.data[CONF_HOST],
+        port=int(entry.data[CONF_PORT]),
+        username=entry.data.get(CONF_USERNAME, ""),
+        password=entry.data.get(CONF_PASSWORD, ""),
         session=async_get_clientsession(hass),
     )
 
     # Initialize coordinator with config_entry
+    scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+
     coordinator = MyIPX800V3DataUpdateCoordinator(
         hass=hass,
         logger=LOGGER,
         name=DOMAIN,
         config_entry=entry,
-        update_interval=timedelta(hours=1),
+        update_interval=timedelta(seconds=scan_interval),
         always_update=False,  # Only update entities when data actually changes
     )
+
+    # Register the webhook
+    webhook_id = entry.data[CONF_WEBHOOK_ID]
+    try:
+        webhook.async_register(
+            hass,
+            DOMAIN,
+            "My IPX800V3 Webhook",
+            webhook_id,
+            handle_webhook,
+            allowed_methods=("GET", "POST"),
+        )
+        LOGGER.debug("Registered webhook with url: %s", entry.data[CONF_WEBHOOK_URL])
+    except ValueError:
+        LOGGER.warning("Le webhook %s est déjà défini !", webhook_id)
 
     # Store runtime data
     entry.runtime_data = MyIPX800V3Data(
@@ -143,6 +161,38 @@ async def async_setup_entry(
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 
     return True
+
+
+# /api/webhook/ipx800-push-MmYtm9wNKiMEr-IButVxB2u5
+# 192.168.0.35 8123
+# Webhook received data: {'O': '00000011000000000000000000000000', 'I': '00000000000000000000000000000000'}
+# IPX800 seems buggy, data received is incomplete ( no analog ), so we trigger a full refresh to get the latest data from the API instead of relying on the webhook payload
+
+
+async def handle_webhook(hass: HomeAssistant, webhook_id: str, request: web.Request) -> None:
+    """Handle incoming webhook calls."""
+
+    # 1. Find the entry associated with this specific webhook_id
+    # You can iterate over entries for your domain to find the one matching the ID
+    entry = next(
+        (entry for entry in hass.config_entries.async_entries(DOMAIN) if entry.data.get(CONF_WEBHOOK_ID) == webhook_id),
+        None,
+    )
+
+    if not entry or not entry.runtime_data:
+        LOGGER.error("Webhook received for unknown entry: %s", webhook_id)
+        return None
+
+    # 2. Access the coordinator from runtime_data
+    coordinator = entry.runtime_data.coordinator
+
+    # 3. Process the data
+    data = dict(request.query)
+    LOGGER.debug("Webhook received data: %s", data)
+
+    # 4. Trigger the refresh
+    # coordinator.async_set_updated_data(data)
+    return await coordinator.async_request_refresh()
 
 
 async def async_unload_entry(
@@ -168,6 +218,7 @@ async def async_unload_entry(
     For more information:
     https://developers.home-assistant.io/docs/config_entries_index/#unloading-entries
     """
+    webhook.async_unregister(hass, entry.data[CONF_WEBHOOK_ID])
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 

@@ -19,7 +19,8 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from custom_components.my_ipx800v3.const import CONF_NAME_FROM_IPX
+from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.helpers import selector
 
 
@@ -38,14 +39,42 @@ def get_user_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
     return vol.Schema(
         {
             vol.Required(
-                CONF_USERNAME,
-                default=defaults.get(CONF_USERNAME, vol.UNDEFINED),
+                CONF_HOST,
+                default=defaults.get(CONF_HOST, vol.UNDEFINED),
             ): selector.TextSelector(
                 selector.TextSelectorConfig(
                     type=selector.TextSelectorType.TEXT,
                 ),
             ),
-            vol.Required(CONF_PASSWORD): selector.TextSelector(
+            vol.Required(
+                CONF_PORT,
+                default=defaults.get(CONF_PORT, 80),
+            ): vol.All(
+                selector.NumberSelector(
+                    selector.NumberSelectorConfig(
+                        min=1,
+                        max=65535,
+                        mode=selector.NumberSelectorMode.BOX,
+                    )
+                ),
+                vol.Coerce(int),
+            ),
+            vol.Optional(
+                CONF_NAME_FROM_IPX,
+                default=defaults.get(CONF_NAME_FROM_IPX, True),
+            ): selector.BooleanSelector(),
+            vol.Optional(
+                CONF_USERNAME,
+                default=defaults.get(CONF_USERNAME, ""),
+            ): selector.TextSelector(
+                selector.TextSelectorConfig(
+                    type=selector.TextSelectorType.TEXT,
+                ),
+            ),
+            vol.Optional(
+                CONF_PASSWORD,
+                default=defaults.get(CONF_PASSWORD, ""),
+            ): selector.TextSelector(
                 selector.TextSelectorConfig(
                     type=selector.TextSelectorType.PASSWORD,
                 ),
@@ -54,7 +83,7 @@ def get_user_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
     )
 
 
-def get_reconfigure_schema(username: str) -> vol.Schema:
+def get_reconfigure_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
     """
     Get schema for reconfigure step.
 
@@ -65,23 +94,13 @@ def get_reconfigure_schema(username: str) -> vol.Schema:
         Voluptuous schema for reconfiguration.
 
     """
+    defaults = defaults or {}
     return vol.Schema(
         {
-            vol.Required(
-                CONF_USERNAME,
-                default=username,
-            ): selector.TextSelector(
-                selector.TextSelectorConfig(
-                    type=selector.TextSelectorType.TEXT,
-                ),
-            ),
-            vol.Required(
-                CONF_PASSWORD,
-            ): selector.TextSelector(
-                selector.TextSelectorConfig(
-                    type=selector.TextSelectorType.PASSWORD,
-                ),
-            ),
+            vol.Optional(
+                CONF_NAME_FROM_IPX,
+                default=defaults.get(CONF_NAME_FROM_IPX, True),
+            ): selector.BooleanSelector(),
         },
     )
 
@@ -99,7 +118,7 @@ def get_reauth_schema(username: str) -> vol.Schema:
     """
     return vol.Schema(
         {
-            vol.Required(
+            vol.Optional(
                 CONF_USERNAME,
                 default=username,
             ): selector.TextSelector(
@@ -107,7 +126,7 @@ def get_reauth_schema(username: str) -> vol.Schema:
                     type=selector.TextSelectorType.TEXT,
                 ),
             ),
-            vol.Required(
+            vol.Optional(
                 CONF_PASSWORD,
             ): selector.TextSelector(
                 selector.TextSelectorConfig(

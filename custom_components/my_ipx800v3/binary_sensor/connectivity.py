@@ -15,15 +15,13 @@ from homeassistant.const import EntityCategory
 if TYPE_CHECKING:
     from custom_components.my_ipx800v3.coordinator import MyIPX800V3DataUpdateCoordinator
 
-ENTITY_DESCRIPTIONS = (
-    BinarySensorEntityDescription(
-        key="api_connectivity",
-        translation_key="api_connectivity",
-        device_class=BinarySensorDeviceClass.CONNECTIVITY,
-        entity_category=EntityCategory.DIAGNOSTIC,
-        icon="mdi:api",
-        has_entity_name=True,
-    ),
+CONNECTIVITY_DESCRIPTION = BinarySensorEntityDescription(
+    key="api_connectivity",
+    translation_key="api_connectivity",
+    device_class=BinarySensorDeviceClass.CONNECTIVITY,
+    entity_category=EntityCategory.DIAGNOSTIC,
+    icon="mdi:api",
+    has_entity_name=True,
 )
 
 
@@ -34,9 +32,11 @@ class MyIPX800V3ConnectivitySensor(BinarySensorEntity, MyIPX800V3Entity):
         self,
         coordinator: MyIPX800V3DataUpdateCoordinator,
         entity_description: BinarySensorEntityDescription,
+        api_endpoint: str,
     ) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator, entity_description)
+        self._api_endpoint = api_endpoint
 
     @property
     def is_on(self) -> bool:
@@ -49,5 +49,5 @@ class MyIPX800V3ConnectivitySensor(BinarySensorEntity, MyIPX800V3Entity):
         """Return additional state attributes."""
         return {
             "update_interval": str(self.coordinator.update_interval),
-            "api_endpoint": "JSONPlaceholder (Demo)",
+            "api_endpoint": self._api_endpoint,
         }

@@ -12,23 +12,18 @@ https://developers.home-assistant.io/docs/config_entries_config_flow_handler
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from slugify import slugify
 
-from custom_components.my_ipx800v3.config_flow_handler.schemas import (
-    get_reauth_schema,
-    get_reconfigure_schema,
-    get_user_schema,
-)
+from custom_components.my_ipx800v3.config_flow_handler.options_flow import MyIPX800V3OptionsFlow
+from custom_components.my_ipx800v3.config_flow_handler.schemas import get_reconfigure_schema, get_user_schema
 from custom_components.my_ipx800v3.config_flow_handler.validators import validate_credentials
 from custom_components.my_ipx800v3.const import DOMAIN, LOGGER
 from homeassistant import config_entries
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.components import webhook
+from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.loader import async_get_loaded_integration
-
-if TYPE_CHECKING:
-    from custom_components.my_ipx800v3.config_flow_handler.options_flow import MyIPX800V3OptionsFlow
 
 # Map exception types to error keys for user-facing messages
 ERROR_MAP = {
@@ -53,7 +48,9 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     https://developers.home-assistant.io/docs/config_entries_config_flow_handler
     """
 
+    # Set by developer
     VERSION = 1
+    MINOR_VERSION = 1
 
     @staticmethod
     def async_get_options_flow(
@@ -64,11 +61,7 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         Returns:
             The options flow instance for modifying integration options.
-
         """
-        from custom_components.my_ipx800v3.config_flow_handler.options_flow import (  # noqa: PLC0415
-            MyIPX800V3OptionsFlow,
-        )
 
         return MyIPX800V3OptionsFlow()
 
@@ -92,35 +85,37 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             try:
-                await validate_credentials(
+                data = await validate_credentials(
                     self.hass,
-                    username=user_input[CONF_USERNAME],
-                    password=user_input[CONF_PASSWORD],
+                    host=user_input[CONF_HOST],
+                    port=user_input[CONF_PORT],
+                    username=user_input.get(CONF_USERNAME, ""),
+                    password=user_input.get(CONF_PASSWORD, ""),
                 )
             except Exception as exception:  # noqa: BLE001
                 errors["base"] = self._map_exception_to_error(exception)
             else:
-                # Set unique ID based on username
-                # NOTE: This is just an example - use a proper unique ID in production
-                # See: https://developers.home-assistant.io/docs/config_entries_config_flow_handler#unique-ids
-                await self.async_set_unique_id(slugify(user_input[CONF_USERNAME]))
+                # Set unique ID based on mac address from API data to prevent duplicates
+                host = user_input[CONF_HOST]
+                # port = int(user_input[CONF_PORT])
+                await self.async_set_unique_id(self._build_unique_id(data))
                 self._abort_if_unique_id_configured()
-
+                user_input["webhook_id"] = self.webhook_id
+                user_input["webhook_url"] = self.webhook_url
                 return self.async_create_entry(
-                    title=user_input[CONF_USERNAME],
+                    title=f"IPX800 V3 ({host})",
                     data=user_input,
                 )
 
         integration = async_get_loaded_integration(self.hass, DOMAIN)
         assert integration.documentation is not None, "Integration documentation URL is not set in manifest.json"
-
+        self.webhook_id = webhook.async_generate_id()
+        self.webhook_url = webhook.async_generate_url(self.hass, self.webhook_id)
         return self.async_show_form(
             step_id="user",
             data_schema=get_user_schema(user_input),
             errors=errors,
-            description_placeholders={
-                "documentation_url": integration.documentation,
-            },
+            description_placeholders={"documentation_url": integration.documentation, "webhook_url": self.webhook_url},
         )
 
     async def async_step_reconfigure(
@@ -130,7 +125,7 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """
         Handle reconfiguration of the integration.
 
-        Allows users to update their credentials without removing and re-adding
+        Allows users to update the scan interval without removing and re-adding
         the integration.
 
         Args:
@@ -145,86 +140,99 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             try:
-                await validate_credentials(
+                host = entry.data[CONF_HOST]
+                port = entry.data[CONF_PORT]
+                data = await validate_credentials(
                     self.hass,
-                    username=user_input[CONF_USERNAME],
-                    password=user_input[CONF_PASSWORD],
+                    host=host,
+                    port=port,
+                    username=user_input.get(CONF_USERNAME, ""),
+                    password=user_input.get(CONF_PASSWORD, ""),
                 )
             except Exception as exception:  # noqa: BLE001
                 errors["base"] = self._map_exception_to_error(exception)
             else:
-                return self.async_update_reload_and_abort(
-                    entry,
-                    data=user_input,
-                )
+                uniqueid = self._build_unique_id(data)
+                await self.async_set_unique_id(uniqueid)
+                self._abort_if_unique_id_mismatch()
+                return self.async_update_reload_and_abort(entry, data={**entry.data, **user_input})
+                # return self.async_update_reload_and_abort(
+                #     entry,
+                #     data={**entry.data, **user_input},
+                # )
 
         return self.async_show_form(
             step_id="reconfigure",
-            data_schema=get_reconfigure_schema(entry.data.get(CONF_USERNAME, "")),
+            data_schema=get_reconfigure_schema(entry.data),
             errors=errors,
         )
 
-    async def async_step_reauth(
-        self,
-        entry_data: dict[str, Any] | None = None,
-    ) -> config_entries.ConfigFlowResult:
-        """
-        Handle reauthentication when credentials are invalid.
+    def _build_unique_id(self, data):
+        return slugify(f"{data['config_mac']}")
 
-        This flow is automatically triggered when the coordinator catches
-        an authentication error (ConfigEntryAuthFailed).
+    # async def async_step_reauth(
+    #     self,
+    #     entry_data: dict[str, Any] | None = None,
+    # ) -> config_entries.ConfigFlowResult:
+    #     """
+    #     Handle reauthentication when credentials are invalid.
 
-        Args:
-            entry_data: The existing entry data (unused, per convention).
+    #     This flow is automatically triggered when the coordinator catches
+    #     an authentication error (ConfigEntryAuthFailed).
 
-        Returns:
-            The result of the reauth_confirm step.
+    #     Args:
+    #         entry_data: The existing entry data (unused, per convention).
 
-        """
-        return await self.async_step_reauth_confirm()
+    #     Returns:
+    #         The result of the reauth_confirm step.
 
-    async def async_step_reauth_confirm(
-        self,
-        user_input: dict[str, Any] | None = None,
-    ) -> config_entries.ConfigFlowResult:
-        """
-        Handle reauthentication confirmation.
+    #     """
+    #     return await self.async_step_reauth_confirm()
 
-        Shows the reauthentication form and processes updated credentials.
+    # async def async_step_reauth_confirm(
+    #     self,
+    #     user_input: dict[str, Any] | None = None,
+    # ) -> config_entries.ConfigFlowResult:
+    #     """
+    #     Handle reauthentication confirmation.
 
-        Args:
-            user_input: The user input with updated credentials, or None for initial display.
+    #     Shows the reauthentication form and processes updated credentials.
 
-        Returns:
-            The config flow result, either showing a form or updating the entry.
+    #     Args:
+    #         user_input: The user input with updated credentials, or None for initial display.
 
-        """
-        entry = self._get_reauth_entry()
-        errors: dict[str, str] = {}
+    #     Returns:
+    #         The config flow result, either showing a form or updating the entry.
 
-        if user_input is not None:
-            try:
-                await validate_credentials(
-                    self.hass,
-                    username=user_input[CONF_USERNAME],
-                    password=user_input[CONF_PASSWORD],
-                )
-            except Exception as exception:  # noqa: BLE001
-                errors["base"] = self._map_exception_to_error(exception)
-            else:
-                return self.async_update_reload_and_abort(
-                    entry,
-                    data={**entry.data, **user_input},
-                )
+    #     """
+    #     entry = self._get_reauth_entry()
+    #     errors: dict[str, str] = {}
 
-        return self.async_show_form(
-            step_id="reauth_confirm",
-            data_schema=get_reauth_schema(entry.data.get(CONF_USERNAME, "")),
-            errors=errors,
-            description_placeholders={
-                "username": entry.data.get(CONF_USERNAME, ""),
-            },
-        )
+    #     if user_input is not None:
+    #         try:
+    #             await validate_credentials(
+    #                 self.hass,
+    #                 host=entry.data[CONF_HOST],
+    #                 port=int(entry.data[CONF_PORT]),
+    #                 username=user_input.get(CONF_USERNAME, ""),
+    #                 password=user_input.get(CONF_PASSWORD, ""),
+    #             )
+    #         except Exception as exception:
+    #             errors["base"] = self._map_exception_to_error(exception)
+    #         else:
+    #             return self.async_update_reload_and_abort(
+    #                 entry,
+    #                 data={**entry.data, **user_input},
+    #             )
+
+    #     return self.async_show_form(
+    #         step_id="reauth_confirm",
+    #         data_schema=get_reauth_schema(entry.data.get(CONF_USERNAME, "")),
+    #         errors=errors,
+    #         description_placeholders={
+    #             "username": entry.data.get(CONF_USERNAME, ""),
+    #         },
+    #     )
 
     def _map_exception_to_error(self, exception: Exception) -> str:
         """

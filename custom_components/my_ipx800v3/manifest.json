@@ -1,13 +1,14 @@
 {
   "domain": "my_ipx800v3",
-  "name": "My IPX800V3 HA Integration",
+  "name": "My IPX800 V3",
   "codeowners": [
     "@amg0"
   ],
   "config_flow": true,
-  "documentation": "https://github.com/amg0/ha_ipx800v3",
+  "dependencies": ["webhook"],
+  "documentation": "https://github.com/amg0/ha_integration_ipx",
   "integration_type": "hub",
-  "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/amg0/ha_ipx800v3/issues",
-  "version": "0.1.0"
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/amg0/ha_integration_ipx/issues",
+  "version": "0.3.0"
 }

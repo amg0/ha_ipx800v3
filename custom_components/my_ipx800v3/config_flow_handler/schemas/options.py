@@ -17,7 +17,8 @@ from typing import Any
 
 import voluptuous as vol
 
-from custom_components.my_ipx800v3.const import DEFAULT_ENABLE_DEBUGGING, DEFAULT_UPDATE_INTERVAL_HOURS
+from custom_components.my_ipx800v3.const import DEFAULT_SCAN_INTERVAL
+from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.helpers import selector
 
 
@@ -35,26 +36,21 @@ def get_options_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
     defaults = defaults or {}
     return vol.Schema(
         {
-            vol.Optional(
-                "update_interval_hours",
-                default=defaults.get("update_interval_hours", DEFAULT_UPDATE_INTERVAL_HOURS),
-            ): selector.NumberSelector(
-                selector.NumberSelectorConfig(
-                    min=0.25,
-                    max=24,
-                    step=0.25,
-                    unit_of_measurement="h",
-                    mode=selector.NumberSelectorMode.BOX,
+            vol.Required(
+                CONF_SCAN_INTERVAL,
+                default=defaults.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+            ): vol.All(
+                vol.Coerce(int),
+                selector.NumberSelector(
+                    selector.NumberSelectorConfig(
+                        min=1,
+                        max=300,
+                        step=1,
+                        unit_of_measurement="s",
+                        mode=selector.NumberSelectorMode.BOX,
+                    )
                 ),
             ),
-            vol.Optional(
-                "enable_debugging",
-                default=defaults.get("enable_debugging", DEFAULT_ENABLE_DEBUGGING),
-            ): selector.BooleanSelector(),
-            vol.Optional(
-                "custom_icon",
-                default=defaults.get("custom_icon"),
-            ): selector.IconSelector(),
         },
     )
 

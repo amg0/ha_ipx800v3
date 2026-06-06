@@ -1,4 +1,4 @@
-# My IPX800V3 HA Integration
+# My IPX800 V3
 
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
@@ -7,7 +7,9 @@
 [![hacs][hacsbadge]][hacs]
 ![Project Maintenance][maintenance-shield]
 
-<!--
+[![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
+
+ <!--
 Uncomment and customize these badges if you want to use them:
 
 [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
@@ -16,36 +18,42 @@ Uncomment and customize these badges if you want to use them:
 
 **✨ Develop in the cloud:** Want to contribute or customize this integration? Open it directly in GitHub Codespaces - no local setup required!
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/amg0/ha_ipx800v3?quickstart=1)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/amg0/ha_integration_ipx?quickstart=1)
+
+## ✨ Caveats
+
+this is my first custom integration on HomeAssistant and I am fully leveraging the excellent integration template from: <https://github.com/jpawlowski/hacs.integration_blueprint> so many thanks to him
+
+At this point, not everything is fully tested or in a stable final version, use at your own risk and please accept evolutions as I grow myself in home assistant custom integration understanding.
+
+HACS integration is not done yet. please Ignore any reference to HACS on this page for now and just use this repo directly into Home Assistant as a custom repo.
+
+Feature under progress:
+
+- **HACS**: HACS integration not made yet
 
 ## ✨ Features
 
 - **Easy Setup**: Simple configuration through the UI - no YAML required
-- **Air Quality Monitoring**: Track AQI and PM2.5 levels in real-time
-- **Filter Management**: Monitor filter life and get replacement alerts
-- **Smart Control**: Adjust fan speed, target humidity, and operating modes
-- **Child Lock**: Safety feature to prevent accidental changes
+- **Configuration**: hostname, port, user and password
+- **Optimized Polling**: only one API call for all entities/sensors and configurable refresh rate
+- **Push mode**: wip, not yet fully functional , IPX will be able to push changes into Home assistant for real time updates
 - **Diagnostic Info**: View filter life, runtime hours, and device statistics
 - **Reconfigurable**: Change credentials anytime without removing the integration
 - **Options Flow**: Adjust settings like update interval after setup
 - **Custom Services**: Advanced control with built-in service calls
+- **Push mode**: wip, not yet fully functional , IPX will be able to push changes into Home assistant for real time updates.
 
 **This integration will set up the following platforms.**
 
-| Platform        | Description                                              |
-| --------------- | -------------------------------------------------------- |
-| `sensor`        | Air quality index (AQI), PM2.5, filter life, and runtime |
-| `binary_sensor` | API connection status and filter replacement alert       |
-| `switch`        | Child lock and LED display controls                      |
-| `select`        | Fan speed selection (Low/Medium/High/Auto)               |
-| `number`        | Target humidity setting (30-80%)                         |
-| `button`        | Reset filter timer after replacement                     |
-| `fan`           | Air purifier fan control with speed settings             |
+| Platform        | Description            |
+| --------------- | ---------------------- |
+| `sensor`        | Analog Sensor, Counter |
+| `binary_sensor` | Digital Input          |
+| `switch`        | Output Relays          |
 
 > [!TIP]
-> **Interactive Demo:** The entities are interconnected for demonstration.
-> Press the **Reset Filter Timer** button to see **Filter Life Remaining** update to 100%.
-> Changing the **Air Purifier** fan speed syncs the **Fan Speed** select, and vice versa.
+> **Names:** An integration option controls if the names of entities is imported from the names of the relay/input/sensor of the IPX board
 
 ## 🚀 Quick Start
 
@@ -55,7 +63,7 @@ Uncomment and customize these badges if you want to use them:
 
 Click the button below to open the integration directly in HACS:
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jpawlowski&repository=ha_ipx800v3&category=integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jpawlowski&repository=ha_integration_ipx&category=integration)
 
 Then:
 
@@ -88,9 +96,15 @@ Click the button below to open the configuration dialog:
 
 Follow the setup wizard:
 
-1. Enter your username
-2. Enter your password
-3. Click Submit
+> [!TIP]
+> Look at the webhook url at the top of the parameter dialog box, copy paste it to configure your IPX800 board Push Url. this is optional but better for near real time updates
+
+1. Enter your ipx board hostname or ip address
+2. Enter your port ( 80 by default )
+3. Chose if you want to import the names from the IPX board
+4. optionally enter a user name
+5. and a password if your IPX is configured with a user/pwd security
+6. Click Submit
 
 That's it! The integration will start loading your data.
 
@@ -98,7 +112,7 @@ That's it! The integration will start loading your data.
 
 1. Go to **Settings** → **Devices & Services**
 2. Click **"+ Add Integration"**
-3. Search for "My IPX800V3 HA Integration"
+3. Search for "My IPX800 V3"
 4. Follow the same setup steps as Option 1
 
 ### Step 3: Adjust Settings (Optional)
@@ -106,105 +120,53 @@ That's it! The integration will start loading your data.
 After setup, you can adjust options:
 
 1. Go to **Settings** → **Devices & Services**
-2. Find **My IPX800V3 HA Integration**
+2. Find **My IPX800 V3**
 3. Click **Configure** to adjust:
    - Update interval (how often to refresh data)
-   - Enable debug logging
 
-You can also **Reconfigure** your credentials anytime without removing the integration.
+You can also **Reconfigure** your board and chose to change the import name options ( it will impact your entities names but not the ID )
 
 ### Step 4: Start Using!
 
-The integration creates several entities for your air purifier:
+The integration creates several entities for your IPX800 V3 board
 
-- **Sensors**: Air quality index, PM2.5 levels, filter life remaining, total runtime
-- **Binary Sensors**: API connection status, filter replacement alert
-- **Switches**: Child lock, LED display control
-- **Select**: Fan speed (Low/Medium/High/Auto)
-- **Number**: Target humidity (30-80%)
-- **Button**: Reset filter timer
-- **Fan**: Air purifier fan control
+- **Sensors**: Analog sensors, Counter
+- **Binary Sensors**: Digital Inputs
+- **Switches**: Output relays
 
-Find all entities in **Settings** → **Devices & Services** → **My IPX800V3 HA Integration** → click on the device.
+Find all entities in **Settings** → **Devices & Services** → **My IPX800 V3** → click on the device.
 
 ## Available Entities
 
 ### Sensors
 
-- **Air Quality Index (AQI)**: Real-time air quality measurement (0-500 scale)
-  - Includes air quality category (Good/Moderate/Unhealthy/etc.)
-  - Health recommendations based on current AQI
-- **PM2.5**: Fine particulate matter concentration in µg/m³
-- **Filter Life Remaining** (Diagnostic): Shows remaining filter life as percentage
-- **Total Runtime** (Diagnostic): Total operating hours of the device
+- **Analog**: the type of analog sensor is retrieved directly from the IPX configuration on the IPX board and the calculation for the native value is made according to the same calculation that the IPX board does itself.
 
 ### Binary Sensors
 
-- **API Connection**: Shows whether the connection to the API is active
-  - On: Connected and receiving data
-  - Off: Connection lost or authentication failed
-  - Shows update interval and API endpoint information
-- **Filter Replacement Needed**: Alerts when filter needs replacement
-  - Shows estimated days remaining
-  - Turns on when filter life is low
+- **Digital Input**: Reflects and control the states of digital inputs on the board. there is also an API health sensor that tells if the connection is established
 
 ### Switches
 
-- **Child Lock**: Prevents accidental button presses on the device
-  - Icon changes based on state (locked/unlocked)
-- **LED Display**: Enable/disable the LED display
-  - Disabled by default - enable in entity settings if needed
-
-### Select
-
-- **Fan Speed**: Choose from Low, Medium, High, or Auto
-  - Icon changes dynamically based on selected speed
-  - Auto mode adjusts speed based on air quality
-  - Syncs bidirectionally with the Air Purifier fan entity
-
-### Number
-
-- **Target Humidity**: Set desired humidity level (30-80%)
-  - Adjustable in 5% increments
-  - Displayed as a slider in the UI
-
-### Button
-
-- **Reset Filter Timer**: Reset the filter life to 100%
-  - Press to reset after replacing the filter
-  - Instantly updates the Filter Life Remaining sensor
-
-### Fan
-
-- **Air Purifier**: Control the air purifier fan speed and power
-  - Three speed levels: Low, Medium, High
-  - Syncs bidirectionally with the Fan Speed select entity
-  - Turn on/off functionality
+- **Output Relays**: Reflects and control the states on the board
 
 ## Custom Services
 
 The integration provides services for advanced automation:
 
-### `my_ipx800v3.example_action`
-
-Perform a custom action (customize this for your needs).
-
-**Example:**
-
-```yaml
-service: my_ipx800v3.example_action
-data:
-  # Add your parameters here
-```
-
 ### `my_ipx800v3.reload_data`
 
 Manually refresh data from the API without waiting for the update interval.
+Takes a target device as parameter ( so it applies to the IPX800 boar, not the entities ).
+You can use developer tools Action page to test with the UI form and device selector, or use the yaml way
 
 **Example:**
 
 ```yaml
-service: my_ipx800v3.reload_data
+action: my_ipx800v3.reload_data
+data: {}
+target:
+  device_id: your_device_id like 8723064826443c1c71e4177d2204eae9
 ```
 
 Use these services in automations or scripts for more control.
@@ -213,19 +175,21 @@ Use these services in automations or scripts for more control.
 
 ### During Setup
 
-| Name     | Required | Description           |
-| -------- | -------- | --------------------- |
-| Username | Yes      | Your account username |
-| Password | Yes      | Your account password |
+| Name         | Required | Description                                         |
+| ------------ | -------- | --------------------------------------------------- |
+| Host         | Yes      | hostname or IP address                              |
+| Post         | Yes      | IPX board port number - defaults to 80              |
+| Import Names | Yes      | if ON, it will import the entity names from the ipx |
+| Username     | No       | Your account username                               |
+| Password     | No       | Your account password                               |
 
 ### After Setup (Options)
 
 You can change these anytime by clicking **Configure**:
 
-| Name             | Default | Description                |
-| ---------------- | ------- | -------------------------- |
-| Update Interval  | 1 hour  | How often to refresh data  |
-| Enable Debugging | Off     | Enable extra debug logging |
+| Name            | Default | Description               |
+| --------------- | ------- | ------------------------- |
+| Update Interval | 30 s    | How often to refresh data |
 
 ## Troubleshooting
 
@@ -248,7 +212,7 @@ The integration will automatically resume normal operation with the new credenti
 You can also update credentials at any time without waiting for an error:
 
 1. Go to **Settings** → **Devices & Services**
-2. Find **My IPX800V3 HA Integration**
+2. Find **My IPX800 V3**
 3. Click the **3 dots menu** → **Reconfigure**
 4. Enter new username/password
 5. Click Submit
@@ -292,7 +256,7 @@ If your device is not responding:
 1. Check the **API Connection** binary sensor - it should be "On"
 2. Check your network connection
 3. Verify the device is powered on
-4. Check the integration diagnostics (Settings → Devices & Services → My IPX800V3 HA Integration → 3 dots → Download diagnostics)
+4. Check the integration diagnostics (Settings → Devices & Services → My IPX800 V3 → 3 dots → Download diagnostics)
 
 ## 🤝 Contributing
 
@@ -305,7 +269,7 @@ You have two options to set up a development environment — expand below for fu
 
 Both options provide the same fully-configured environment with Home Assistant, Python 3.14, Node.js LTS, and all necessary tools.
 
-### Option 1: GitHub Codespaces (Recommended) ☁️
+### Option 1: GitHub Codespaces ☁️
 
 Develop directly in your browser without installing anything locally!
 
@@ -318,7 +282,7 @@ Develop directly in your browser without installing anything locally!
 > [!TIP]
 > Codespaces gives you **60 hours/month free** for personal accounts. When you start Home Assistant (`script/develop`), port 8123 forwards automatically.
 
-### Option 2: Local Development with VS Code 💻
+### Option 2: Local Development with VS Code (Recommended) 💻
 
 #### Prerequisites
 
@@ -399,19 +363,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-[commits-shield]: https://img.shields.io/github/commit-activity/y/amg0/ha_ipx800v3.svg?style=for-the-badge
-[commits]: https://github.com/amg0/ha_ipx800v3/commits/main
+[commits-shield]: https://img.shields.io/github/commit-activity/y/amg0/ha_integration_ipx.svg?style=for-the-badge
+[commits]: https://github.com/amg0/ha_integration_ipx/commits/main
 [hacs]: https://github.com/hacs/integration
 [hacsbadge]: https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge
-[license-shield]: https://img.shields.io/github/license/amg0/ha_ipx800v3.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/amg0/ha_integration_ipx.svg?style=for-the-badge
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40amg0-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/amg0/ha_ipx800v3.svg?style=for-the-badge
-[releases]: https://github.com/amg0/ha_ipx800v3/releases
+[releases-shield]: https://img.shields.io/github/release/amg0/ha_integration_ipx.svg?style=for-the-badge
+[releases]: https://github.com/amg0/ha_integration_ipx/releases
 [user_profile]: https://github.com/jpawlowski
+[buymecoffee]: https://buymeacoffee.com/amg0
+[buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
 
 <!-- Optional badge definitions - uncomment if needed:
-[buymecoffee]: https://www.buymeacoffee.com/jpawlowski
-[buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
 [discord]: https://discord.gg/Qa5fW2R
 [discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
 -->

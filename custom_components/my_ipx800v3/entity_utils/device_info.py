@@ -40,8 +40,8 @@ def create_device_info(
     """
     return DeviceInfo(
         identifiers={(config_entry.domain, config_entry.entry_id)},
-        name=name or "My IPX800V3 HA Integration",
-        manufacturer=manufacturer or "My IPX800V3 HA Integration",
+        name=name or "My IPX800 V3",
+        manufacturer=manufacturer or "My IPX800 V3",
         model=model or "Unknown",
         sw_version=sw_version,
     )

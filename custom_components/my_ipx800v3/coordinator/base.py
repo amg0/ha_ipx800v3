@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any
 
 from custom_components.my_ipx800v3.api import MyIPX800V3ApiClientAuthenticationError, MyIPX800V3ApiClientError
 from custom_components.my_ipx800v3.const import LOGGER
+from custom_components.my_ipx800v3.coordinator.data_processing import transform_api_data
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
@@ -42,6 +43,7 @@ class MyIPX800V3DataUpdateCoordinator(DataUpdateCoordinator):
     """
 
     config_entry: MyIPX800V3ConfigEntry
+    names: dict[str, str] = {}
 
     async def _async_setup(self) -> None:
         """
@@ -59,7 +61,32 @@ class MyIPX800V3DataUpdateCoordinator(DataUpdateCoordinator):
         # Example: Fetch device info once at startup
         # device_info = await self.config_entry.runtime_data.client.get_device_info()
         # self._device_id = device_info["id"]
-        LOGGER.debug("Coordinator setup complete for %s", self.config_entry.entry_id)
+        try:
+            # Optional: Get active entity contexts to optimize data fetching
+            # listening_contexts = set(self.async_contexts())
+            # LOGGER.debug("Active entity contexts: %s", listening_contexts)
+
+            # Fetch data from API
+            # In production, you could pass listening_contexts to optimize the API call:
+            # return await self.config_entry.runtime_data.client.async_get_data(listening_contexts)
+            self.names = await self.config_entry.runtime_data.client.async_get_names()
+        except MyIPX800V3ApiClientAuthenticationError as exception:
+            LOGGER.warning("Authentication error - %s", exception)
+            raise ConfigEntryAuthFailed(
+                translation_domain="my_ipx800v3",
+                translation_key="authentication_failed",
+            ) from exception
+        except MyIPX800V3ApiClientError as exception:
+            LOGGER.exception("Error communicating with API")
+            # If the API provides rate limit information, you can honor it:
+            # if hasattr(exception, 'retry_after'):
+            #     raise UpdateFailed(retry_after=exception.retry_after) from exception
+            raise UpdateFailed(
+                translation_domain="my_ipx800v3",
+                translation_key="update_failed",
+            ) from exception
+
+        LOGGER.debug("Coordinator setup complete for %s with names %s", self.config_entry.entry_id, self.names)
 
     async def _async_update_data(self) -> Any:
         """
@@ -104,7 +131,9 @@ class MyIPX800V3DataUpdateCoordinator(DataUpdateCoordinator):
             # Fetch data from API
             # In production, you could pass listening_contexts to optimize the API call:
             # return await self.config_entry.runtime_data.client.async_get_data(listening_contexts)
-            return await self.config_entry.runtime_data.client.async_get_data()
+            raw_data = await self.config_entry.runtime_data.client.async_get_data()
+            return transform_api_data(raw_data)
+
         except MyIPX800V3ApiClientAuthenticationError as exception:
             LOGGER.warning("Authentication error - %s", exception)
             raise ConfigEntryAuthFailed(

@@ -20,14 +20,22 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
-async def validate_credentials(hass: HomeAssistant, username: str, password: str) -> None:
+async def validate_credentials(
+    hass: HomeAssistant,
+    host: str,
+    port: int,
+    username: str,
+    password: str,
+) -> dict[str, str]:
     """
     Validate user credentials by testing API connection.
 
     Args:
         hass: Home Assistant instance.
-        username: The username to validate.
-        password: The password to validate.
+        host: The host/IP address of the IPX800 V3.
+        port: The HTTP port of the IPX800 V3.
+        username: The optional username.
+        password: The optional password.
 
     Raises:
         MyIPX800V3ApiClientAuthenticationError: If credentials are invalid.
@@ -36,11 +44,13 @@ async def validate_credentials(hass: HomeAssistant, username: str, password: str
 
     """
     client = MyIPX800V3ApiClient(
+        host=host,
+        port=port,
         username=username,
         password=password,
         session=async_create_clientsession(hass),
     )
-    await client.async_get_data()  # May raise authentication/communication errors
+    return await client.async_get_data()  # May raise authentication/communication errors
 
 
 __all__ = [

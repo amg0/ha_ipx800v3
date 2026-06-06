@@ -1,30 +1,41 @@
 # yaml-language-server: $schema=../../schemas/yaml/services_schema.yaml
 # Describes the format for available services for my_ipx800v3
 
-example_action:
-  name: Example Action
-  description: Execute an example action (dummy service for demonstration)
-  fields:
-    action_type:
-      name: Action Type
-      description: The type of action to perform
-      required: false
-      default: default
-      example: "update"
-      selector:
-        select:
-          options:
-            - "default"
-            - "update"
-            - "reset"
-    target_value:
-      name: Target Value
-      description: The target value for the action
-      required: false
-      example: "new_value"
-      selector:
-        text:
+# example_action:
+#   name: Example Action
+#   description: Execute an example action (dummy service for demonstration)
+#   fields:
+#     action_type:
+#       name: Action Type
+#       description: The type of action to perform
+#       required: false
+#       default: default
+#       example: "update"
+#       selector:
+#         select:
+#           options:
+#             - "default"
+#             - "update"
+#             - "reset"
+#     target_value:
+#       name: Target Value
+#       description: The target value for the action
+#       required: false
+#       example: "new_value"
+#       selector:
+#         text:
 
+# If the service action accepts entity IDs, target allows the user to specify
+# entities by entity, device, or area. If `target` is specified, `entity_id`
+# should not be  defined in the `fields` map. By default it shows only targets
+# matching entities from the same domain as the action, but if further
+# customization is required, target supports the entity, device, and area
+# selectors (https://www.home-assistant.io/docs/blueprint/selectors/).
+# Entity selector parameters will automatically be applied to device and area,
+# and device selector parameters will automatically be applied to area.
 reload_data:
   name: Reload Data
   description: Force a refresh of the integration data from the API
+  target:
+    device:
+      integration: my_ipx800v3

@@ -1,11 +1,8 @@
 """
 API Client for my_ipx800v3.
 
-This module provides the API client for communicating with external services.
-It demonstrates proper error handling, authentication patterns, and async operations.
-
-For more information on creating API clients:
-https://developers.home-assistant.io/docs/api_lib_index
+This module provides the API client for communicating with the GCE IPX800 V3.
+It handles fetching state from globalstatus.xml and controlling outputs.
 """
 
 from __future__ import annotations
@@ -13,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import socket
 from typing import Any
+import xml.etree.ElementTree as ET
 
 import aiohttp
 
@@ -57,62 +55,52 @@ def _verify_response_or_raise(response: aiohttp.ClientResponse) -> None:
 
 class MyIPX800V3ApiClient:
     """
-    API Client for Smart Air Purifier integration.
+    API Client for GCE IPX800 V3.
 
-    This client demonstrates authentication and API communication patterns
-    for Home Assistant integrations. It handles HTTP requests, error handling,
-    and credential management.
-
-    The username and password are stored and would be used for:
-    - HTTP Basic Auth headers
-    - OAuth token exchange
-    - API key generation
-    - Session token management
-
-    Note: JSONPlaceholder is used as a demo endpoint and doesn't require auth.
-    In production, replace with your actual API endpoint that validates credentials.
-
-    For more information on API clients:
-    https://developers.home-assistant.io/docs/api_lib_index
-
-    Attributes:
-        _username: The username for API authentication.
-        _password: The password for API authentication.
-        _session: The aiohttp ClientSession for making requests.
-
+    Handles communication with the local IPX800 V3 board via HTTP XML polling
+    and HTTP preset endpoints.
     """
 
     def __init__(
         self,
+        host: str,
+        port: int,
         username: str,
         password: str,
         session: aiohttp.ClientSession,
     ) -> None:
         """
-        Initialize the API Client with credentials.
+        Initialize the API Client.
 
         Args:
-            username: The username for authentication from config flow.
-            password: The password for authentication from config flow.
+            host: The host/IP address of the IPX800 V3.
+            port: The HTTP port of the IPX800 V3.
+            username: The optional username for authentication from config flow.
+            password: The optional password for authentication from config flow.
             session: The aiohttp ClientSession to use for requests.
 
         """
+        self._host = host
+        self._port = port
         self._username = username
         self._password = password
         self._session = session
+        self._base_url = f"http://{host}:{port}"
 
-    async def async_get_data(self) -> Any:
+    @property
+    def base_url(self) -> str:
+        """Get the base URL for the API client."""
+        return self._base_url
+
+    async def async_get_data(self) -> dict[str, str]:
         """
-        Get data from the API.
+        Get all data from the IPX800 V3 board.
 
-        This method fetches the current state and sensor data from the device.
-        It demonstrates where credentials would be used in production:
-        - Authorization headers (Basic Auth, Bearer Token)
-        - Query parameters (username, api_key)
-        - Session cookies (after login)
+        Fetches the complete status in a single request to globalstatus.xml
+        to minimize load on the board.
 
         Returns:
-            A dictionary containing the device data.
+            A flat dictionary of tag-value pairs.
 
         Raises:
             MyIPX800V3ApiClientAuthenticationError: If authentication fails.
@@ -120,65 +108,112 @@ class MyIPX800V3ApiClient:
             MyIPX800V3ApiClientError: For other API errors.
 
         """
-        # In production: Use username/password for authentication
-        # Example patterns:
-        # 1. Basic Auth: auth=aiohttp.BasicAuth(self._username, self._password)
-        # 2. Token: headers={"Authorization": f"Bearer {self._get_token()}"}
-        # 3. API Key: params={"username": self._username, "key": self._password}
+        url = f"{self._base_url}/globalstatus.xml"
+
+        auth = None
+        if self._username and self._password:
+            auth = aiohttp.BasicAuth(self._username, self._password)
+
+        xml_text = await self._api_wrapper(
+            method="get",
+            url=url,
+            auth=auth,
+            is_xml=True,
+        )
+
+        try:
+            root = ET.fromstring(xml_text)  # noqa: S314
+        except ET.ParseError as exception:
+            msg = f"Failed to parse XML response from IPX800 V3: {exception}"
+            raise MyIPX800V3ApiClientError(msg) from exception
+
+        data = {}
+        for child in root:
+            if child.tag:
+                data[child.tag] = child.text or ""
+
+        # Default version to Unknown if not in XML
+        if "version" not in data:
+            data["version"] = "3.05.xx"
+
+        return data
+
+    async def async_get_names(self) -> dict[str, str]:
+        """
+        Get all data from the IPX800 V3 board.
+
+        Fetches the names from ionames.xml.
+
+        Returns:
+            A flat dictionary of tag-value pairs.
+
+        Raises:
+            MyIPX800V3ApiClientAuthenticationError: If authentication fails.
+            MyIPX800V3ApiClientCommunicationError: If communication fails.
+            MyIPX800V3ApiClientError: For other API errors.
+
+        """
+        url = f"{self._base_url}/ioname.xml"
+
+        auth = None
+        if self._username and self._password:
+            auth = aiohttp.BasicAuth(self._username, self._password)
+
+        xml_text = await self._api_wrapper(
+            method="get",
+            url=url,
+            auth=auth,
+            is_xml=True,
+        )
+
+        try:
+            root = ET.fromstring(xml_text)  # noqa: S314
+        except ET.ParseError as exception:
+            msg = f"Failed to parse XML response from IPX800 V3: {exception}"
+            raise MyIPX800V3ApiClientError(msg) from exception
+
+        data = {}
+        for child in root:
+            if child.tag:
+                data[child.tag] = child.text or ""
+
+        return data
+
+    async def async_set_relay(self, relay_index: int, state: bool) -> Any:
+        """
+        Set the state of a relay (0-indexed relay_index, e.g. 0 to 31).
+
+        Uses /preset.htm?setX=1 or 0 where X = relay_index + 1.
+
+        Args:
+            relay_index: The 0-based index of the relay (0 maps to set1).
+            state: True for ON (1), False for OFF (0).
+
+        Returns:
+            The API response text.
+
+        Raises:
+            MyIPX800V3ApiClientAuthenticationError: If authentication fails.
+            MyIPX800V3ApiClientCommunicationError: If communication fails.
+            MyIPX800V3ApiClientError: For other API errors.
+
+        """
+        param_num = relay_index + 1
+        param_val = 1 if state else 0
+
+        url = f"{self._base_url}/preset.htm"
+        params = {f"set{param_num}": param_val}
+
+        auth = None
+        if self._username and self._password:
+            auth = aiohttp.BasicAuth(self._username, self._password)
 
         return await self._api_wrapper(
             method="get",
-            url="https://jsonplaceholder.typicode.com/posts/1",
-            # For demo purposes with JSONPlaceholder (no auth required)
-            # In production, add authentication here
-        )
-
-    async def async_set_fan_speed(self, speed: str) -> Any:
-        """
-        Set the fan speed on the device.
-
-        Args:
-            speed: The fan speed to set (low, medium, high, auto).
-
-        Returns:
-            A dictionary containing the API response.
-
-        Raises:
-            MyIPX800V3ApiClientAuthenticationError: If authentication fails.
-            MyIPX800V3ApiClientCommunicationError: If communication fails.
-            MyIPX800V3ApiClientError: For other API errors.
-
-        """
-        # In production: Send authenticated request to change fan speed
-        return await self._api_wrapper(
-            method="patch",
-            url="https://jsonplaceholder.typicode.com/posts/1",
-            data={"fan_speed": speed, "user": self._username},
-            headers={"Content-type": "application/json; charset=UTF-8"},
-        )
-
-    async def async_set_target_humidity(self, humidity: int) -> Any:
-        """
-        Set the target humidity on the device.
-
-        Args:
-            humidity: The target humidity percentage (30-80).
-
-        Returns:
-            A dictionary containing the API response.
-
-        Raises:
-            MyIPX800V3ApiClientAuthenticationError: If authentication fails.
-            MyIPX800V3ApiClientCommunicationError: If communication fails.
-            MyIPX800V3ApiClientError: For other API errors.
-
-        """
-        # In production: Send authenticated request to change humidity setting
-        return await self._api_wrapper(
-            method="patch",
-            url="https://jsonplaceholder.typicode.com/posts/1",
-            data={"target_humidity": humidity, "user": self._username},
-            headers={"Content-type": "application/json; charset=UTF-8"},
+            url=url,
+            auth=auth,
+            params=params,
+            is_xml=True,
         )
 
     async def _api_wrapper(
@@ -187,21 +222,24 @@ class MyIPX800V3ApiClient:
         url: str,
         data: dict | None = None,
         headers: dict | None = None,
+        params: dict | None = None,
+        auth: aiohttp.BasicAuth | None = None,
+        is_xml: bool = False,
     ) -> Any:
         """
         Wrapper for API requests with error handling.
 
-        This method handles all HTTP requests and translates exceptions
-        into integration-specific exceptions.
-
         Args:
-            method: The HTTP method (get, post, patch, etc.).
+            method: The HTTP method (get, post, etc.).
             url: The URL to request.
             data: Optional data to send in the request body.
             headers: Optional headers to include in the request.
+            params: Optional query parameters.
+            auth: Optional HTTP Basic Authentication.
+            is_xml: If True, returns response as raw text instead of JSON.
 
         Returns:
-            The JSON response from the API.
+            The JSON response, or raw text if is_xml is True.
 
         Raises:
             MyIPX800V3ApiClientAuthenticationError: If authentication fails.
@@ -216,8 +254,12 @@ class MyIPX800V3ApiClient:
                     url=url,
                     headers=headers,
                     json=data,
+                    params=params,
+                    auth=auth,
                 )
                 _verify_response_or_raise(response)
+                if is_xml:
+                    return await response.text()
                 return await response.json()
 
         except TimeoutError as exception:
