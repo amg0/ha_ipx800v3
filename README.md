@@ -18,40 +18,49 @@ Uncomment and customize these badges if you want to use them:
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/amg0/ha_ipx800v3?quickstart=1)
 
-## ✨ Caveats
-
-this is my first custom integration on HomeAssistant and I am fully leveraging the excellent integration template from: <https://github.com/jpawlowski/hacs.integration_blueprint> so many thanks to him
-
-At this point, not everything is fully tested or in a stable final version, use at your own risk and please accept evolutions as I grow myself in home assistant custom integration understanding.
-
-HACS integration is not done yet. please Ignore any reference to HACS on this page for now and just use this repo directly into Home Assistant as a custom repo.
-
-Feature under progress:
-
-- **HACS**: HACS integration not made yet
-
 ## ✨ Features
 
 - **Easy Setup**: Simple configuration through the UI - no YAML required
-- **Configuration**: hostname, port, user and password
+- **Configuration**: hostname, port, refresh rate, options: name import, user/password
 - **Optimized Polling**: only one API call for all entities/sensors and configurable refresh rate
-- **Push mode**: wip, not yet fully functional , IPX will be able to push changes into Home assistant for real time updates
+- **Push mode**: wip, requires manually editing the PUSH url on the IPX. IPX will push changes into Home assistant for near real time updates
 - **Diagnostic Info**: View filter life, runtime hours, and device statistics
-- **Reconfigurable**: Change credentials anytime without removing the integration
+- **Reconfigurable**: Change import name options without removing the integration but it impacts the names of the entities
 - **Options Flow**: Adjust settings like update interval after setup
-- **Custom Services**: Advanced control with built-in service calls
-- **Push mode**: wip, not yet fully functional , IPX will be able to push changes into Home assistant for real time updates.
+- **Custom Services**: "Reload data" action to force a refresh
+- **Analog Sensor calculation**: depending on the type of sensor configured on the IPX, the raw value is translated to its meaningful value by the same calculation that IPX is itself using in its Web App.
 
 **This integration will set up the following platforms.**
 
-| Platform        | Description            |
-| --------------- | ---------------------- |
-| `sensor`        | Analog Sensor, Counter |
-| `binary_sensor` | Digital Input          |
-| `switch`        | Output Relays          |
+| Platform        | Description                     |
+| --------------- | ------------------------------- |
+| `sensor`        | Analog Sensor, Counter          |
+| `binary_sensor` | Digital Input, API connectivity |
+| `switch`        | Output Relays                   |
 
 > [!TIP]
-> **Names:** An integration option controls if the names of entities is imported from the names of the relay/input/sensor of the IPX board
+> **Import Names:** when set, the integration reads and reuse the names configured on the IPX800 board.
+
+## ✨ Caveats
+
+- I fully leveraging the excellent integration template from: <https://github.com/jpawlowski/hacs.integration_blueprint> so many thanks to him.
+
+- This is a work in progress, use at your own risk and please accept evolutions. I am still learning about custom integrations.
+
+- HACS integration is not done yet. Just use this repo directly into Home Assistant as a custom repo.
+
+- if you test and develop under DevContainer/Docker, the webhook url displayed is not correct. you will need to replace the IP_ADDRESS by the ip address of your computer instead of the internal docker ip address. this issue is only when using devcontainer. also you will likely need to edit your devcontainer.json to force the port exposition by docker so that the IPX800 can call it. forardPorts is not enough, runArgs is needed to force docker to map the ports
+
+```json
+  "runArgs": ["-p", "8123:8123"],
+  "forwardPorts": [8123],
+```
+
+Not Yet Implemented Features:
+
+- **HACS**: HACS integration not made yet but it can be installed in HA as a **custom repository link**
+
+- dynamically configure the webhook PUSH url into the IPX800.
 
 ## 🚀 Quick Start
 
