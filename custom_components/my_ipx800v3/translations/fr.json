@@ -1,0 +1,158 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuration initiale de l'intégration",
+        "description": "Si vous avez besoin d'aide pour la configuration, consultez la [documentation]({documentation_url}). Veuillez copier le webhook {webhook_url}",
+        "data": {
+          "username": "Nom d'utilisateur",
+          "password": "Mot de passe",
+          "names_from_ipx": "Copier les noms depuis l'IPX"
+        },
+        "data_description": {
+          "names_from_ipx": "Cochez si vous souhaitez importer les noms des entités depuis la carte IPX"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfiguration de l'intégration",
+        "description": "Mettre à jour la configuration de l'interface et reconfigurer les entités",
+        "data": {
+          "names_from_ipx": "Copier les noms depuis l'IPX"
+        },
+        "data_description": {
+          "names_from_ipx": "Cochez si vous souhaitez importer les noms des entités depuis la carte IPX"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Réauthentification de l'intégration",
+        "description": "Les identifiants pour {username} ne sont plus valides. Veuillez fournir des identifiants mis à jour pour rétablir l'accès.",
+        "data": {
+          "username": "Nom d'utilisateur",
+          "password": "Mot de passe"
+        }
+      }
+    },
+    "error": {
+      "auth": "Nom d'utilisateur ou mot de passe incorrect.",
+      "connection": "Impossible de se connecter au serveur.",
+      "unknown": "Une erreur inconnue est survenue."
+    },
+    "abort": {
+      "already_configured": "Cette entrée est déjà configurée.",
+      "reconfigure_successful": "La configuration a été mise à jour avec succès !"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configurer les options de l'intégration",
+        "description": "Personnalisez le fonctionnement de cette intégration.",
+        "data": {
+          "scan_interval": "Intervalle d'interrogation (secondes)"
+        },
+        "data_description": {
+          "scan_interval": "Interroger les données de la carte IPX toutes les x secondes"
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "authentication_failed": {
+      "message": "Échec de l'authentification lors de la mise à jour des données."
+    },
+    "update_failed": {
+      "message": "Échec de la mise à jour des données depuis le serveur."
+    },
+    "switch_turn_on_failed": {
+      "message": "Échec de l'activation de l'interrupteur."
+    },
+    "switch_turn_off_failed": {
+      "message": "Échec de la désactivation de l'interrupteur."
+    },
+    "number_set_failed": {
+      "message": "Échec de la définition de la valeur cible."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "air_quality_index": {
+        "name": "Indice de qualité de l'air"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "filter_life": {
+        "name": "Durée de vie restante du filtre"
+      },
+      "runtime": {
+        "name": "Temps de fonctionnement total"
+      }
+    },
+    "binary_sensor": {
+      "api_connectivity": {
+        "name": "Connexion API"
+      },
+      "filter_replacement": {
+        "name": "Remplacement du filtre nécessaire"
+      }
+    },
+    "switch": {
+      "child_lock": {
+        "name": "Sécurité enfant"
+      },
+      "led_display": {
+        "name": "Affichage LED"
+      }
+    },
+    "select": {
+      "fan_speed": {
+        "name": "Vitesse du ventilateur",
+        "state": {
+          "low": "Bas",
+          "medium": "Moyen",
+          "high": "Haut",
+          "auto": "Auto"
+        }
+      }
+    },
+    "number": {
+      "target_humidity": {
+        "name": "Humidité cible"
+      }
+    },
+    "button": {
+      "reset_filter": {
+        "name": "Réinitialiser le minuteur du filtre"
+      }
+    },
+    "fan": {
+      "air_purifier": {
+        "name": "Purificateur d'air"
+      }
+    }
+  },
+  "issues": {
+    "deprecated_api_endpoint": {
+      "title": "Point de terminaison API obsolète",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Mettre à jour le point de terminaison API",
+            "description": "Votre appareil utilise la version API {api_version} qui est obsolète. Veuillez mettre à jour vers la v2 pour un support continu et de nouvelles fonctionnalités.\n\nCliquez sur Soumettre pour mettre à jour votre appareil afin d'utiliser le nouveau point de terminaison API (v2). Cela rechargera l'intégration."
+          }
+        }
+      }
+    },
+    "missing_configuration": {
+      "title": "Configuration manquante",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Reconnaître le problème de configuration",
+            "description": "Certaines options de configuration sont manquantes ou invalides. Veuillez reconfigurer l'intégration pour assurer un bon fonctionnement.\n\nCliquez sur Soumettre pour reconnaître ce problème. Vous devrez peut-être reconfigurer l'intégration si les problèmes persistent."
+          }
+        }
+      }
+    }
+  }
+}
