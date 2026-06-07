@@ -61,7 +61,7 @@ Feature under progress:
 
 Click the button below to open the integration directly in HACS:
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jpawlowski&repository=ha_ipx800v3&category=integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=amg0&repository=https%3A%2F%2Fgithub.com%2Famg0%2Fha_ipx800v3&category=integration)
 
 Then:
 
@@ -369,7 +369,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40amg0-blue.svg?style=for-the-badge
 [releases-shield]: https://img.shields.io/github/release/amg0/ha_ipx800v3.svg?style=for-the-badge
 [releases]: https://github.com/amg0/ha_ipx800v3/releases
-[user_profile]: https://github.com/jpawlowski
+[user_profile]: https://github.com/amg0
 [buymecoffee]: https://buymeacoffee.com/amg0
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
 

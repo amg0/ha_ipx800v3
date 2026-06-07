@@ -1,5 +1,6 @@
 {
   "name": "My IPX800V3 HA Integration",
   "homeassistant": "2026.4.0",
-  "hacs": "2.0.5"
+  "hacs": "2.0.5",
+  "render_readme": true
 }
