@@ -19,7 +19,7 @@ from slugify import slugify
 from custom_components.my_ipx800v3.config_flow_handler.options_flow import MyIPX800V3OptionsFlow
 from custom_components.my_ipx800v3.config_flow_handler.schemas import get_reconfigure_schema, get_user_schema
 from custom_components.my_ipx800v3.config_flow_handler.validators import validate_credentials
-from custom_components.my_ipx800v3.const import DOMAIN, LOGGER
+from custom_components.my_ipx800v3.const import CONF_WEBHOOK_URL, DOMAIN, LOGGER
 from homeassistant import config_entries
 from homeassistant.components import webhook
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
@@ -161,10 +161,12 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 #     data={**entry.data, **user_input},
                 # )
 
+        webhook_url = entry.data[CONF_WEBHOOK_URL]
         return self.async_show_form(
             step_id="reconfigure",
             data_schema=get_reconfigure_schema(entry.data),
             errors=errors,
+            description_placeholders={"webhook_url": webhook_url},
         )
 
     def _build_unique_id(self, data):

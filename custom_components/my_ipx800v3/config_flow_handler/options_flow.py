@@ -13,6 +13,7 @@ from __future__ import annotations
 from typing import Any
 
 from custom_components.my_ipx800v3.config_flow_handler.schemas import get_options_schema
+from custom_components.my_ipx800v3.const import CONF_WEBHOOK_URL
 from homeassistant import config_entries
 
 
@@ -47,12 +48,17 @@ class MyIPX800V3OptionsFlow(config_entries.OptionsFlow):
             The config flow result, either showing a form or creating an options entry.
 
         """
+        # integration = async_get_loaded_integration(self.hass, DOMAIN)
+        # assert integration.documentation is not None, "Integration documentation URL is not set in manifest.json"
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
+
+        webhook_url = self.config_entry.data[CONF_WEBHOOK_URL]
 
         return self.async_show_form(
             step_id="init",
             data_schema=get_options_schema(self.config_entry.options),
+            description_placeholders={"webhook_url": webhook_url},
         )
 
 

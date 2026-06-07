@@ -15,7 +15,7 @@
       },
       "reconfigure": {
         "title": "Reconfiguration of the Integration",
-        "description": "Update the interface configuration and reconfigure entities",
+        "description": "Update the interface configuration and reconfigure entities. Webhook url:{webhook_url}",
         "data": {
           "names_from_ipx": "Copy names from IPX"
         },
@@ -46,7 +46,7 @@
     "step": {
       "init": {
         "title": "Configure Integration Options",
-        "description": "Customize how this integration operates.",
+        "description": "Customize how this integration operates.\n\n**Webhook**: >{webhook_url}",
         "data": {
           "scan_interval": "Polling interval (seconds)"
         },
