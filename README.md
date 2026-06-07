@@ -70,7 +70,7 @@ Not Yet Implemented Features:
 
 Click the button below to open the integration directly in HACS:
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=amg0&repository=https%3A%2F%2Fgithub.com%2Famg0%2Fha_ipx800v3&category=integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=amg0&repository=ha_ipx800v3&category=integration)
 
 Then:
 
