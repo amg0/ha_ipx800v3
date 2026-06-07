@@ -104,14 +104,17 @@ Click the button below to open the configuration dialog:
 Follow the setup wizard:
 
 > [!TIP]
-> Look at the webhook url at the top of the parameter dialog box, copy paste it to configure your IPX800 board Push Url. this is optional but better for near real time updates
+> Look at the webhook url at the top of the parameter dialog box, copy it and go to your IPX Push settings page to configure ip_addr, the port and the webhook path on your IPX800 board. first save the ip_add and port, then save the API path for the webhook. this PUSH api configuration is optional but is recommended for near real time updates
+
+In the config dialog:
 
 1. Enter your ipx board hostname or ip address
 2. Enter your port ( 80 by default )
-3. Chose if you want to import the names from the IPX board
-4. optionally enter a user name
-5. and a password if your IPX is configured with a user/pwd security
+3. Chose if you want to import the names from the IPX board or accept default names
+4. if your IPX is configured with a user/pwd security, enter a user name
+5. and a password
 6. Click Submit
+7. if the API is tested successfully, Home Assistant will accept it and propose you to associate the new device with an Area
 
 That's it! The integration will start loading your data.
 
@@ -130,15 +133,16 @@ After setup, you can adjust options:
 2. Find **My IPX800 V3**
 3. Click **Configure** to adjust:
    - Update interval (how often to refresh data)
+   - it is recommended not to overload the IPX with too frequent update and instead use the push mode to have near real time updates
 
-You can also **Reconfigure** your board and chose to change the import name options ( it will impact your entities names but not the ID )
+You can use the **Reconfigure** command your board to chose to change the import name options ( it will impact your entities names but not the ID )
 
 ### Step 4: Start Using!
 
 The integration creates several entities for your IPX800 V3 board
 
 - **Sensors**: Analog sensors, Counter
-- **Binary Sensors**: Digital Inputs
+- **Binary Sensors**: Digital Inputs, API connectivity sensor
 - **Switches**: Output relays
 
 Find all entities in **Settings** → **Devices & Services** → **My IPX800 V3** → click on the device.
