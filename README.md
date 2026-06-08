@@ -151,15 +151,19 @@ Find all entities in **Settings** → **Devices & Services** → **My IPX800 V3*
 
 ### Sensors
 
-- **Analog**: the type of analog sensor is retrieved directly from the IPX configuration on the IPX board and the calculation for the native value is made according to the same calculation that the IPX board does itself.
+- **Analog**: a sensor per each analog ('analog') input and per each counter ('count') of the IPX.
+
+The type of analog sensor is retrieved directly from the IPX configuration on the IPX board and the sensor value calculation from the raw data is made according to the same calculation that the IPX board does itself.
 
 ### Binary Sensors
 
-- **Digital Input**: Reflects and control the states of digital inputs on the board. there is also an API health sensor that tells if the connection is established
+- **Digital Input**: one sensor per each digital input ('btn'). Reflects the states of digital inputs on the board.
+
+- There is also an API health sensor that tells if the connection to the IPX is established
 
 ### Switches
 
-- **Output Relays**: Reflects and control the states on the board
+- **Output Relays**: a switch sensor per each output relays ('led') on the IPX. it reflects and enable to control (on/off) the states on the board
 
 ## Custom Services
 
@@ -186,17 +190,17 @@ Use these services in automations or scripts for more control.
 
 ### During Setup
 
-| Name         | Required | Description                                         |
-| ------------ | -------- | --------------------------------------------------- |
-| Host         | Yes      | hostname or IP address                              |
-| Post         | Yes      | IPX board port number - defaults to 80              |
-| Import Names | Yes      | if ON, it will import the entity names from the ipx |
-| Username     | No       | Your account username                               |
-| Password     | No       | Your account password                               |
+| Name         | Required | Description                                                             |
+| ------------ | -------- | ----------------------------------------------------------------------- |
+| Host         | Yes      | hostname or IP address                                                  |
+| Post         | Yes      | IPX board port number - defaults to 80                                  |
+| Import Names | Yes      | if ON, it will import the names from the IPX to create the entity names |
+| Username     | No       | Your account username                                                   |
+| Password     | No       | Your account password                                                   |
 
 ### After Setup (Options)
 
-You can change these anytime by clicking **Configure**:
+You can change these anytime by clicking the **Configure** gear box on the board device:
 
 | Name            | Default | Description               |
 | --------------- | ------- | ------------------------- |
