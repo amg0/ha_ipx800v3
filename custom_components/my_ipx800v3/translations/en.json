@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Initial Configuration of the Integration",
-        "description": "If you need help with the configuration have a look at the [documentation]({documentation_url}).\n\nPlease configure this **webhook** in the push configuration screen of your IPX800: >{webhook_url}\n",
+        "description": "If you need help with the configuration have a look at the [documentation]({documentation_url}).\n\nPlease configure this **webhook** in the push configuration screen of your IPX800: >{webhook_url}",
         "data": {
           "username": "Username",
           "password": "Password",
