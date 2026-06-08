@@ -29,8 +29,8 @@ Uncomment and customize these badges if you want to use them:
 - **Options Flow**: Adjust settings like update interval after setup
 - **Custom Services**: "Reload data" action to force a refresh
 - **Analog Sensor calculation**: depending on the type of sensor configured on the IPX, the raw value is translated to its meaningful value by the same calculation that IPX is itself using in its Web App.
-
-**This integration will set up the following platforms.**
+- Localization strings for EN 🇬🇧 and FR 🇫🇷.
+  **This integration will set up the following platforms.**
 
 | Platform        | Description                     |
 | --------------- | ------------------------------- |
