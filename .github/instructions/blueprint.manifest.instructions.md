@@ -4,7 +4,7 @@ applyTo: "**/manifest.json"
 
 # Manifest Instructions
 
-**Applies to:** `custom_components/my_ipx800v3/manifest.json`
+**Applies to:** `custom_components/ha_integration_domain/manifest.json`
 
 ## Schema Validation
 
@@ -16,14 +16,14 @@ This schema combines Home Assistant's official manifest requirements with HACS-s
 
 ```json
 {
-  "domain": "my_ipx800v3",
-  "name": "My IPX800V3 HA Integration",
-  "codeowners": ["@amg0"],
+  "domain": "ha_integration_domain",
+  "name": "Integration Blueprint",
+  "codeowners": ["@jpawlowski"],
   "config_flow": true,
-  "documentation": "https://github.com/amg0/ha_ipx800v3",
+  "documentation": "https://github.com/jpawlowski/hacs.integration_blueprint",
   "integration_type": "device",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/amg0/ha_ipx800v3/issues",
+  "issue_tracker": "https://github.com/jpawlowski/hacs.integration_blueprint/issues",
   "requirements": [],
   "version": "0.0.0"
 }
@@ -82,7 +82,7 @@ GitHub usernames with `@` prefix:
 
 ```json
 "codeowners": [
-  "@amg0"
+  "@jpawlowski"
 ]
 ```
 
