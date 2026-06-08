@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Initial Configuration of the Integration",
-        "description": "If you need help with the configuration have a look at the [documentation]({documentation_url}). please copy the webhook {webhook_url}",
+        "description": "If you need help with the configuration have a look at the [documentation]({documentation_url}).\n\nPlease configure this **webhook** in the push configuration screen of your IPX800: >{webhook_url}\n",
         "data": {
           "username": "Username",
           "password": "Password",
@@ -15,7 +15,7 @@
       },
       "reconfigure": {
         "title": "Reconfiguration of the Integration",
-        "description": "Update the interface configuration and reconfigure entities. Webhook url:{webhook_url}",
+        "description": "Update the interface configuration and reconfigure entities. \n\n**Webhook**: >{webhook_url}",
         "data": {
           "names_from_ipx": "Copy names from IPX"
         },
