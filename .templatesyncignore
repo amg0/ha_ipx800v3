@@ -89,6 +89,10 @@ docs/
 # Keep this file in your control — customize the schedule,
 # add PAT secrets, or adjust PR settings as you see fit.
 .github/workflows/template-sync.yml
+.github/instructions/
+.github/ISSUE_TEMPLATE/
+.github/prompts/
+.templatesyncignore
 
 # ── Lockfiles ────────────────────────────────────────────────
 # Manage your own lockfile to avoid noisy, conflict-prone PRs.
