@@ -216,6 +216,41 @@ class MyIPX800V3ApiClient:
             is_xml=True,
         )
 
+    async def async_set_relay_switch(self, relay_index: int) -> Any:
+        """
+        Set the state of a relay (0-indexed relay_index, e.g. 0 to 31).
+
+        output according to configuration of Tb inside IPX800 ( impulse or normal )
+        Uses /leds.cgi?led=preset.htm?setX=1 or 0 where X = relay_index + 1.
+
+        Args:
+            relay_index: The 0-based index of the relay (0 maps to set1).
+
+        Returns:
+            The API response text.
+
+        Raises:
+            MyIPX800V3ApiClientAuthenticationError: If authentication fails.
+            MyIPX800V3ApiClientCommunicationError: If communication fails.
+            MyIPX800V3ApiClientError: For other API errors.
+
+        """
+
+        url = f"{self._base_url}/leds.cgi"
+        params = {"led": relay_index}
+
+        auth = None
+        if self._username and self._password:
+            auth = aiohttp.BasicAuth(self._username, self._password)
+
+        return await self._api_wrapper(
+            method="get",
+            url=url,
+            auth=auth,
+            params=params,
+            is_xml=True,
+        )
+
     async def _api_wrapper(
         self,
         method: str,

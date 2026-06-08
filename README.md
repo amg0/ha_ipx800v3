@@ -47,7 +47,7 @@ Uncomment and customize these badges if you want to use them:
 
 - HACS integration is not done yet. Just use this repo directly into Home Assistant as a custom repo.
 
-- if you test and develop under DevContainer/Docker, the webhook url displayed is not correct. you will need to replace the IP_ADDRESS by the ip address of your computer instead of the internal docker ip address. this issue is only when using devcontainer. also you will likely need to edit your devcontainer.json to force the port exposition by docker so that the IPX800 can call it. forardPorts is not enough, runArgs is needed to force docker to map the ports
+- if you test and develop under DevContainer/Docker, the webhook url displayed is not correct. you will need to replace the IP_ADDRESS by the ip address of your computer instead of the internal docker ip address. this issue is only when using devcontainer. also you will likely need to edit your devcontainer.json to force the port exposition by docker so that the IPX800 can call it. forwardPorts is not enough, runArgs is needed to force docker to map the ports
 
 ```json
   "runArgs": ["-p", "8123:8123"],
