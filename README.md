@@ -39,9 +39,6 @@ Uncomment and customize these badges if you want to use them:
 | `binary_sensor` | Digital Input, API connectivity |
 | `switch`        | Output Relays                   |
 
-> [!TIP]
-> **Import Names:** when set, the integration reads and reuse the names configured on the IPX800 board.
-
 ## ✨ Caveats
 
 - I fully leveraging the excellent integration template from: <https://github.com/jpawlowski/hacs.integration_blueprint> so many thanks to him.
@@ -118,6 +115,9 @@ In the config dialog:
 7. if the API is tested successfully, Home Assistant will accept it and propose you to associate the new device with an Area
 
 That's it! The integration will start loading your data.
+
+> [!TIP]
+> **Import Names:** when set, the integration reads and reuse the names configured on the IPX800 board.
 
 #### Option 2: Manual Configuration
 
