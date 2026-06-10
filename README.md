@@ -18,6 +18,8 @@ Uncomment and customize these badges if you want to use them:
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/amg0/ha_ipx800v3?quickstart=1)
 
+![Integration_Image](DocImages/Integration.png)
+
 ## ✨ Features
 
 - **Easy Setup**: Simple configuration through the UI - no YAML required
