@@ -33,11 +33,11 @@ Uncomment and customize these badges if you want to use them:
 
 **This integration will set up the following platforms:**
 
-| Platform        | Description                  |
-| --------------- | ---------------------------- |
-| `sensor`        | Analog Sensor, Counter       |
-| `binary_sensor` | API connectivity             |
-| `switch`        | Output Relays, Digital Input |
+| Platform        | Description                     |
+| --------------- | ------------------------------- |
+| `sensor`        | Analog Sensor, Counter          |
+| `binary_sensor` | Digital Input, API connectivity |
+| `switch`        | Output Relays                   |
 
 ## ✨ Caveats
 
@@ -143,8 +143,8 @@ You can use the **Reconfigure** command your board to chose to change the import
 The integration creates several entities for your IPX800 V3 board
 
 - **Sensors**: Analog sensors, Counter
-- **Binary Sensors**: API connectivity sensor
-- **Switches**: Output relays, Digital Inputs
+- **Binary Sensors**: Digital Inputs, API connectivity sensor
+- **Switches**: Output relays
 
 Find all entities in **Settings** → **Devices & Services** → **My IPX800 V3** → click on the device.
 
@@ -158,13 +158,13 @@ The type of analog sensor is retrieved directly from the IPX configuration on th
 
 ### Binary Sensors
 
+- **Digital Input**: one sensor per each digital input ('btn'). Reflects the states of digital inputs on the board.
+
 - There is also an API health sensor that tells if the connection to the IPX is established
 
 ### Switches
 
 - **Output Relays**: a switch sensor per each output relays ('led') on the IPX. it reflects and enable to control (on/off) the states on the board
-
-- **Digital Input**: one sensor per each digital input ('btn'). Reflects the states of digital inputs on the IPX board and enable to force them to on/off to simulate digital inputs
 
 ## Custom Services
 
