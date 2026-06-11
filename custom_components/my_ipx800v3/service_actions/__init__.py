@@ -8,6 +8,7 @@ from custom_components.my_ipx800v3.const import DOMAIN, LOGGER
 from custom_components.my_ipx800v3.service_actions.example_service import (
     async_handle_example_action,
     async_handle_reload_data,
+    async_handle_toggle_input,
 )
 from homeassistant.core import ServiceCall, ServiceResponse, SupportsResponse
 from homeassistant.helpers import (
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
 # Service action names - only used within service_actions module
 SERVICE_EXAMPLE_ACTION = "example_action"
 SERVICE_RELOAD_DATA = "reload_data"
+SERVICE_TOGGLE_INPUT = "toggle_input"
 
 
 async def async_setup_services(hass: HomeAssistant) -> None:
@@ -48,6 +50,69 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         # Use first entry (or implement logic to select specific entry)
         entry = entries[0]
         await async_handle_example_action(hass, entry, call)
+
+    async def handle_toggle_input(call: ServiceCall) -> None:
+        """Handle the toggle_input service call."""
+        # Extract target selection from service call data
+        target_selection = target_helpers.TargetSelection(call.data)
+        entity_registry = er.async_get(hass)
+
+        # Process each target entity
+        for entity_id in target_selection.entity_ids:
+            # Get the entity from the registry
+            entity_entry = entity_registry.async_get(entity_id)
+            if not entity_entry:
+                LOGGER.warning("Entity %s not found in registry", entity_id)
+                continue
+
+            # Get the config entry for this entity
+            if not entity_entry.config_entry_id:
+                LOGGER.warning(
+                    "Entity %s has no associated config entry",
+                    entity_id,
+                )
+                continue
+
+            target_config_entry = hass.config_entries.async_get_entry(entity_entry.config_entry_id)
+            if not target_config_entry or target_config_entry.domain != DOMAIN:
+                LOGGER.warning(
+                    "No my_ipx800v3 config entry found for entity %s",
+                    entity_id,
+                )
+                continue
+
+            # Extract the key from the unique_id (format: entry_id_key)
+            if not entity_entry.unique_id:
+                LOGGER.warning(
+                    "Entity %s has no unique_id",
+                    entity_id,
+                )
+                continue
+
+            # Split unique_id by '_' to extract the key
+            unique_id_parts = entity_entry.unique_id.split("_", 1)
+            if len(unique_id_parts) < 2:
+                LOGGER.warning(
+                    "Invalid unique_id format for entity %s",
+                    entity_id,
+                )
+                continue
+
+            # check that unique_id_parts[1] is a valid key (e.g., starts with 'btn' or 'led' followed by digits)
+            if not unique_id_parts[1].startswith(("btn", "led")) or not unique_id_parts[1][3:].isdigit():
+                LOGGER.warning(
+                    "Invalid entity key format for entity %s",
+                    entity_id,
+                )
+                continue
+
+            # Call the service handler with the proper entry and entity_id
+            await async_handle_toggle_input(
+                hass,
+                target_config_entry,
+                call,
+                entity_key=unique_id_parts[1],  # Pass the key part to identify which input to toggle
+            )
 
     async def handle_reload_data(call: ServiceCall) -> ServiceResponse:
         """Handle the reload_data service call."""
@@ -115,6 +180,13 @@ async def async_setup_services(hass: HomeAssistant) -> None:
             SERVICE_RELOAD_DATA,
             handle_reload_data,
             supports_response=SupportsResponse.OPTIONAL,
+        )
+
+    if not hass.services.has_service(DOMAIN, SERVICE_TOGGLE_INPUT):
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_TOGGLE_INPUT,
+            handle_toggle_input,
         )
 
     LOGGER.debug("Services registered for %s", DOMAIN)

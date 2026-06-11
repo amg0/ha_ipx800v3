@@ -4,6 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from custom_components.my_ipx800v3.api.client import (
+    MyIPX800V3ApiClientAuthenticationError,
+    MyIPX800V3ApiClientCommunicationError,
+    MyIPX800V3ApiClientError,
+)
 from custom_components.my_ipx800v3.const import LOGGER
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import UpdateFailed
@@ -55,6 +60,51 @@ async def async_handle_example_action(
 
     # For now, this is just a dummy that logs the action
     LOGGER.info("Example action completed successfully")
+
+
+async def async_handle_toggle_input(
+    hass: HomeAssistant,
+    entry: MyIPX800V3ConfigEntry,
+    call: ServiceCall,
+    entity_key: str | None = None,
+) -> None:
+    """
+    Handle the toggle_input service action call.
+
+    This service toggles the state of a specific digital input entity.
+
+    Args:
+        hass: Home Assistant instance
+        entry: Config entry for the integration
+        call: Service call data containing target entity ID
+        entity_key: Optional entity key override
+    """
+    client = entry.runtime_data.client
+
+    # Extract entity key from parameters or service call data
+    if entity_key is None:
+        LOGGER.error("No entity key provided in toggle_input service call")
+        return
+
+    # Extract digital input index from entity attributes
+    input_index = int(entity_key[3])
+
+    # IPX800V3 API requires adding 100 to the input index
+    relay_index = input_index + 100
+
+    try:
+        await client.async_set_relay_switch(relay_index)
+        LOGGER.debug(
+            "Successfully toggled digital input %d for entity %s",
+            input_index,
+            entity_key,
+        )
+    except MyIPX800V3ApiClientAuthenticationError as err:
+        LOGGER.error("Authentication error toggling input: %s", err)
+    except MyIPX800V3ApiClientCommunicationError as err:
+        LOGGER.error("Communication error toggling input: %s", err)
+    except MyIPX800V3ApiClientError as err:
+        LOGGER.error("Error toggling input: %s", err)
 
 
 async def async_handle_reload_data(

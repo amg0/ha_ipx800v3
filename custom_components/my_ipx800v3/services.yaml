@@ -37,3 +37,8 @@ reload_data:
   name: Reload Data
   description: "Recharge les données de l'intégration IPX800."
   target: {}
+
+toggle_input:
+  name: Toggle Digital Input
+  description: "Bascule l'état d'un digital input spécifique."
+  target: {}
