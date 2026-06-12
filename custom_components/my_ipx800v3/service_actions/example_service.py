@@ -10,7 +10,7 @@ from custom_components.my_ipx800v3.api.client import (
     MyIPX800V3ApiClientError,
 )
 from custom_components.my_ipx800v3.const import LOGGER
-from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady, ServiceValidationError
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.util import dt as dt_util
 
@@ -84,7 +84,7 @@ async def async_handle_toggle_input(
     # Extract entity key from parameters or service call data
     if entity_key is None:
         LOGGER.error("No entity key provided in toggle_input service call")
-        return
+        raise ServiceValidationError("No entity key provided in toggle_input service call")
 
     # Extract digital input index from entity attributes
     input_index = int(entity_key[3])
@@ -101,10 +101,13 @@ async def async_handle_toggle_input(
         )
     except MyIPX800V3ApiClientAuthenticationError as err:
         LOGGER.error("Authentication error toggling input: %s", err)
+        raise ServiceValidationError(f"Authentication error toggling input: {err}") from err
     except MyIPX800V3ApiClientCommunicationError as err:
         LOGGER.error("Communication error toggling input: %s", err)
+        raise ServiceValidationError(f"Communication error toggling input: {err}") from err
     except MyIPX800V3ApiClientError as err:
         LOGGER.error("Error toggling input: %s", err)
+        raise ServiceValidationError(f"Error toggling input: {err}") from err
 
 
 async def async_handle_reload_data(
@@ -137,12 +140,7 @@ async def async_handle_reload_data(
     except (UpdateFailed, ConfigEntryAuthFailed, ConfigEntryNotReady) as exception:
         LOGGER.exception("Failed to reload data: %s", exception)
         # Return error response instead of raising
-        return {
-            "status": "error",
-            "timestamp": dt_util.now().isoformat(),
-            "error": str(exception),
-            "error_type": type(exception).__name__,
-        }
+        raise ServiceValidationError(f"Failed to reload data: {exception}") from exception
     else:
         end_time = dt_util.now()
         duration_ms = (end_time - start_time).total_seconds() * 1000

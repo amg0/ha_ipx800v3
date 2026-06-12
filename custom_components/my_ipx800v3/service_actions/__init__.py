@@ -11,6 +11,7 @@ from custom_components.my_ipx800v3.service_actions.example_service import (
     async_handle_toggle_input,
 )
 from homeassistant.core import ServiceCall, ServiceResponse, SupportsResponse
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import (
     device_registry as dr,
     entity_registry as er,  # Add this import
@@ -45,7 +46,7 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         entries = hass.config_entries.async_entries(DOMAIN)
         if not entries:
             LOGGER.warning("No config entries found for %s", DOMAIN)
-            return
+            raise ServiceValidationError(f"No config entries found for {DOMAIN}")
 
         # Use first entry (or implement logic to select specific entry)
         entry = entries[0]
@@ -73,6 +74,7 @@ async def async_setup_services(hass: HomeAssistant) -> None:
                 )
                 continue
 
+            # find Config Entry of the integration so that we can access the API client and coordinator
             target_config_entry = hass.config_entries.async_get_entry(entity_entry.config_entry_id)
             if not target_config_entry or target_config_entry.domain != DOMAIN:
                 LOGGER.warning(
