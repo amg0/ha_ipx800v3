@@ -90,7 +90,13 @@ async def async_handle_toggle_input(
     input_index = int(entity_key[3])
 
     # IPX800V3 API requires adding 100 to the input index
-    relay_index = input_index + 100
+    if entity_key.startswith("btn"):
+        relay_index = input_index + 100
+    elif entity_key.startswith("led"):
+        relay_index = input_index
+    else:
+        LOGGER.error("Invalid entity key format: %s", entity_key)
+        raise ServiceValidationError(f"Invalid entity key format: {entity_key}")
 
     try:
         await client.async_set_relay_switch(relay_index)

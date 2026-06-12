@@ -175,8 +175,8 @@ The integration provides services for advanced automation:
 ### `my_ipx800v3.reload_data`
 
 Manually refresh data from the API without waiting for the update interval.
-Takes a target device as parameter ( so it applies to the IPX800 boar, not the entities ).
-You can use developer tools Action page to test with the UI form and device selector, or use the yaml way
+Takes a target device as parameter (so it applies to the IPX800 board, not the entities).
+You can use developer tools Action page to test with the UI form and device selector, or use the yaml way.
 
 **Example:**
 
@@ -185,6 +185,32 @@ action: my_ipx800v3.reload_data
 data: {}
 target:
   device_id: your_device_id like 8723064826443c1c71e4177d2204eae9
+```
+
+### `my_ipx800v3.toggle_input`
+
+Toggle the state of a digital input or output relay on the IPX800 board.
+Takes a target entity as parameter (one or more digital input entities).
+This service allows you to remotely trigger digital inputs connected to the board.
+
+**Example:**
+
+```yaml
+action: my_ipx800v3.toggle_input
+data: {}
+target:
+  entity_id: binary_sensor.your_device_digital_input_name
+```
+
+**Multiple inputs:**
+
+```yaml
+action: my_ipx800v3.toggle_input
+data: {}
+target:
+  entity_id:
+    - binary_sensor.device_digital_input_1
+    - binary_sensor.device_digital_input_2
 ```
 
 Use these services in automations or scripts for more control.
