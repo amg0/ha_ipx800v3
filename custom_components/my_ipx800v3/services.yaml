@@ -41,4 +41,9 @@ reload_data:
 toggle_input:
   name: Toggle Digital Input
   description: "Bascule l'état d'un digital input spécifique."
-  target: {}
+  target:
+    entity:
+      integration: my_ipx800v3
+      domain:
+        - binary_sensor
+        - switch
