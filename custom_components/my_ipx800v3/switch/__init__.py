@@ -75,10 +75,11 @@ class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
         #     self._relay_index,
         #     True,
         # )
-        await self.coordinator.config_entry.runtime_data.client.async_set_relay_switch(self._relay_index)
-        # Optimistically update and write state
-        self.coordinator.data[self._led_key] = "1"
-        self.async_write_ha_state()
+        if not self.is_on:
+            await self.coordinator.config_entry.runtime_data.client.async_toggle_relay(self._relay_index)
+            # Optimistically update and write state
+            self.coordinator.data[self._led_key] = "1"
+            self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the switch off."""
@@ -86,7 +87,8 @@ class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
         #     self._relay_index,
         #     False,
         # )
-        await self.coordinator.config_entry.runtime_data.client.async_set_relay_switch(self._relay_index)
-        # Optimistically update and write state
-        self.coordinator.data[self._led_key] = "0"
-        self.async_write_ha_state()
+        if self.is_on:
+            await self.coordinator.config_entry.runtime_data.client.async_toggle_relay(self._relay_index)
+            # Optimistically update and write state
+            self.coordinator.data[self._led_key] = "0"
+            self.async_write_ha_state()

@@ -216,7 +216,7 @@ class MyIPX800V3ApiClient:
             is_xml=True,
         )
 
-    async def async_set_relay_switch(self, relay_index: int) -> Any:
+    async def async_toggle_relay(self, relay_index: int) -> Any:
         """
         Set the state of a relay (0-indexed relay_index, e.g. 0 to 31).
 

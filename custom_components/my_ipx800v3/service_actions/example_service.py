@@ -100,7 +100,7 @@ async def async_handle_toggle_input(
         raise ServiceValidationError(f"Invalid entity key format: {entity_key}")
 
     try:
-        await client.async_set_relay_switch(relay_index)
+        await client.async_toggle_relay(relay_index)
         LOGGER.debug(
             "Successfully toggled digital input %d for entity %s",
             input_index,
