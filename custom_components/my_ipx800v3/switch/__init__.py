@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from custom_components.my_ipx800v3.const import CONF_NAME_FROM_IPX
+from custom_components.my_ipx800v3.const import CONF_NAME_FROM_IPX, LOGGER
 from custom_components.my_ipx800v3.entity import MyIPX800V3Entity
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 
@@ -81,6 +81,7 @@ class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
             # Optimistically update and write state
             self.coordinator.data[self._led_key] = "1"
             self.async_write_ha_state()
+            LOGGER.debug("Successfully switched ON switch %d for entity %s", self._relay_index, self._led_key)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the switch off."""
@@ -94,3 +95,4 @@ class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
             # Optimistically update and write state
             self.coordinator.data[self._led_key] = "0"
             self.async_write_ha_state()
+            LOGGER.debug("Successfully switched OFF switch %d for entity %s", self._relay_index, self._led_key)
