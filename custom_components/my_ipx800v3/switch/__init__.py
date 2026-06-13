@@ -76,6 +76,7 @@ class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
         #     True,
         # )
         if not self.is_on:
+            # toggle is preferable to switch because toggle takes into account the IPX configuration Ta Tb
             await self.coordinator.config_entry.runtime_data.client.async_toggle_relay(self._relay_index)
             # Optimistically update and write state
             self.coordinator.data[self._led_key] = "1"
@@ -88,6 +89,7 @@ class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
         #     False,
         # )
         if self.is_on:
+            # toggle is preferable to switch because toggle takes into account the IPX configuration Ta Tb
             await self.coordinator.config_entry.runtime_data.client.async_toggle_relay(self._relay_index)
             # Optimistically update and write state
             self.coordinator.data[self._led_key] = "0"
