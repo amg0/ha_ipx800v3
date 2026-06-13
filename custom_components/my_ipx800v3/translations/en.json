@@ -1,4 +1,14 @@
 {
+  "services": {
+    "reload_data" : {
+      "name" : "Reload data",
+      "description": "Trigger a full refresh of integration's data"
+    },
+    "toggle_input": {
+      "name" : "toggle_input",
+      "description": "toggle the state of a digital input port"
+    }
+  },
   "config": {
     "step": {
       "user": {
@@ -75,60 +85,13 @@
   },
   "entity": {
     "sensor": {
-      "air_quality_index": {
-        "name": "Air Quality Index"
-      },
-      "pm25": {
-        "name": "PM2.5"
-      },
-      "filter_life": {
-        "name": "Filter Life Remaining"
-      },
-      "runtime": {
-        "name": "Total Runtime"
-      }
     },
     "binary_sensor": {
       "api_connectivity": {
         "name": "API Connection"
-      },
-      "filter_replacement": {
-        "name": "Filter Replacement Needed"
       }
     },
     "switch": {
-      "child_lock": {
-        "name": "Child Lock"
-      },
-      "led_display": {
-        "name": "LED Display"
-      }
-    },
-    "select": {
-      "fan_speed": {
-        "name": "Fan Speed",
-        "state": {
-          "low": "Low",
-          "medium": "Medium",
-          "high": "High",
-          "auto": "Auto"
-        }
-      }
-    },
-    "number": {
-      "target_humidity": {
-        "name": "Target Humidity"
-      }
-    },
-    "button": {
-      "reset_filter": {
-        "name": "Reset Filter Timer"
-      }
-    },
-    "fan": {
-      "air_purifier": {
-        "name": "Air Purifier"
-      }
     }
   },
   "issues": {

@@ -1,30 +1,40 @@
 {
+  "services": {
+    "reload_data" : {
+      "name" : "Recharger les données",
+      "description": "Forcer un rafraîchissement complet des données de l'intégration"
+    },
+    "toggle_input": {
+      "name" : "Basculer l'entrée",
+      "description": "Basculer l'état d'un port d'entrée numérique"
+    }
+  },
   "config": {
     "step": {
       "user": {
         "title": "Configuration initiale de l'intégration",
-        "description": "Si vous avez besoin d'aide pour la configuration, consultez la [documentation]({documentation_url}).\n\nVeuillez configurer ce **webhook** dans la configuration Push de votre IPX800: >{webhook_url}",
+        "description": "Si vous avez besoin d'aide pour la configuration, consultez la [documentation]({documentation_url}).\n\nVeuillez configurer ce **webhook** dans l'écran de configuration push de votre IPX800 : >{webhook_url}",
         "data": {
           "username": "Nom d'utilisateur",
           "password": "Mot de passe",
           "names_from_ipx": "Copier les noms depuis l'IPX"
         },
         "data_description": {
-          "names_from_ipx": "Cochez si vous souhaitez importer les noms des entités depuis la carte IPX"
+          "names_from_ipx": "Cochez si vous souhaitez importer les noms d'entités depuis la carte IPX"
         }
       },
       "reconfigure": {
         "title": "Reconfiguration de l'intégration",
-        "description": "Mettre à jour la configuration de l'interface et reconfigurer les entités.\n\n**Webhook**: >{webhook_url}",
+        "description": "Mettez à jour la configuration de l'interface et reconfigurez les entités. \n\n**Webhook** : >{webhook_url}",
         "data": {
           "names_from_ipx": "Copier les noms depuis l'IPX"
         },
         "data_description": {
-          "names_from_ipx": "Cochez si vous souhaitez importer les noms des entités depuis la carte IPX"
+          "names_from_ipx": "Cochez si vous souhaitez importer les noms d'entités depuis la carte IPX"
         }
       },
       "reauth_confirm": {
-        "title": "Réauthentification de l'intégration",
+        "title": "Réauthentifier l'intégration",
         "description": "Les identifiants pour {username} ne sont plus valides. Veuillez fournir des identifiants mis à jour pour rétablir l'accès.",
         "data": {
           "username": "Nom d'utilisateur",
@@ -33,7 +43,7 @@
       }
     },
     "error": {
-      "auth": "Nom d'utilisateur ou mot de passe incorrect.",
+      "auth": "Nom d'utilisateur/mot de passe incorrect.",
       "connection": "Impossible de se connecter au serveur.",
       "unknown": "Une erreur inconnue est survenue."
     },
@@ -46,9 +56,9 @@
     "step": {
       "init": {
         "title": "Configurer les options de l'intégration",
-        "description": "Personnalisez le fonctionnement de cette intégration.\n\n**Webhook**: >{webhook_url}",
+        "description": "Personnalisez le fonctionnement de cette intégration.\n\n**Webhook** : >{webhook_url}",
         "data": {
-          "scan_interval": "Intervalle d'interrogation (secondes)"
+          "scan_interval": "Intervalle de sondage (secondes)"
         },
         "data_description": {
           "scan_interval": "Interroger les données de la carte IPX toutes les x secondes"
@@ -58,7 +68,7 @@
   },
   "exceptions": {
     "authentication_failed": {
-      "message": "Échec de l'authentification lors de la mise à jour des données."
+      "message": "Authentification échouée lors de la mise à jour des données."
     },
     "update_failed": {
       "message": "Échec de la mise à jour des données depuis le serveur."
@@ -75,60 +85,13 @@
   },
   "entity": {
     "sensor": {
-      "air_quality_index": {
-        "name": "Indice de qualité de l'air"
-      },
-      "pm25": {
-        "name": "PM2.5"
-      },
-      "filter_life": {
-        "name": "Durée de vie restante du filtre"
-      },
-      "runtime": {
-        "name": "Temps de fonctionnement total"
-      }
     },
     "binary_sensor": {
       "api_connectivity": {
         "name": "Connexion API"
-      },
-      "filter_replacement": {
-        "name": "Remplacement du filtre nécessaire"
       }
     },
     "switch": {
-      "child_lock": {
-        "name": "Sécurité enfant"
-      },
-      "led_display": {
-        "name": "Affichage LED"
-      }
-    },
-    "select": {
-      "fan_speed": {
-        "name": "Vitesse du ventilateur",
-        "state": {
-          "low": "Bas",
-          "medium": "Moyen",
-          "high": "Haut",
-          "auto": "Auto"
-        }
-      }
-    },
-    "number": {
-      "target_humidity": {
-        "name": "Humidité cible"
-      }
-    },
-    "button": {
-      "reset_filter": {
-        "name": "Réinitialiser le minuteur du filtre"
-      }
-    },
-    "fan": {
-      "air_purifier": {
-        "name": "Purificateur d'air"
-      }
     }
   },
   "issues": {
@@ -138,7 +101,7 @@
         "step": {
           "init": {
             "title": "Mettre à jour le point de terminaison API",
-            "description": "Votre appareil utilise la version API {api_version} qui est obsolète. Veuillez mettre à jour vers la v2 pour un support continu et de nouvelles fonctionnalités.\n\nCliquez sur Soumettre pour mettre à jour votre appareil afin d'utiliser le nouveau point de terminaison API (v2). Cela rechargera l'intégration."
+            "description": "Votre appareil utilise la version d'API {api_version} qui est obsolète. Veuillez passer à la v2 pour continuer à être supporté et bénéficier des nouvelles fonctionnalités.\n\nCliquez sur Soumettre pour mettre à jour votre appareil afin d'utiliser le nouveau point de terminaison API (v2). Cela rechargera l'intégration."
           }
         }
       }
@@ -149,7 +112,7 @@
         "step": {
           "init": {
             "title": "Reconnaître le problème de configuration",
-            "description": "Certaines options de configuration sont manquantes ou invalides. Veuillez reconfigurer l'intégration pour assurer un bon fonctionnement.\n\nCliquez sur Soumettre pour reconnaître ce problème. Vous devrez peut-être reconfigurer l'intégration si les problèmes persistent."
+            "description": "Certaines options de configuration sont manquantes ou invalides. Veuillez reconfigurer l'intégration pour assurer un fonctionnement correct.\n\nCliquez sur Soumettre pour reconnaître ce problème. Il se peut que vous deviez reconfigurer l'intégration si les problèmes persistent."
           }
         }
       }
