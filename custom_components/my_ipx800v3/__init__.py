@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from typing import TYPE_CHECKING
+from urllib.parse import urlparse
 
 from aiohttp import web
 
@@ -27,6 +28,7 @@ from homeassistant.components import webhook
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL, CONF_USERNAME, Platform
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.network import get_url
 from homeassistant.loader import async_get_loaded_integration
 
 from .api import MyIPX800V3ApiClient
@@ -156,6 +158,21 @@ async def async_setup_entry(
 
     # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
     await coordinator.async_config_entry_first_refresh()
+
+    # Get the URL string, Parse out just the hostname/IP and the port
+    base_url = get_url(hass, allow_external=False)
+    parsed_url = urlparse(base_url)
+
+    # ip_address = "192.168.0.227"
+    ip_address = parsed_url.hostname  # e.g., "192.168.1.50"
+    port = parsed_url.port  # e.g., 8123
+
+    # Configure the WebHook in the IPX 800
+    await client.async_config_push(
+        internal_addr=ip_address,
+        internal_port=port,
+        webhook_url=webhook.async_generate_path(entry.data[CONF_WEBHOOK_ID]),
+    )
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))

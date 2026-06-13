@@ -14,6 +14,8 @@ import xml.etree.ElementTree as ET
 
 import aiohttp
 
+from custom_components.my_ipx800v3.const import LOGGER
+
 
 class MyIPX800V3ApiClientError(Exception):
     """Base exception to indicate a general API error."""
@@ -250,6 +252,37 @@ class MyIPX800V3ApiClient:
             params=params,
             is_xml=True,
         )
+
+    # Server: 192.168.0.35
+    # Port: 8123
+    # Webhook URL: /api/webhook/ipx800-push-MmYtm9wNKiMEr-IButVxB2u5
+    # new : >http://172.17.0.2:8123/api/webhook/1cf08c7f22b665875f0f36c4d7bac2f03ec41e95f217a427dcb4e61686858def
+    # 192.168.0.227 :  8123
+    # /api/webhook/1cf08c7f22b665875f0f36c4d7bac2f03ec41e95f217a427dcb4e61686858def
+
+    async def async_config_push(self, internal_addr, internal_port, webhook_url):
+        """
+        Configures the IPX800 V3 push settings.
+
+        Ported from Jeedom to Home Assistant.
+        """
+        LOGGER.debug("config_push called")
+
+        # --- FIRST CALL: Configure Server & Port ---
+        url = f"{self._base_url}/protect/settings/push3.htm"
+        params = {"channel": "65", "server": internal_addr, "port": internal_port, "pass": "user:pass", "enph": 1}
+        auth = None
+        if self._username and self._password:
+            auth = aiohttp.BasicAuth(self._username, self._password)
+        LOGGER.debug(f"calling first time {url}")
+
+        await self._api_wrapper(method="get", url=url, auth=auth, params=params, is_xml=True)
+
+        # --- SECOND CALL: Configure the Callback URL ---
+        params = {"channel": "65", "cmd1": webhook_url}
+        LOGGER.debug(f"callback url {url} webhook:{webhook_url} params {params}")
+
+        return await self._api_wrapper(method="get", url=url, auth=auth, params=params, is_xml=True)
 
     async def _api_wrapper(
         self,

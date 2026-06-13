@@ -19,7 +19,7 @@ from slugify import slugify
 from custom_components.my_ipx800v3.config_flow_handler.options_flow import MyIPX800V3OptionsFlow
 from custom_components.my_ipx800v3.config_flow_handler.schemas import get_reconfigure_schema, get_user_schema
 from custom_components.my_ipx800v3.config_flow_handler.validators import validate_credentials
-from custom_components.my_ipx800v3.const import CONF_WEBHOOK_URL, DOMAIN, LOGGER
+from custom_components.my_ipx800v3.const import CONF_WEBHOOK_ID, CONF_WEBHOOK_URL, DOMAIN, LOGGER
 from homeassistant import config_entries
 from homeassistant.components import webhook
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
@@ -100,8 +100,8 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 # port = int(user_input[CONF_PORT])
                 await self.async_set_unique_id(self._build_unique_id(data))
                 self._abort_if_unique_id_configured()
-                user_input["webhook_id"] = self.webhook_id
-                user_input["webhook_url"] = self.webhook_url
+                user_input[CONF_WEBHOOK_ID] = self.webhook_id
+                user_input[CONF_WEBHOOK_URL] = self.webhook_url
                 return self.async_create_entry(
                     title=f"IPX800 V3 ({host})",
                     data=user_input,
