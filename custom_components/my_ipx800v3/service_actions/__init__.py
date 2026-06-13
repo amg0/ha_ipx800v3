@@ -6,12 +6,10 @@ from typing import TYPE_CHECKING, Any
 
 from custom_components.my_ipx800v3.const import DOMAIN, LOGGER
 from custom_components.my_ipx800v3.service_actions.example_service import (
-    async_handle_example_action,
     async_handle_reload_data,
     async_handle_toggle_input,
 )
 from homeassistant.core import ServiceCall, ServiceResponse, SupportsResponse
-from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import (
     device_registry as dr,
     entity_registry as er,  # Add this import
@@ -22,7 +20,6 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 # Service action names - only used within service_actions module
-SERVICE_EXAMPLE_ACTION = "example_action"
 SERVICE_RELOAD_DATA = "reload_data"
 SERVICE_TOGGLE_INPUT = "toggle_input"
 
@@ -40,8 +37,9 @@ async def async_setup_services(hass: HomeAssistant) -> None:
     Service handlers iterate over all config entries to find the relevant one.
     """
 
-    async def handle_example_action(call: ServiceCall) -> None:
-        """Handle the example_action service call."""
+    """
+        async def handle_example_action(call: ServiceCall) -> None:
+
         # Find all config entries for this domain
         entries = hass.config_entries.async_entries(DOMAIN)
         if not entries:
@@ -51,6 +49,7 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         # Use first entry (or implement logic to select specific entry)
         entry = entries[0]
         await async_handle_example_action(hass, entry, call)
+    """
 
     async def handle_toggle_input(call: ServiceCall) -> None:
         """Handle the toggle_input service call."""
@@ -169,12 +168,6 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         return processed_entries
 
     # Register services (only once at component level)
-    if not hass.services.has_service(DOMAIN, SERVICE_EXAMPLE_ACTION):
-        hass.services.async_register(
-            DOMAIN,
-            SERVICE_EXAMPLE_ACTION,
-            handle_example_action,
-        )
 
     if not hass.services.has_service(DOMAIN, SERVICE_RELOAD_DATA):
         hass.services.async_register(

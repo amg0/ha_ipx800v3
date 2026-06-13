@@ -19,12 +19,12 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse
 
 
-async def async_handle_example_action(
+""" async def async_handle_example_action(
     hass: HomeAssistant,
     entry: MyIPX800V3ConfigEntry,
     call: ServiceCall,
 ) -> None:
-    """
+
     Handle the example_action service action call.
 
     This is a dummy service action that demonstrates how to implement custom service actions.
@@ -33,7 +33,7 @@ async def async_handle_example_action(
         hass: Home Assistant instance
         entry: Config entry for the integration
         call: Service call data
-    """
+
     LOGGER.info("Example action service called with data: %s", call.data)
 
     # Example: Access the coordinator
@@ -60,6 +60,7 @@ async def async_handle_example_action(
 
     # For now, this is just a dummy that logs the action
     LOGGER.info("Example action completed successfully")
+ """
 
 
 async def async_handle_toggle_input(
