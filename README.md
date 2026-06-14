@@ -104,17 +104,18 @@ Click the button below to open the configuration dialog:
 Follow the setup wizard:
 
 > [!TIP]
-> Look at the webhook url at the top of the parameter dialog box, copy it and go to your IPX Push settings page to configure ip_addr, the port and the webhook path on your IPX800 board. first save the ip_add and port, then save the API path for the webhook. this PUSH api configuration is optional but is recommended for near real time updates
+> Look at the webhook url at the top of the parameter dialog box, copy it and go to your IPX Push settings page to configure ip_addr, the port and the webhook path on your IPX800 board. first save the ip_add and port, then save the API path for the webhook. this PUSH api configuration is optional but is recommended for near real time updates. You can also let the integration try to configure it automatically by checking the **Automatic PUSH configuration** option.
 
 In the config dialog:
 
 1. Enter your ipx board hostname or ip address
 2. Enter your port ( 80 by default )
 3. Chose if you want to import the names from the IPX board or accept default names
-4. if your IPX is configured with a user/pwd security, enter a user name
-5. and a password
-6. Click Submit
-7. if the API is tested successfully, Home Assistant will accept it and propose you to associate the new device with an Area
+4. Chose if you want to automatically configure the PUSH settings on the IPX board
+5. if your IPX is configured with a user/pwd security, enter a user name
+6. and a password
+7. Click Submit
+8. if the API is tested successfully, Home Assistant will accept it and propose you to associate the new device with an Area
 
 That's it! The integration will start loading your data.
 

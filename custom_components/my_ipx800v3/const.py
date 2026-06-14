@@ -18,3 +18,4 @@ DEFAULT_ENABLE_DEBUGGING = False
 CONF_WEBHOOK_ID = "webhook_id"
 CONF_WEBHOOK_URL = "webhook_url"
 CONF_NAME_FROM_IPX = "names_from_ipx"
+CONF_AUTOMATIC_PUSH = "automatic_push"

@@ -17,20 +17,24 @@
         "data": {
           "username": "Username",
           "password": "Password",
-          "names_from_ipx": "Copy names from IPX"
+          "names_from_ipx": "Copy names from IPX",
+          "automatic_push": "Automatic PUSH configuration"
         },
         "data_description": {
-          "names_from_ipx": "Check if you want to import entity names from the IPX board"
+          "names_from_ipx": "Check if you want to import entity names from the IPX board",
+          "automatic_push": "Check if you want to automatically configure the PUSH settings on the IPX board"
         }
       },
       "reconfigure": {
         "title": "Reconfiguration of the Integration",
         "description": "Update the interface configuration and reconfigure entities. \n\n**Webhook**: >{webhook_url}",
         "data": {
-          "names_from_ipx": "Copy names from IPX"
+          "names_from_ipx": "Copy names from IPX",
+          "automatic_push": "Automatic PUSH configuration"
         },
         "data_description": {
-          "names_from_ipx": "Check if you want to import entity names from the IPX board"
+          "names_from_ipx": "Check if you want to import entity names from the IPX board",
+          "automatic_push": "Check if you want to automatically configure the PUSH settings on the IPX board"
         }
       },
       "reauth_confirm": {

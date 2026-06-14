@@ -19,7 +19,7 @@ from typing import Any
 
 import voluptuous as vol
 
-from custom_components.my_ipx800v3.const import CONF_NAME_FROM_IPX
+from custom_components.my_ipx800v3.const import CONF_AUTOMATIC_PUSH, CONF_NAME_FROM_IPX
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.helpers import selector
 
@@ -64,6 +64,10 @@ def get_user_schema(defaults: Mapping[str, Any] | None = None) -> vol.Schema:
                 default=defaults.get(CONF_NAME_FROM_IPX, True),
             ): selector.BooleanSelector(),
             vol.Optional(
+                CONF_AUTOMATIC_PUSH,
+                default=defaults.get(CONF_AUTOMATIC_PUSH, True),
+            ): selector.BooleanSelector(),
+            vol.Optional(
                 CONF_USERNAME,
                 default=defaults.get(CONF_USERNAME, ""),
             ): selector.TextSelector(
@@ -100,6 +104,10 @@ def get_reconfigure_schema(defaults: Mapping[str, Any] | None = None) -> vol.Sch
             vol.Optional(
                 CONF_NAME_FROM_IPX,
                 default=defaults.get(CONF_NAME_FROM_IPX, True),
+            ): selector.BooleanSelector(),
+            vol.Optional(
+                CONF_AUTOMATIC_PUSH,
+                default=defaults.get(CONF_AUTOMATIC_PUSH, True),
             ): selector.BooleanSelector(),
         },
     )

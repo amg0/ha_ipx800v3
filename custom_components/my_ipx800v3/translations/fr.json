@@ -17,20 +17,24 @@
         "data": {
           "username": "Nom d'utilisateur",
           "password": "Mot de passe",
-          "names_from_ipx": "Copier les noms depuis l'IPX"
+          "names_from_ipx": "Copier les noms depuis l'IPX",
+          "automatic_push": "Configuration automatique du PUSH"
         },
         "data_description": {
-          "names_from_ipx": "Cochez si vous souhaitez importer les noms d'entités depuis la carte IPX"
+          "names_from_ipx": "Cochez si vous souhaitez importer les noms d'entités depuis la carte IPX",
+          "automatic_push": "Cochez si vous souhaitez configurer automatiquement les paramètres PUSH sur la carte IPX"
         }
       },
       "reconfigure": {
         "title": "Reconfiguration de l'intégration",
         "description": "Mettez à jour la configuration de l'interface et reconfigurez les entités. \n\n**Webhook** : >{webhook_url}",
         "data": {
-          "names_from_ipx": "Copier les noms depuis l'IPX"
+          "names_from_ipx": "Copier les noms depuis l'IPX",
+          "automatic_push": "Configuration automatique du PUSH"
         },
         "data_description": {
-          "names_from_ipx": "Cochez si vous souhaitez importer les noms d'entités depuis la carte IPX"
+          "names_from_ipx": "Cochez si vous souhaitez importer les noms d'entités depuis la carte IPX",
+          "automatic_push": "Cochez si vous souhaitez configurer automatiquement les paramètres PUSH sur la carte IPX"
         }
       },
       "reauth_confirm": {

@@ -82,8 +82,9 @@
       ]
     }
   },
-  "runArgs": ["-p", "8123:8123"],
-  "forwardPorts": [8123],
+  //"runArgs": ["-p", "8123:8123"],
+  //"forwardPorts": [8123],
+  "runArgs": ["--network=host"],
   "portsAttributes": {
     "8123": {
       "label": "Home Assistant",

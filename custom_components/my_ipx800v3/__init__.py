@@ -32,7 +32,7 @@ from homeassistant.helpers.network import get_url
 from homeassistant.loader import async_get_loaded_integration
 
 from .api import MyIPX800V3ApiClient
-from .const import CONF_WEBHOOK_ID, CONF_WEBHOOK_URL, DEFAULT_SCAN_INTERVAL, DOMAIN, LOGGER
+from .const import CONF_AUTOMATIC_PUSH, CONF_WEBHOOK_ID, CONF_WEBHOOK_URL, DEFAULT_SCAN_INTERVAL, DOMAIN, LOGGER
 from .coordinator import MyIPX800V3DataUpdateCoordinator
 from .data import MyIPX800V3Data
 from .service_actions import async_setup_services
@@ -164,15 +164,19 @@ async def async_setup_entry(
     parsed_url = urlparse(base_url)
 
     # ip_address = "192.168.0.227"
-    ip_address = parsed_url.hostname  # e.g., "192.168.1.50"
+    ip_address = parsed_url.hostname or ""  # e.g., "192.168.1.50"
+    if ip_address.startswith("172"):
+        # This will resolve to the actual host machine's bridge IP
+        ip_address = "192.168.0.227"
     port = parsed_url.port  # e.g., 8123
 
     # Configure the WebHook in the IPX 800
-    await client.async_config_push(
-        internal_addr=ip_address,
-        internal_port=port,
-        webhook_url=webhook.async_generate_path(entry.data[CONF_WEBHOOK_ID]),
-    )
+    if entry.data.get(CONF_AUTOMATIC_PUSH, True):
+        await client.async_config_push(
+            internal_addr=ip_address,
+            internal_port=port,
+            webhook_url=webhook.async_generate_path(entry.data[CONF_WEBHOOK_ID]),
+        )
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
