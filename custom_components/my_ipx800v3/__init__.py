@@ -162,12 +162,7 @@ async def async_setup_entry(
     # Get the URL string, Parse out just the hostname/IP and the port
     base_url = get_url(hass, allow_external=False)
     parsed_url = urlparse(base_url)
-
-    # ip_address = "192.168.0.227"
-    ip_address = parsed_url.hostname or ""  # e.g., "192.168.1.50"
-    if ip_address.startswith("172"):
-        # This will resolve to the actual host machine's bridge IP
-        ip_address = "192.168.0.227"
+    ip_address = parsed_url.hostname
     port = parsed_url.port  # e.g., 8123
 
     # Configure the WebHook in the IPX 800
