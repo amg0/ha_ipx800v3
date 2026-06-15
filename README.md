@@ -285,6 +285,16 @@ logger:
 
 ### Common Issues
 
+#### Development inside devcontainer or docker
+
+Home assistant by default will see the internal container IP address instead of the IP address of your host on the LAN
+
+1. in that case you can go into HA system / network settings
+2. uncheck local network automatic setting option
+3. enter the host IP and port that you want to use like : <http://192.168.0.227:8123>
+
+then IPX800 webhook will be correct and your container will be reachable
+
 #### Authentication Errors
 
 If you receive authentication errors:
