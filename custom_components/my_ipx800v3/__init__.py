@@ -24,6 +24,7 @@ from urllib.parse import urlparse
 
 from aiohttp import web
 
+from custom_components.my_ipx800v3.config_flow_handler.config_flow import MyIPX800V3ConfigFlowHandler
 from homeassistant.components import webhook
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL, CONF_USERNAME, Platform
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -256,3 +257,32 @@ async def async_reload_entry(
     https://developers.home-assistant.io/docs/config_entries_index/#reloading-entries
     """
     await hass.config_entries.async_reload(entry.entry_id)
+
+
+async def async_migrate_entry(
+    hass: HomeAssistant,
+    entry: MyIPX800V3ConfigEntry,
+):
+    """Migrer l'entrée de configuration."""
+    LOGGER.info(
+        "Migration config entry version: %s.%s => %s.%s",
+        entry.version,
+        entry.minor_version,
+        MyIPX800V3ConfigFlowHandler.VERSION,
+        MyIPX800V3ConfigFlowHandler.MINOR_VERSION,
+    )
+
+    # Récupération des données actuelles
+    data = {**entry.data}
+
+    # Logique de transformation des données ici into entry.data
+
+    # Saving changes
+
+    hass.config_entries.async_update_entry(
+        entry=entry,
+        data=data,
+        version=MyIPX800V3ConfigFlowHandler.VERSION,
+        minor_version=MyIPX800V3ConfigFlowHandler.MINOR_VERSION,
+    )
+    return True  # Doit retourner True si la migration réussit [1]
