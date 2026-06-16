@@ -25,13 +25,13 @@ Uncomment and customize these badges if you want to use them:
 - **Easy Setup**: Simple configuration through the UI - no YAML required
 - **Configuration**: hostname, port, refresh rate, options: name import, user/password
 - **Optimized Polling**: only one API call for all entities/sensors and configurable refresh rate
-- **Push mode**: wip, requires manually editing the PUSH url on the IPX. IPX will push changes into Home assistant for near real time updates
-- **Diagnostic Info**: View filter life, runtime hours, and device statistics
-- **Reconfigurable**: Change import name options without removing the integration but it impacts the names of the entities
-- **Options Flow**: Adjust settings like update interval after setup
-- **Custom Services**: "Reload data" action to force a refresh
+- **Push mode**: if option requested, it will automatically configure the PUSH url on the IPX. otherwise a manual copy/paste is requested. with Push mode, the IPX will push changes into Home assistant for near real time updates
+- **Diagnostic Info**: returns some device statistics
+- **Reconfigurable**: Change option like the choice to import I/O names from the IPX.
+- **Options Flow**: Adjust polling settings like update interval after setup
+- **Custom Services**: "Reload data": force a refresh; "toggle_input": change a relay state or simulate a change on a digital input contact.
 - **Analog Sensor calculation**: depending on the type of sensor configured on the IPX, the raw value is translated to its meaningful value by the same calculation that IPX is itself using in its Web App.
-- Localization strings for EN 🇬🇧 and FR 🇫🇷.
+- Localization for EN 🇬🇧 and FR 🇫🇷.
 
 **This integration will set up the following platforms:**
 
@@ -45,11 +45,11 @@ Uncomment and customize these badges if you want to use them:
 
 - I fully leveraging the excellent integration template from: <https://github.com/jpawlowski/hacs.integration_blueprint> so many thanks to him.
 
-- This is a work in progress, use at your own risk and please accept evolutions. I am still learning about custom integrations.
+- This is a work in progress, use at your own risk and please accept evolutions.
 
-- HACS integration is not done yet. Just use this repo directly into Home Assistant as a custom repo.
+- HACS integration is not official yet. Just use this repository directly into Home Assistant as a custom repo.
 
-- if you test and develop under DevContainer/Docker, the webhook url displayed is not correct. you will need to replace the IP_ADDRESS by the ip address of your computer instead of the internal docker ip address. this issue is only when using devcontainer. also you will likely need to edit your devcontainer.json to force the port exposition by docker so that the IPX800 can call it. forwardPorts is not enough, runArgs is needed to force docker to map the ports
+- if you test and develop under DevContainer/Docker, the webhook url displayed is not correct. you will need to replace the IP_ADDRESS by the ip address of your computer instead of the internal docker ip address. this issue is only when using devcontainer. also you will likely need to edit your devcontainer.json to force the port exposure by docker so that the IPX800 can call it. forwardPorts is not enough, runArgs is needed to force docker to map the ports
 
 ```json
   "runArgs": ["-p", "8123:8123"],
@@ -59,8 +59,6 @@ Uncomment and customize these badges if you want to use them:
 Not Yet Implemented Features:
 
 - **HACS**: HACS integration not made yet but it can be installed in HA as a **custom repository link**
-
-- dynamically configure the webhook PUSH url into the IPX800.
 
 ## 🚀 Quick Start
 
@@ -104,7 +102,11 @@ Click the button below to open the configuration dialog:
 Follow the setup wizard:
 
 > [!TIP]
-> Look at the webhook url at the top of the parameter dialog box, copy it and go to your IPX Push settings page to configure ip_addr, the port and the webhook path on your IPX800 board. first save the ip_add and port, then save the API path for the webhook. this PUSH api configuration is optional but is recommended for near real time updates. You can also let the integration try to configure it automatically by checking the **Automatic PUSH configuration** option.
+> if you do not use the option to automatically setup the PUSH url on the IPX, you can look at the webhook url at the top of the parameter dialog box, copy it and go to your IPX Push settings page to configure ip_addr, the port and the webhook path on your IPX800 board.
+> first, save the ip_add and port, then save the API path for the webhook.
+
+> [!TIP]
+> this PUSH api configuration is optional but is recommended for near real time updates. it is preferable to have a not so frequent polling interval and push option configured
 
 In the config dialog:
 
