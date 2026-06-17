@@ -29,7 +29,7 @@ Uncomment and customize these badges if you want to use them:
 - **Diagnostic Info**: returns some device statistics
 - **Reconfigurable**: Change option like the choice to import I/O names from the IPX.
 - **Options Flow**: Adjust polling settings like update interval after setup
-- **Custom Services**: "Reload data": force a refresh; "toggle_input": change a relay state or simulate a change on a digital input contact.
+- **Custom Services**: "Reload data": force a refresh; "toggle_input": change a relay state or simulate a change on a digital input contact; "set_counter_value" & "adjust_counter_value": manage your pulse counters.
 - **Analog Sensor calculation**: depending on the type of sensor configured on the IPX, the raw value is translated to its meaningful value by the same calculation that IPX is itself using in its Web App.
 - Localization for EN 🇬🇧 and FR 🇫🇷.
 
@@ -214,6 +214,36 @@ target:
   entity_id:
     - binary_sensor.device_digital_input_1
     - binary_sensor.device_digital_input_2
+```
+
+### `my_ipx800v3.set_counter_value`
+
+Définit une valeur spécifique pour un compteur sur la carte IPX800.
+Prend une entité cible (un capteur de type compteur) et une valeur.
+
+**Example :**
+
+```yaml
+action: my_ipx800v3.set_counter_value
+data:
+  value: 1000
+target:
+  entity_id: sensor.your_device_counter_1
+```
+
+### `my_ipx800v3.adjust_counter_value`
+
+Ajuste la valeur d'un compteur avec un décalage positif ou négatif.
+Prend une entité cible (un capteur de type compteur) et une valeur de décalage (-255 à 255).
+
+**Example :**
+
+```yaml
+action: my_ipx800v3.adjust_counter_value
+data:
+  offset: 10
+target:
+  entity_id: sensor.your_device_counter_1
 ```
 
 Use these services in automations or scripts for more control.

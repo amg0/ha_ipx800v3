@@ -253,6 +253,126 @@ class MyIPX800V3ApiClient:
             is_xml=True,
         )
 
+    async def async_set_counter(self, counter_index: int, value: int) -> Any:
+        """
+        Set a value to a counter.
+
+        Uses /protect/assignio/counter1.htm?num=x&counter=VALUE.
+
+        Args:
+            counter_index: The 0-based index of the counter (0 to 7).
+            value: The value to be set.
+
+        Returns:
+            The API response text.
+
+        Raises:
+            MyIPX800V3ApiClientAuthenticationError: If authentication fails.
+            MyIPX800V3ApiClientCommunicationError: If communication fails.
+            MyIPX800V3ApiClientError: For other API errors.
+
+        """
+        if not 0 <= counter_index <= 7:
+            msg = "Counter index must be between 0 and 7"
+            raise ValueError(msg)
+
+        url = f"{self._base_url}/protect/assignio/counter1.htm"
+        params = {"num": counter_index, "counter": value}
+
+        auth = None
+        if self._username and self._password:
+            auth = aiohttp.BasicAuth(self._username, self._password)
+
+        return await self._api_wrapper(
+            method="get",
+            url=url,
+            auth=auth,
+            params=params,
+            is_xml=True,
+        )
+
+    async def async_increment_counter(self, counter_index: int, amount: int) -> Any:
+        """
+        Increase an amount from a counter.
+
+        Uses /protect/assignio/counter1.htm?num=x&inc=VALUE.
+
+        Args:
+            counter_index: The 0-based index of the counter (0 to 7).
+            amount: The amount to increment (1 to 255).
+
+        Returns:
+            The API response text.
+
+        Raises:
+            MyIPX800V3ApiClientAuthenticationError: If authentication fails.
+            MyIPX800V3ApiClientCommunicationError: If communication fails.
+            MyIPX800V3ApiClientError: For other API errors.
+
+        """
+        if not 0 <= counter_index <= 7:
+            msg = "Counter index must be between 0 and 7"
+            raise ValueError(msg)
+        if not 1 <= amount <= 255:
+            msg = "Increment amount must be between 1 and 255"
+            raise ValueError(msg)
+
+        url = f"{self._base_url}/protect/assignio/counter1.htm"
+        params = {"num": counter_index, "inc": amount}
+
+        auth = None
+        if self._username and self._password:
+            auth = aiohttp.BasicAuth(self._username, self._password)
+
+        return await self._api_wrapper(
+            method="get",
+            url=url,
+            auth=auth,
+            params=params,
+            is_xml=True,
+        )
+
+    async def async_decrement_counter(self, counter_index: int, amount: int) -> Any:
+        """
+        Decrease an amount from a counter.
+
+        Uses /protect/assignio/counter1.htm?num=x&dec=VALUE.
+
+        Args:
+            counter_index: The 0-based index of the counter (0 to 7).
+            amount: The amount to decrement (1 to 255).
+
+        Returns:
+            The API response text.
+
+        Raises:
+            MyIPX800V3ApiClientAuthenticationError: If authentication fails.
+            MyIPX800V3ApiClientCommunicationError: If communication fails.
+            MyIPX800V3ApiClientError: For other API errors.
+
+        """
+        if not 0 <= counter_index <= 7:
+            msg = "Counter index must be between 0 and 7"
+            raise ValueError(msg)
+        if not 1 <= amount <= 255:
+            msg = "Decrement amount must be between 1 and 255"
+            raise ValueError(msg)
+
+        url = f"{self._base_url}/protect/assignio/counter1.htm"
+        params = {"num": counter_index, "dec": amount}
+
+        auth = None
+        if self._username and self._password:
+            auth = aiohttp.BasicAuth(self._username, self._password)
+
+        return await self._api_wrapper(
+            method="get",
+            url=url,
+            auth=auth,
+            params=params,
+            is_xml=True,
+        )
+
     # Server: 192.168.0.35
     # Port: 8123
     # Webhook URL: /api/webhook/ipx800-push-MmYtm9wNKiMEr-IButVxB2u5

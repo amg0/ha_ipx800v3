@@ -1,12 +1,32 @@
 {
   "services": {
-    "reload_data" : {
-      "name" : "Recharger les données",
-      "description": "Forcer un rafraîchissement complet des données de l'intégration"
+    "reload_data": {
+      "name": "Recharger les données",
+      "description": "Recharge les données de l'intégration IPX800."
     },
     "toggle_input": {
-      "name" : "Basculer l'entrée",
-      "description": "Basculer l'état d'un port d'entrée numérique"
+      "name": "Basculer l'entrée numérique",
+      "description": "Bascule l'état d'un digital input spécifique."
+    },
+    "set_counter_value": {
+      "name": "Définir la valeur du compteur",
+      "description": "Définit une valeur spécifique pour un compteur.",
+      "fields": {
+        "value": {
+          "name": "Valeur",
+          "description": "La nouvelle valeur à affecter au compteur."
+        }
+      }
+    },
+    "adjust_counter_value": {
+      "name": "Ajuster la valeur du compteur",
+      "description": "Ajuste la valeur d'un compteur avec un décalage positif ou négatif.",
+      "fields": {
+        "offset": {
+          "name": "Décalage",
+          "description": "La valeur de décalage à appliquer (positif pour incrémenter, négatif pour décrémenter)."
+        }
+      }
     }
   },
   "config": {

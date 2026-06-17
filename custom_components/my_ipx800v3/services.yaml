@@ -34,16 +34,54 @@
 # Entity selector parameters will automatically be applied to device and area,
 # and device selector parameters will automatically be applied to area.
 reload_data:
-  name: Reload Data
-  description: "Recharge les données de l'intégration IPX800."
+  name: Reload data
+  description: "Reload data from the IPX800 integration."
   target: {}
 
 toggle_input:
-  name: Toggle Digital Input
-  description: "Bascule l'état d'un digital input spécifique."
+  name: Toggle digital input
+  description: "Toggle the state of a specific digital input."
   target:
     entity:
       integration: my_ipx800v3
       domain:
         - binary_sensor
         - switch
+
+set_counter_value:
+  name: Set counter value
+  description: "Sets a specific value for a counter."
+  target:
+    entity:
+      integration: my_ipx800v3
+      domain:
+        - sensor
+  fields:
+    value:
+      name: Value
+      description: "The new value to assign to the counter."
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 4294967295
+          mode: box
+
+adjust_counter_value:
+  name: Adjust counter value
+  description: "Adjusts a counter value with a positive or negative offset."
+  target:
+    entity:
+      integration: my_ipx800v3
+      domain:
+        - sensor
+  fields:
+    offset:
+      name: Offset
+      description: "The offset value to apply (positive to increment, negative to decrement)."
+      required: true
+      selector:
+        number:
+          min: -255
+          max: 255
+          mode: box

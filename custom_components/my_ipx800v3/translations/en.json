@@ -1,12 +1,32 @@
 {
   "services": {
-    "reload_data" : {
-      "name" : "Reload data",
-      "description": "Trigger a full refresh of integration's data"
+    "reload_data": {
+      "name": "Reload data",
+      "description": "Reload data from the IPX800 integration."
     },
     "toggle_input": {
-      "name" : "toggle_input",
-      "description": "toggle the state of a digital input port"
+      "name": "Toggle digital input",
+      "description": "Toggle the state of a specific digital input."
+    },
+    "set_counter_value": {
+      "name": "Set counter value",
+      "description": "Sets a specific value for a counter.",
+      "fields": {
+        "value": {
+          "name": "Value",
+          "description": "The new value to assign to the counter."
+        }
+      }
+    },
+    "adjust_counter_value": {
+      "name": "Adjust counter value",
+      "description": "Adjusts a counter value with a positive or negative offset.",
+      "fields": {
+        "offset": {
+          "name": "Offset",
+          "description": "The offset value to apply (positive to increment, negative to decrement)."
+        }
+      }
     }
   },
   "config": {
