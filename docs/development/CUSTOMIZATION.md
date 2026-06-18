@@ -10,6 +10,8 @@ Repositories created from this blueprint can receive upstream improvements autom
 
 Every Monday at 07:00 UTC, the workflow checks whether the upstream blueprint (`amg0/ha_ipx800v3`) has new commits. If it does, it opens a pull request with the diff against your repository.
 
+The workflow is configured to update an existing open template-sync PR when possible (force-push + PR edit) instead of closing it and opening a new one each run.
+
 You review the PR and merge anything you want to adopt. Changes you don't want can simply be dismissed or partially merged.
 
 ### Prerequisites (important)

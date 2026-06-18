@@ -1,6 +1,6 @@
 {
   "domain": "my_ipx800v3",
-  "name": "My IPX800 V3",
+  "name": "My IPX800V3 HA Integration",
   "codeowners": [
     "@amg0"
   ],
