@@ -218,9 +218,8 @@ target:
 
 ### `my_ipx800v3.set_counter_value`
 
-Définit une valeur spécifique pour un compteur sur la carte IPX800.
-Prend une entité cible (un capteur de type compteur) et une valeur.
-
+sets a value for a counter on the IPX800 board
+target is one or several counter entities for the IPX800 board
 **Example :**
 
 ```yaml
@@ -233,8 +232,9 @@ target:
 
 ### `my_ipx800v3.adjust_counter_value`
 
-Ajuste la valeur d'un compteur avec un décalage positif ou négatif.
-Prend une entité cible (un capteur de type compteur) et une valeur de décalage (-255 à 255).
+Adjust a counter with a positive or negative increment offset
+works on counter entities for the IPX800 boar
+target is one or several counter entities for the IPX800 board and offset value is in the range (-255 <=> 255).
 
 **Example :**
 
@@ -435,8 +435,6 @@ You'll need these installed locally:
 
 > [!NOTE]
 > **Transparency Notice:** This integration was developed with assistance from AI coding agents (GitHub Copilot, Claude, and others). While the codebase follows Home Assistant Core standards, AI-generated code may not be reviewed or tested to the same extent as manually written code. AI tools were used to generate boilerplate code, implement standard integration features (config flow, coordinator, entities), ensure code quality and type safety, and write documentation. If you encounter unexpected behavior, please [open an issue](../../issues) on GitHub.
->
-> _This section can be removed or modified if AI assistance was not used in your integration's development._
 
 ---
 
