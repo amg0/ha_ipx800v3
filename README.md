@@ -343,7 +343,7 @@ If your device is not responding:
 1. Check the **API Connection** binary sensor - it should be "On"
 2. Check your network connection
 3. Verify the device is powered on
-4. Check the integration diagnostics (Settings → Devices & Services → My IPX800 V3 → 3 dots → Download diagnostics)
+4. Check the integration diagnostics (Settings → Devices & Services → My IPX800 V3→ 3 dots → Download diagnostics)
 
 ## 🤝 Contributing
 

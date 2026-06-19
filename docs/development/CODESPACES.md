@@ -1,6 +1,6 @@
 # GitHub Codespaces Development Guide
 
-My IPX800V3 HA Integration is fully compatible with GitHub Codespaces for cloud-based development.
+My IPX800 V3 is fully compatible with GitHub Codespaces for cloud-based development.
 
 ## Quick Start
 

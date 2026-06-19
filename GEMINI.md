@@ -14,7 +14,7 @@ Read `AGENTS.md` completely before starting any work. It contains:
 ## Quick Reference
 
 - **Domain:** `my_ipx800v3`
-- **Title:** My IPX800V3 HA Integration
+- **Title:** My IPX800 V3
 - **Class prefix:** `MyIPX800V3`
 - **Main code:** `custom_components/my_ipx800v3/`
 - **Validate:** `script/check` (type-check + lint + spell)

@@ -1,6 +1,6 @@
 # Architecture Overview
 
-This document describes the technical architecture of the My IPX800V3 HA Integration custom component for Home Assistant.
+This document describes the technical architecture of the My IPX800 V3 custom component for Home Assistant.
 
 ## Directory Structure
 

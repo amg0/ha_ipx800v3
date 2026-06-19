@@ -1,7 +1,7 @@
 # Examples
 
 This page provides ready-to-use examples for automations, dashboards, and blueprints
-with the My IPX800V3 HA Integration custom integration.
+with the My IPX800 V3 custom integration.
 
 Replace entity IDs like `sensor.device_name_*` with your actual entity IDs after
 setting up the integration.
@@ -65,7 +65,7 @@ Save this as a blueprint file and import it in Home Assistant:
 
 ```yaml
 blueprint:
-  name: My IPX800V3 HA Integration — Threshold Alert
+  name: My IPX800 V3 — Threshold Alert
   description: Send a notification when a sensor exceeds a configurable threshold.
   domain: automation
   input:

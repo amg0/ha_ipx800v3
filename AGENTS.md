@@ -9,7 +9,7 @@ This is a Home Assistant custom integration that was generated from a blueprint 
 **Integration details:**
 
 - **Domain:** `my_ipx800v3`
-- **Title:** My IPX800V3 HA Integration
+- **Title:** My IPX800 V3
 - **Repository:** amg0/ha_ipx800v3
 
 **Key directories:**
@@ -188,14 +188,14 @@ As an AI agent, **aim for Silver or Gold Quality Scale** when generating code:
 This integration uses the following identifiers consistently:
 
 - **Domain:** `my_ipx800v3`
-- **Title:** My IPX800V3 HA Integration
+- **Title:** My IPX800 V3
 - **Class prefix:** `MyIPX800V3`
 
 **When creating new files:**
 
 - Use the domain `my_ipx800v3` for all DOMAIN references
 - Prefix all integration-specific classes with `MyIPX800V3`
-- Use "My IPX800V3 HA Integration" as the display title
+- Use "My IPX800 V3" as the display title
 - Never hardcode different values
 
 ### Integration Structure

@@ -1,6 +1,6 @@
-# Getting Started with My IPX800V3 HA Integration
+# Getting Started with My IPX800 V3
 
-This guide will help you install and set up the My IPX800V3 HA Integration custom integration for Home Assistant.
+This guide will help you install and set up the My IPX800 V3 custom integration for Home Assistant.
 
 ## Prerequisites
 
@@ -19,7 +19,7 @@ This guide will help you install and set up the My IPX800V3 HA Integration custo
 5. Add this repository URL: `https://github.com/amg0/ha_ipx800v3`
 6. Set category to "Integration"
 7. Click "Add"
-8. Find "My IPX800V3 HA Integration" in the integration list
+8. Find "My IPX800 V3" in the integration list
 9. Click "Download"
 10. Restart Home Assistant
 
@@ -36,7 +36,7 @@ After installation, add the integration:
 
 1. Go to **Settings** → **Devices & Services**
 2. Click **+ Add Integration**
-3. Search for "My IPX800V3 HA Integration"
+3. Search for "My IPX800 V3"
 4. Follow the configuration steps:
 
 ### Step 1: Connection Information
@@ -99,13 +99,13 @@ Add entities to your dashboard:
 1. Go to your dashboard
 2. Click **Edit Dashboard** → **Add Card**
 3. Choose card type (e.g., "Entities", "Glance")
-4. Select entities from "My IPX800V3 HA Integration"
+4. Select entities from "My IPX800 V3"
 
 Example entities card:
 
 ```yaml
 type: entities
-title: My IPX800V3 HA Integration
+title: My IPX800 V3
 entities:
   - sensor.device_name_sensor
   - binary_sensor.device_name_connectivity
