@@ -171,6 +171,12 @@ The type of analog sensor is retrieved directly from the IPX configuration on th
 
 - **Output Relays**: a switch sensor per each output relays ('led') on the IPX. it reflects and enable to control (on/off) the states on the board
 
+### Entities Attribute
+
+Entities have special attributes to keep some interesting information handy for scripting
+
+- **ipx_key** : the unique key on the IPX board ( led0, btn3, counter1, analog2 ... )
+
 ## Custom Services
 
 The integration provides services for advanced automation:
