@@ -12,7 +12,7 @@ ATTRIBUTION = "Data provided by https://wiki.gce-electronics.com/index.php?title
 PARALLEL_UPDATES = 1
 
 # Default configuration values
-DEFAULT_SCAN_INTERVAL = 30
+DEFAULT_SCAN_INTERVAL = 60
 DEFAULT_ENABLE_DEBUGGING = False
 
 CONF_WEBHOOK_ID = "webhook_id"
