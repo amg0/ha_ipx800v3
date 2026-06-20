@@ -128,6 +128,9 @@ async def async_setup_services(hass: HomeAssistant) -> None:  # noqa: C901
             elif call.service == SERVICE_ADJUST_COUNTER_VALUE:
                 await async_handle_change_counter_value(hass, target_config_entry, call, entity_key)
 
+        # changing counter values does not trigger IPX Push so we force a refresh of data
+        await handle_reload_data(call)
+
     services = [
         (SERVICE_RELOAD_DATA, handle_reload_data, SupportsResponse.OPTIONAL),
         (SERVICE_TOGGLE_INPUT, handle_toggle_input, SupportsResponse.NONE),
