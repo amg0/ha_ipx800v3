@@ -55,8 +55,13 @@ class MyIPX800V3Entity(CoordinatorEntity[MyIPX800V3DataUpdateCoordinator]):
         """
         super().__init__(coordinator)
         self.entity_description = entity_description
+
         # Include entity description key in unique_id to support multiple entities
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{entity_description.key}"
+
+        # Extra attributes to be seen in HomeAssistant UI
+        self._attr_extra_state_attributes = {"ipx_key": entity_description.key}
+
         self._attr_device_info = DeviceInfo(
             identifiers={
                 (
