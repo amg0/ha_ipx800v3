@@ -57,6 +57,16 @@
           "automatic_push": "Cochez si vous souhaitez configurer automatiquement les paramètres PUSH sur la carte IPX"
         }
       },
+      "options_init": {
+        "title": "Configurer les options de l'intégration",
+        "description": "Personnalisez le fonctionnement de cette intégration.\n\n**Webhook** : >{webhook_url}",
+        "data": {
+          "scan_interval": "Intervalle de sondage (secondes)"
+        },
+        "data_description": {
+          "scan_interval": "Interroger les données de la carte IPX toutes les x secondes"
+        }
+      },
       "reauth_confirm": {
         "title": "Réauthentifier l'intégration",
         "description": "Les identifiants pour {username} ne sont plus valides. Veuillez fournir des identifiants mis à jour pour rétablir l'accès.",

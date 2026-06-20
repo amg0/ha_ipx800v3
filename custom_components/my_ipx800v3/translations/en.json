@@ -45,6 +45,16 @@
           "automatic_push": "Check if you want to automatically configure the PUSH settings on the IPX board"
         }
       },
+      "options_init": {
+        "title": "Configure Integration Options",
+        "description": "Customize how this integration operates.\n\n**Webhook**: >{webhook_url}",
+        "data": {
+          "scan_interval": "Polling interval (seconds)"
+        },
+        "data_description": {
+          "scan_interval": "Poll the IPX board data every x seconds"
+        }
+      },
       "reconfigure": {
         "title": "Reconfiguration of the Integration",
         "description": "Update the interface configuration and reconfigure entities. \n\n**Webhook**: >{webhook_url}",

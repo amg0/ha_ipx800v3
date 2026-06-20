@@ -17,7 +17,11 @@ from typing import Any
 from slugify import slugify
 
 from custom_components.my_ipx800v3.config_flow_handler.options_flow import MyIPX800V3OptionsFlow
-from custom_components.my_ipx800v3.config_flow_handler.schemas import get_reconfigure_schema, get_user_schema
+from custom_components.my_ipx800v3.config_flow_handler.schemas import (
+    get_options_schema,
+    get_reconfigure_schema,
+    get_user_schema,
+)
 from custom_components.my_ipx800v3.config_flow_handler.validators import validate_credentials
 from custom_components.my_ipx800v3.const import CONF_WEBHOOK_ID, CONF_WEBHOOK_URL, DOMAIN, LOGGER
 from homeassistant import config_entries
@@ -51,6 +55,11 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     # Set by developer
     VERSION = 1
     MINOR_VERSION = 1
+
+    ### MODIFICATION 2 : Initialisation d'un dictionnaire pour stocker temporairement les données du premier écran
+    def __init__(self) -> None:
+        """Initialize the ConfigFlow."""
+        self._setup_data: dict[str, Any] = {}
 
     @staticmethod
     def async_get_options_flow(
@@ -96,16 +105,14 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = self._map_exception_to_error(exception)
             else:
                 # Set unique ID based on mac address from API data to prevent duplicates
-                host = user_input[CONF_HOST]
-                # port = int(user_input[CONF_PORT])
                 await self.async_set_unique_id(self._build_unique_id(data))
                 self._abort_if_unique_id_configured()
                 user_input[CONF_WEBHOOK_ID] = self.webhook_id
                 user_input[CONF_WEBHOOK_URL] = self.webhook_url
-                return self.async_create_entry(
-                    title=f"IPX800 V3 ({host})",
-                    data=user_input,
-                )
+                ### MODIFICATION 3 : Au lieu de créer l'entrée, on sauvegarde les données
+                ### et on passe à la nouvelle étape `options_init`
+                self._setup_data = user_input
+                return await self.async_step_options_init()
 
         integration = async_get_loaded_integration(self.hass, DOMAIN)
         assert integration.documentation is not None, "Integration documentation URL is not set in manifest.json"
@@ -116,6 +123,31 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=get_user_schema(user_input),
             errors=errors,
             description_placeholders={"documentation_url": integration.documentation, "webhook_url": self.webhook_url},
+        )
+
+    ### MODIFICATION 4 : Création de l'étape intermédiaire pour afficher le formulaire des options
+    async def async_step_options_init(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> config_entries.ConfigFlowResult:
+        """Handle the options step during the initial setup."""
+        if user_input is not None:
+            host = self._setup_data[CONF_HOST]
+
+            # C'est ici que l'entrée est réellement créée avec les 'data' ET les 'options'
+            return self.async_create_entry(
+                title=f"IPX800 V3 ({host})",
+                data=self._setup_data,
+                options=user_input,
+            )
+
+        # On récupère l'url du webhook précédemment générée pour le placeholder (comme dans votre options_flow.py)
+        webhook_url = self._setup_data.get(CONF_WEBHOOK_URL, "")
+
+        return self.async_show_form(
+            step_id="options_init",
+            data_schema=get_options_schema(),  # Pas de 'defaults' la première fois
+            description_placeholders={"webhook_url": webhook_url},
         )
 
     async def async_step_reconfigure(
