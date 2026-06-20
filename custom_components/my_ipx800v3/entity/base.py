@@ -64,7 +64,7 @@ class MyIPX800V3Entity(CoordinatorEntity[MyIPX800V3DataUpdateCoordinator]):
                     coordinator.config_entry.entry_id,
                 ),
             },
-            name="IPX800 V3",
+            name="IPX800",
             manufacturer="GCE Electronics",
             model="IPX800 V3",
             sw_version=coordinator.data.get("version", "3.05.xx"),
