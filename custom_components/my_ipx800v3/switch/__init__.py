@@ -81,7 +81,9 @@ class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
             # Optimistically update and write state
             self.coordinator.data[self._led_key] = "1"
             self.async_write_ha_state()
-            LOGGER.debug("Successfully switched ON switch %d for entity %s", self._relay_index, self._led_key)
+            LOGGER.info(
+                "Successfully switched ON switch %d for entity '%s' (%s)", self._relay_index, self.name, self._led_key
+            )
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the switch off."""
@@ -95,4 +97,6 @@ class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
             # Optimistically update and write state
             self.coordinator.data[self._led_key] = "0"
             self.async_write_ha_state()
-            LOGGER.debug("Successfully switched OFF switch %d for entity %s", self._relay_index, self._led_key)
+            LOGGER.info(
+                "Successfully switched OFF switch %d for entity '%s' (%s)", self._relay_index, self.name, self._led_key
+            )

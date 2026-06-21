@@ -43,7 +43,7 @@ async def async_handle_set_counter_value(
 
     try:
         await client.async_set_counter(counter_index, int(value))
-        LOGGER.debug(
+        LOGGER.info(
             "Successfully set counter %d to %d",
             counter_index,
             value,
@@ -91,7 +91,7 @@ async def async_handle_change_counter_value(
         else:
             await client.async_decrement_counter(counter_index, abs(offset))
 
-        LOGGER.debug(
+        LOGGER.info(
             "Successfully adjusted counter %d by %d",
             counter_index,
             offset,

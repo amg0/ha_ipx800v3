@@ -101,9 +101,9 @@ async def async_handle_toggle_input(
 
     try:
         await client.async_toggle_relay(relay_index)
-        LOGGER.debug(
+        LOGGER.info(
             "Successfully toggled digital input %d for entity %s",
-            input_index,
+            relay_index,
             entity_key,
         )
     except MyIPX800V3ApiClientAuthenticationError as err:
