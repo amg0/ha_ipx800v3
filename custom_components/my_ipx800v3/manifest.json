@@ -5,7 +5,7 @@
     "@amg0"
   ],
   "config_flow": true,
-  "dependencies": ["webhook"],
+  "dependencies": ["frontend","http","webhook"],
   "documentation": "https://github.com/amg0/ha_ipx800v3",
   "integration_type": "hub",
   "iot_class": "local_polling",
