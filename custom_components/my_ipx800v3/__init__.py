@@ -325,8 +325,14 @@ async def async_unload_entry(
                 for item in resources.async_items():
                     if item.get("url", "").startswith(base_file_url):
                         resource_id = item.get("id")
-                        await resources.async_delete_item(resource_id)
-                        LOGGER.info("Resource Lovelace %s unloaded due to uninstall.", item.get("url"))
+
+                        # we check that resource_id is indeed a str before using it
+                        if isinstance(resource_id, str):
+                            await resources.async_delete_item(resource_id)
+                            LOGGER.info("Resource Lovelace %s unloaded due to uninstall.", item.get("url"))
+                        else:
+                            LOGGER.warning("Impossible to remove Lovelace resource: ID invalid or missing.")
+
                         break
 
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
