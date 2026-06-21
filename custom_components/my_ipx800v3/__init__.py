@@ -28,6 +28,7 @@ from aiohttp import web
 from custom_components.my_ipx800v3.config_flow_handler.config_flow import MyIPX800V3ConfigFlowHandler
 from homeassistant.components import webhook
 from homeassistant.components.http import StaticPathConfig
+from homeassistant.components.lovelace.resources import ResourceStorageCollection
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL, CONF_USERNAME, Platform
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
@@ -103,8 +104,8 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         if "lovelace" in hass.data:
             lovelace = hass.data["lovelace"]
 
-            # Depuis HA 2026.2, resources est un attribute direct de l'objet lovelace
-            resources = getattr(lovelace, "resources", None)
+            # since HA 2026.2, resources is an attribute direct of object lovelace
+            resources: ResourceStorageCollection | None = getattr(lovelace, "resources", None)
 
             if resources:
                 # Action critique : forcer le chargement de la collection pour ne pas écraser les données existantes
@@ -299,6 +300,35 @@ async def async_unload_entry(
     https://developers.home-assistant.io/docs/config_entries_index/#unloading-entries
     """
     webhook.async_unregister(hass, entry.data[CONF_WEBHOOK_ID])
+
+    # 1. check if there are other instances of the integration
+    # we need to unregister the lovelace card only if he deletes the very last IPX800
+    configured_entries = hass.config_entries.async_entries(DOMAIN)
+
+    # when calling async_remove_entry, the entry is sometime already removed from the list
+    # we check if the list is empty , or if it contains only the entry we are trying to delete
+    if len(configured_entries) == 0 or (
+        len(configured_entries) == 1 and configured_entries[0].entry_id == entry.entry_id
+    ):
+        # 2. Cleanup the lovelace resource
+        if "lovelace" in hass.data:
+            lovelace = hass.data["lovelace"]
+            # since HA 2026.2, resources is an attribute direct of object lovelace
+            resources: ResourceStorageCollection | None = getattr(lovelace, "resources", None)
+
+            if resources:
+                await resources.async_get_info()
+
+                base_file_url = f"{URL_BASE}/ipx800v3-card.js"
+
+                # search and delete the card
+                for item in resources.async_items():
+                    if item.get("url", "").startswith(base_file_url):
+                        resource_id = item.get("id")
+                        await resources.async_delete_item(resource_id)
+                        LOGGER.info("Resource Lovelace %s unloaded due to uninstall.", item.get("url"))
+                        break
+
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
