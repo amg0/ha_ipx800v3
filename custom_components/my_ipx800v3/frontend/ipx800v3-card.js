@@ -8,6 +8,24 @@
 const LitElement = Object.getPrototypeOf(customElements.get("ha-panel-lovelace") || HTMLElement);
 const { html, css } = LitElement.prototype;
 
+const editorTranslations = {
+  en: {
+    title: "Card Title (Optional)",
+    device_filter: "Device Filter (e.g., ipx800_1)",
+    relay_columns: "Relay Columns",
+    input_columns: "Input Columns",
+    analog_columns: "Analog Columns"
+  },
+  fr: {
+    title: "Titre de la carte (Optionnel)",
+    device_filter: "Filtre d'appareil (Ex: ipx800_1)",
+    relay_columns: "Colonnes Relais",
+    input_columns: "Colonnes Entrées",
+    analog_columns: "Colonnes Analogiques"
+  },
+  // You can easily add more languages later (es, de, it...)
+};
+
 class IPX800V3Card extends LitElement {
   static get properties() {
     return {
@@ -482,15 +500,19 @@ class IPX800V3CardEditor extends LitElement {
 
   // Fonction pour traduire/personnaliser les labels des champs
   _computeLabel(schema) {
-    const labels = {
-      title: "Titre de la carte (Optionnel)",
-      device_filter: "Filtre d'appareil (Ex: ipx800_1)",
-      relay_columns: "Colonnes Relais",
-      input_columns: "Colonnes Entrées",
-      analog_columns: "Colonnes Analogiques"
-    };
-    return labels[schema.name] || schema.name;
+    // 1. Get the current HA language (e.g., 'en', 'fr', 'de'). Fallback to 'en' if undefined.
+    const lang = this.hass?.language || 'en';
+
+    // 2. Extract just the base language code in case of variants (e.g., 'fr-CA' -> 'fr')
+    const baseLang = lang.split('-')[0];
+
+    // 3. Select the dictionary for the user's language, or default to English
+    const dict = editorTranslations[baseLang] || editorTranslations['en'];
+
+    // 4. Return the translated label, or fallback to the raw schema name if missing
+    return dict[schema.name] || schema.name;
   }
+
 
   // Se déclenche à chaque modification d'un champ par l'utilisateur
   _onValueChanged(ev) {
