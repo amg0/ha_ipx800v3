@@ -234,13 +234,13 @@ class IPX800V3Card extends LitElement {
     const filter = this.config.device_filter ? this.config.device_filter.toLowerCase() : '';
     const entities = allIpxEntities.filter(stateObj => {
       if (!filter) return true;
-      return stateObj.entity_id.toLowerCase().includes(filter) || 
+      return stateObj.entity_id.toLowerCase().includes(filter) ||
              (stateObj.attributes.friendly_name && stateObj.attributes.friendly_name.toLowerCase().includes(filter));
     });
 
     // Group entities by type/platform
     const relays = entities.filter(e => e.entity_id.startsWith('switch.'));
-    
+
     // Sort relays by ipx_key numerical suffix so they display in order (led0, led1, led2...)
     relays.sort((a, b) => this._sortIpxKeys(a.attributes.ipx_key, b.attributes.ipx_key));
 
@@ -286,8 +286,8 @@ class IPX800V3Card extends LitElement {
               const isOn = stateObj.state === 'on';
               const name = this._cleanEntityName(stateObj, 'relay');
               return html`
-                <div 
-                  class="relay-btn ${isOn ? 'active' : ''}" 
+                <div
+                  class="relay-btn ${isOn ? 'active' : ''}"
                   title="${stateObj.entity_id}"
                   @click="${() => this._toggleSwitch(stateObj.entity_id)}"
                 >
@@ -410,7 +410,7 @@ class IPX800V3Card extends LitElement {
 
   _adjustCounter(entityId, offset) {
     this.hass.callService('my_ipx800v3', 'adjust_counter_value', {
-      target: { entity_id: entityId },
+      entity_id: entityId,
       offset: offset
     });
   }
