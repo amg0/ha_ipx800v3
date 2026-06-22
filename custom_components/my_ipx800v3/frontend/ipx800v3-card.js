@@ -34,6 +34,15 @@ class IPX800V3Card extends LitElement {
     };
   }
 
+  static getStubConfig() {
+    return {
+      title: "IPX800 V3 Panel",
+      relay_columns: 4,
+      input_columns: 4,
+      analog_columns: 2
+    };
+  }
+
   static get styles() {
     return css`
       :host {
@@ -492,7 +501,7 @@ class IPX800V3CardEditor extends LitElement {
         .hass=${this.hass}
         .data=${this._config}
         .schema=${schema}
-        .computeLabel=${this._computeLabel}
+        .computeLabel=${(schema) => this._computeLabel(schema)}
         @value-changed=${this._onValueChanged}
       ></ha-form>
     `;
