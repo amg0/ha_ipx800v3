@@ -422,9 +422,94 @@ class IPX800V3Card extends LitElement {
   getCardSize() {
     return 3;
   }
+
+  static getConfigElement() {
+    return document.createElement("ipx800v3-card-editor");
+  }
+}
+
+/**
+ * UI Editor for IPX800 V3 Card
+ */
+class IPX800V3CardEditor extends LitElement {
+  static get properties() {
+    return {
+      hass: { type: Object },
+      _config: { type: Object },
+    };
+  }
+
+  setConfig(config) {
+    this._config = config;
+  }
+
+  render() {
+    if (!this.hass || !this._config) {
+      return html``;
+    }
+
+    // Définition du schéma de configuration pour générer le formulaire automatiquement
+    const schema = [
+      {
+        name: "title",
+        selector: { text: {} }
+      },
+      {
+        name: "device_filter",
+        selector: { text: {} }
+      },
+      {
+        name: "",
+        type: "grid",
+        schema: [
+          { name: "relay_columns", selector: { number: { min: 1, max: 8, mode: "box" } } },
+          { name: "input_columns", selector: { number: { min: 1, max: 8, mode: "box" } } },
+          { name: "analog_columns", selector: { number: { min: 1, max: 8, mode: "box" } } }
+        ]
+      }
+    ];
+
+    return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${this._config}
+        .schema=${schema}
+        .computeLabel=${this._computeLabel}
+        @value-changed=${this._onValueChanged}
+      ></ha-form>
+    `;
+  }
+
+  // Fonction pour traduire/personnaliser les labels des champs
+  _computeLabel(schema) {
+    const labels = {
+      title: "Titre de la carte (Optionnel)",
+      device_filter: "Filtre d'appareil (Ex: ipx800_1)",
+      relay_columns: "Colonnes Relais",
+      input_columns: "Colonnes Entrées",
+      analog_columns: "Colonnes Analogiques"
+    };
+    return labels[schema.name] || schema.name;
+  }
+
+  // Se déclenche à chaque modification d'un champ par l'utilisateur
+  _onValueChanged(ev) {
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    // On diffuse l'événement 'config-changed' pour que Lovelace mette à jour le YAML en arrière-plan
+    const event = new CustomEvent("config-changed", {
+      detail: { config: ev.detail.value },
+      bubbles: true,
+      composed: true,
+    });
+    this.dispatchEvent(event);
+  }
 }
 
 customElements.define('ipx800v3-card', IPX800V3Card);
+customElements.define("ipx800v3-card-editor", IPX800V3CardEditor);
 
 // Configure card list to make it discoverable in the Lovelace card picker
 window.customCards = window.customCards || [];
@@ -433,5 +518,19 @@ window.customCards.push({
   name: 'IPX800 V3 Card',
   description: 'A dense synthetic card displaying Relays, Digital Inputs, Analogs, and Counters for IPX800 V3 custom integration.',
   preview: true,
-  documentationURL: 'https://github.com/amg0/ha_ipx800v3'
+  documentationURL: 'https://github.com/amg0/ha_ipx800v3',
+
+  // suggest a card to the user if the entity is from the IPX800 integration
+  getEntitySuggestion: (hass, entityId) => {
+    const entityReg = hass.entities[entityId];
+
+    // check entity 's platform is this integration IPX800V3
+    if (!entityReg || entityReg.platform !== "my_ipx800v3") {
+      return null;
+    }
+
+    return {
+      config: { type: "custom:ipx800v3-card" },
+    };
+  },
 });

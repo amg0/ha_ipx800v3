@@ -30,7 +30,7 @@ Uncomment and customize these badges if you want to use them:
 - **Reconfigurable**: Change option like the choice to import I/O names from the IPX.
 - **Options Flow**: Adjust polling settings like update interval after setup
 - **Custom Services**: "Reload data": force a refresh; "toggle_input": change a relay state or simulate a change on a digital input contact; "set_counter_value" & "adjust_counter_value": manage your pulse counters.
-- **Custom Lovelace Card**: with auto registration installation.
+- **Custom Lovelace Card**: with editor form support and auto registration installation of the javascript module.
 - **Analog Sensor calculation**: depending on the type of sensor configured on the IPX, the raw value is translated to its meaningful value by the same calculation that IPX is itself using in its Web App.
 - Localization for EN 🇬🇧 and FR 🇫🇷.
 
