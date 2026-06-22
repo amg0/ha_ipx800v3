@@ -22,8 +22,7 @@ const editorTranslations = {
     relay_columns: "Colonnes Relais",
     input_columns: "Colonnes Entrées",
     analog_columns: "Colonnes Analogiques"
-  },
-  // You can easily add more languages later (es, de, it...)
+  }
 };
 
 class IPX800V3Card extends LitElement {
@@ -31,15 +30,6 @@ class IPX800V3Card extends LitElement {
     return {
       hass: { type: Object },
       config: { type: Object }
-    };
-  }
-
-  static getStubConfig() {
-    return {
-      title: "IPX800 V3 Panel",
-      relay_columns: 4,
-      input_columns: 4,
-      analog_columns: 2
     };
   }
 
@@ -249,15 +239,42 @@ class IPX800V3Card extends LitElement {
     `;
   }
 
+  static getStubConfig() {
+    return {
+      title: "IPX800 V3 Panel",
+      relay_columns: 4,
+      input_columns: 4,
+      analog_columns: 2
+    };
+  }
+
+  shouldUpdate(changedProps) {
+    if (changedProps.has('config')) return true;
+
+    if (changedProps.has('hass')) {
+      const oldHass = changedProps.get('hass');
+      if (!oldHass) return true;
+
+      for (const entityId in this.hass.states) {
+        const stateObj = this.hass.states[entityId];
+        if (stateObj.attributes && stateObj.attributes.ipx_key !== undefined) {
+          if (oldHass.states[entityId] !== stateObj) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    return true;
+  }
+
   render() {
     if (!this.hass || !this.config) return html``;
 
-    // Retrieve and filter entities containing attributes.ipx_key
     const allIpxEntities = Object.keys(this.hass.states)
       .map(id => this.hass.states[id])
       .filter(stateObj => stateObj.attributes && stateObj.attributes.ipx_key !== undefined);
 
-    // Apply device filter if configured
     const filter = this.config.device_filter ? this.config.device_filter.toLowerCase() : '';
     const entities = allIpxEntities.filter(stateObj => {
       if (!filter) return true;
@@ -265,10 +282,7 @@ class IPX800V3Card extends LitElement {
              (stateObj.attributes.friendly_name && stateObj.attributes.friendly_name.toLowerCase().includes(filter));
     });
 
-    // Group entities by type/platform
     const relays = entities.filter(e => e.entity_id.startsWith('switch.'));
-
-    // Sort relays by ipx_key numerical suffix so they display in order (led0, led1, led2...)
     relays.sort((a, b) => this._sortIpxKeys(a.attributes.ipx_key, b.attributes.ipx_key));
 
     const inputs = entities.filter(e => e.entity_id.startsWith('binary_sensor.') && e.attributes.ipx_key.startsWith('btn'));
@@ -280,12 +294,10 @@ class IPX800V3Card extends LitElement {
     const counters = entities.filter(e => e.entity_id.startsWith('sensor.') && e.attributes.ipx_key.startsWith('count'));
     counters.sort((a, b) => this._sortIpxKeys(a.attributes.ipx_key, b.attributes.ipx_key));
 
-    // Connection sensor
     const connectionEntity = entities.find(e => e.attributes.ipx_key === 'api_connectivity');
     const isOnline = connectionEntity ? connectionEntity.state === 'on' : true;
     const statusText = connectionEntity ? (isOnline ? "Online" : "Offline") : "Connected";
 
-    // Column overrides from configuration
     const relayColumns = this.config.relay_columns || 4;
     const inputColumns = this.config.input_columns || 4;
     const analogColumns = this.config.analog_columns || 2;
@@ -305,7 +317,6 @@ class IPX800V3Card extends LitElement {
           </div>
         </div>
 
-        <!-- Relays (Outputs) Grid -->
         ${relays.length > 0 ? html`
           <div class="section-title">Relays (Outputs)</div>
           <div class="grid relay-grid">
@@ -325,7 +336,6 @@ class IPX800V3Card extends LitElement {
           </div>
         ` : ''}
 
-        <!-- Digital Inputs Grid -->
         ${inputs.length > 0 ? html`
           <div class="section-title">Digital Inputs</div>
           <div class="grid input-grid">
@@ -342,7 +352,6 @@ class IPX800V3Card extends LitElement {
           </div>
         ` : ''}
 
-        <!-- Analog Sensors Grid -->
         ${analogs.length > 0 ? html`
           <div class="section-title">Analog Inputs</div>
           <div class="grid analog-grid">
@@ -367,7 +376,6 @@ class IPX800V3Card extends LitElement {
           </div>
         ` : ''}
 
-        <!-- Pulse Counters Stack -->
         ${counters.length > 0 ? html`
           <div class="section-title">Counters</div>
           <div class="counter-container">
@@ -390,6 +398,12 @@ class IPX800V3Card extends LitElement {
             })}
           </div>
         ` : ''}
+
+        ${relays.length === 0 && inputs.length === 0 && analogs.length === 0 && counters.length === 0 ? html`
+          <div style="padding: 20px 0; text-align: center; color: var(--secondary-text-color); font-style: italic;">
+            Aucune entité IPX800 trouvée.
+          </div>
+        ` : ''}
       </ha-card>
     `;
   }
@@ -406,7 +420,6 @@ class IPX800V3Card extends LitElement {
       const parts = stateObj.entity_id.split('.');
       return parts[parts.length - 1];
     }
-    // Remove common prefix like "IPX800" or "My IPX800 V3" to keep it dense
     name = name.replace(/^My IPX800 V3\s+/i, '');
     name = name.replace(/^IPX800\s+/i, '');
     return name;
@@ -431,11 +444,19 @@ class IPX800V3Card extends LitElement {
     }
   }
 
+  _fireHaptic(type = "light") {
+    const event = new Event("haptic", { bubbles: true, composed: true });
+    event.detail = type;
+    this.dispatchEvent(event);
+  }
+
   _toggleSwitch(entityId) {
+    this._fireHaptic("light");
     this.hass.callService('switch', 'toggle', { entity_id: entityId });
   }
 
   _adjustCounter(entityId, offset) {
+    this._fireHaptic("medium");
     this.hass.callService('my_ipx800v3', 'adjust_counter_value', {
       entity_id: entityId,
       offset: offset
@@ -475,7 +496,6 @@ class IPX800V3CardEditor extends LitElement {
       return html``;
     }
 
-    // Définition du schéma de configuration pour générer le formulaire automatiquement
     const schema = [
       {
         name: "title",
@@ -507,29 +527,18 @@ class IPX800V3CardEditor extends LitElement {
     `;
   }
 
-  // Fonction pour traduire/personnaliser les labels des champs
   _computeLabel(schema) {
-    // 1. Get the current HA language (e.g., 'en', 'fr', 'de'). Fallback to 'en' if undefined.
     const lang = this.hass?.language || 'en';
-
-    // 2. Extract just the base language code in case of variants (e.g., 'fr-CA' -> 'fr')
     const baseLang = lang.split('-')[0];
-
-    // 3. Select the dictionary for the user's language, or default to English
     const dict = editorTranslations[baseLang] || editorTranslations['en'];
-
-    // 4. Return the translated label, or fallback to the raw schema name if missing
     return dict[schema.name] || schema.name;
   }
 
-
-  // Se déclenche à chaque modification d'un champ par l'utilisateur
   _onValueChanged(ev) {
     if (!this._config || !this.hass) {
       return;
     }
 
-    // On diffuse l'événement 'config-changed' pour que Lovelace mette à jour le YAML en arrière-plan
     const event = new CustomEvent("config-changed", {
       detail: { config: ev.detail.value },
       bubbles: true,
@@ -542,7 +551,6 @@ class IPX800V3CardEditor extends LitElement {
 customElements.define('ipx800v3-card', IPX800V3Card);
 customElements.define("ipx800v3-card-editor", IPX800V3CardEditor);
 
-// Configure card list to make it discoverable in the Lovelace card picker
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: 'ipx800v3-card',
@@ -551,11 +559,9 @@ window.customCards.push({
   preview: true,
   documentationURL: 'https://github.com/amg0/ha_ipx800v3',
 
-  // suggest a card to the user if the entity is from the IPX800 integration
   getEntitySuggestion: (hass, entityId) => {
     const entityReg = hass.entities[entityId];
 
-    // check entity 's platform is this integration IPX800V3
     if (!entityReg || entityReg.platform !== "my_ipx800v3") {
       return null;
     }
