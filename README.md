@@ -18,7 +18,7 @@ Uncomment and customize these badges if you want to use them:
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/amg0/ha_ipx800v3?quickstart=1)
 
-![Integration_Image](DocImages/Integration.png)
+![Integration_Image](img/Integration.png)
 
 ## ✨ Features
 
@@ -30,6 +30,7 @@ Uncomment and customize these badges if you want to use them:
 - **Reconfigurable**: Change option like the choice to import I/O names from the IPX.
 - **Options Flow**: Adjust polling settings like update interval after setup
 - **Custom Services**: "Reload data": force a refresh; "toggle_input": change a relay state or simulate a change on a digital input contact; "set_counter_value" & "adjust_counter_value": manage your pulse counters.
+- **Custom Lovelace Card**: with auto registration installation.
 - **Analog Sensor calculation**: depending on the type of sensor configured on the IPX, the raw value is translated to its meaningful value by the same calculation that IPX is itself using in its Web App.
 - Localization for EN 🇬🇧 and FR 🇫🇷.
 
@@ -153,29 +154,76 @@ The integration creates several entities for your IPX800 V3 board
 
 Find all entities in **Settings** → **Devices & Services** → **My IPX800 V3** → click on the device.
 
-## Available Entities
+## ⚒️ Available Entities
 
-### Sensors
+### 🌡️ Sensors
 
 - **Analog**: a sensor per each analog ('analog') input and per each counter ('count') of the IPX.
 
 The type of analog sensor is retrieved directly from the IPX configuration on the IPX board and the sensor value calculation from the raw data is made according to the same calculation that the IPX board does itself.
 
-### Binary Sensors
+### 🚦 Binary Sensors
 
 - **Digital Input**: one sensor per each digital input ('btn'). Reflects the states of digital inputs on the board.
 
 - There is also an API health sensor that tells if the connection to the IPX is established
 
-### Switches
+### 🎚️ Switches
 
 - **Output Relays**: a switch sensor per each output relays ('led') on the IPX. it reflects and enable to control (on/off) the states on the board
 
-### Entities Attribute
+### ⚙ Entities Attribute
 
 Entities have special attributes to keep some interesting information handy for scripting
 
 - **ipx_key** : the unique key on the IPX board ( led0, btn3, counter1, analog2 ... )
+
+## 🎨 Lovelace Custom Dashboard Card
+
+This integration includes a dedicated, high-density Lovelace Custom Card designed specifically for the IPX800 V3. It presents a compact overview of all relays, digital inputs, analog inputs, and counters associated with your board.
+
+![Integration_Image](img/customcard.png)
+
+### Features
+
+- **Auto-Discovery**: Automatically finds and groups all entities (switches, binary sensors, analogs, and counters) belonging to the IPX800 V3 integration.
+- **Compact Relays Grid**: Displays output relays in a dense grid with toggle controls and active state highlighting.
+- **Digital Inputs LED indicators**: Shows digital inputs as passive LED dots (green/yellow when active, grey when inactive).
+- **Analog Sensors**: Visualizes temperature, lux, humidity, pH, current, and voltage with matching icons and values.
+- **Counter Adjustments**: Shows pulse counters with step buttons (`-10`, `-1`, `+1`, `+10`) targeting the integration's custom services directly.
+
+### Installation & Registration
+
+- **Automatic**: The integration registers the Lovelace Card automatically at Home Assistant startup. No manual actions are required for storage-controlled dashboards!
+- **Manual (YAML or if auto-registration fails)**:
+  1. Go to **Settings** → **Dashboards**
+  2. Click the three dots (top right) → **Resources**
+  3. Click **"+ Add Resource"**
+  4. Set the URL to `/my_ipx800v3/ipx800v3-card.js` and Resource type to `JavaScript Module`.
+  5. Click **Create** and refresh your browser.
+
+### Card Configuration Options
+
+| Option           | Type    | Default       | Description                                                                      |
+| ---------------- | ------- | ------------- | -------------------------------------------------------------------------------- |
+| `type`           | string  | **Required**  | Must be `custom:ipx800v3-card`                                                   |
+| `title`          | string  | _Device Name_ | Custom title at the top of the card                                              |
+| `device_filter`  | string  | _None_        | Substring filter to match entity IDs (useful if you have multiple IPX800 boards) |
+| `relay_columns`  | integer | `4`           | Number of columns for the Relay grid (e.g. 4 or 8)                               |
+| `input_columns`  | integer | `4`           | Number of columns for the Digital Inputs grid                                    |
+| `analog_columns` | integer | `2`           | Number of columns for the Analog Inputs grid                                     |
+
+### Basic Card Example
+
+Add this card to your dashboard using the Code Editor:
+
+```yaml
+type: custom:ipx800v3-card
+title: Ground Floor IPX800
+device_filter: my_ipx800v3
+relay_columns: 4
+input_columns: 4
+```
 
 ## Custom Services
 
@@ -253,51 +301,6 @@ target:
 ```
 
 Use these services in automations or scripts for more control.
-
-## 🎨 Lovelace Custom Dashboard Card
-
-This integration includes a dedicated, high-density Lovelace Custom Card designed specifically for the IPX800 V3. It presents a compact overview of all relays, digital inputs, analog inputs, and counters associated with your board.
-
-### Features
-
-- **Auto-Discovery**: Automatically finds and groups all entities (switches, binary sensors, analogs, and counters) belonging to the IPX800 V3 integration.
-- **Compact Relays Grid**: Displays output relays in a dense grid with toggle controls and active state highlighting.
-- **Digital Inputs LED indicators**: Shows digital inputs as passive LED dots (green/yellow when active, grey when inactive).
-- **Analog Sensors**: Visualizes temperature, lux, humidity, pH, current, and voltage with matching icons and values.
-- **Counter Adjustments**: Shows pulse counters with step buttons (`-10`, `-1`, `+1`, `+10`) targeting the integration's custom services directly.
-
-### Installation & Registration
-
-- **Automatic**: The integration registers the Lovelace Card automatically at Home Assistant startup. No manual actions are required for storage-controlled dashboards!
-- **Manual (YAML or if auto-registration fails)**:
-  1. Go to **Settings** → **Dashboards**
-  2. Click the three dots (top right) → **Resources**
-  3. Click **"+ Add Resource"**
-  4. Set the URL to `/my_ipx800v3/ipx800v3-card.js` and Resource type to `JavaScript Module`.
-  5. Click **Create** and refresh your browser.
-
-### Card Configuration Options
-
-| Option           | Type    | Default       | Description                                                                      |
-| ---------------- | ------- | ------------- | -------------------------------------------------------------------------------- |
-| `type`           | string  | **Required**  | Must be `custom:ipx800v3-card`                                                   |
-| `title`          | string  | _Device Name_ | Custom title at the top of the card                                              |
-| `device_filter`  | string  | _None_        | Substring filter to match entity IDs (useful if you have multiple IPX800 boards) |
-| `relay_columns`  | integer | `4`           | Number of columns for the Relay grid (e.g. 4 or 8)                               |
-| `input_columns`  | integer | `4`           | Number of columns for the Digital Inputs grid                                    |
-| `analog_columns` | integer | `2`           | Number of columns for the Analog Inputs grid                                     |
-
-### Basic Card Example
-
-Add this card to your dashboard using the Code Editor:
-
-```yaml
-type: custom:ipx800v3-card
-title: Ground Floor IPX800
-device_filter: my_ipx800v3
-relay_columns: 4
-input_columns: 4
-```
 
 ## Configuration Options
 
