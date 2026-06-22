@@ -5,10 +5,14 @@
     "@amg0"
   ],
   "config_flow": true,
-  "dependencies": ["frontend","http","webhook"],
+  "dependencies": [
+    "http",
+    "lovelace",
+    "webhook"
+  ],
   "documentation": "https://github.com/amg0/ha_ipx800v3",
   "integration_type": "hub",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/amg0/ha_ipx800v3/issues",
-  "version": "0.4.8"
+  "version": "0.4.9"
 }
