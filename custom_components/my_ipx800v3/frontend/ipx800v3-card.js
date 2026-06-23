@@ -58,7 +58,7 @@ class IPX800V3Card extends LitElement {
         margin-bottom: 12px;
       }
       .card-header .title {
-        font-size: 1.2em;
+        font-size: 1em;
         font-weight: 500;
         display: flex;
         align-items: center;
