@@ -222,6 +222,7 @@ Add this card to your dashboard using the Code Editor:
 type: custom:ipx800v3-card
 title: Ground Floor IPX800
 device_filter: my_ipx800v3
+device_exclude: Relay, Input, Analog, Counter
 relay_columns: 4
 input_columns: 4
 ```
@@ -321,7 +322,7 @@ You can change these anytime by clicking the **Configure** gear box on the board
 
 | Name            | Default | Description               |
 | --------------- | ------- | ------------------------- |
-| Update Interval | 30 s    | How often to refresh data |
+| Update Interval | 60 s    | How often to refresh data |
 
 ## Troubleshooting
 
