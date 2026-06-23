@@ -159,23 +159,20 @@ Find all entities in **Settings** → **Devices & Services** → **My IPX800 V3*
 
 ### 🌡️ Sensors
 
-- **Analog**: a sensor per each analog ('analog') input and per each counter ('count') of the IPX.
-
-The type of analog sensor is retrieved directly from the IPX configuration on the IPX board and the sensor value calculation from the raw data is made according to the same calculation that the IPX board does itself.
-
-- Analog
-- Volt
-- TC4012 Sensor
-- SHT-X3:Light-LS100
-- SHT-X3:Temp-TC5050
-- SHT-X3:RH-SH100
-- TC100 Sensor
-- X400 CT10A
-- X400 CT20A
-- X400 CT50A
-- X400 CT100A
-- X200 pH Probe
-- X200 ORP Probe
+- **Analog**: a sensor per each analog ('analog') input and per each counter ('count') of the IPX. The type of analog sensor is retrieved directly from the IPX configuration on the IPX board and the sensor value calculation from the raw data is made according to the same calculation that the IPX board does itself.
+  - Analog
+  - Volt
+  - TC4012 Sensor
+  - SHT-X3:Light-LS100
+  - SHT-X3:Temp-TC5050
+  - SHT-X3:RH-SH100
+  - TC100 Sensor
+  - X400 CT10A
+  - X400 CT20A
+  - X400 CT50A
+  - X400 CT100A
+  - X200 pH Probe
+  - X200 ORP Probe
 
 ### 🚦 Binary Sensors
 
