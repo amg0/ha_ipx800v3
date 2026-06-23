@@ -145,6 +145,26 @@ After setup, you can adjust options:
 
 You can use the **Reconfigure** command your board to chose to change the import name options ( it will impact your entities names but not the ID )
 
+#### Configuration Options
+
+##### During Setup
+
+| Name         | Required | Description                                                             |
+| ------------ | -------- | ----------------------------------------------------------------------- |
+| Host         | Yes      | hostname or IP address                                                  |
+| Post         | Yes      | IPX board port number - defaults to 80                                  |
+| Import Names | Yes      | if ON, it will import the names from the IPX to create the entity names |
+| Username     | No       | Your account username                                                   |
+| Password     | No       | Your account password                                                   |
+
+##### After Setup (Options)
+
+You can change these anytime by clicking the **Configure** gear box on the board device:
+
+| Name            | Default | Description               |
+| --------------- | ------- | ------------------------- |
+| Update Interval | 60 s    | How often to refresh data |
+
 ### Step 4: Start Using!
 
 The integration creates several entities for your IPX800 V3 board
@@ -178,7 +198,7 @@ Find all entities in **Settings** → **Devices & Services** → **My IPX800 V3*
 
 - **Digital Input**: one sensor per each digital input ('btn'). Reflects the states of digital inputs on the board.
 
-- There is also an API health sensor that tells if the connection to the IPX is established
+- **API health sensor**: tells if the connection to the IPX is established
 
 ### 🎚️ Switches
 
@@ -315,26 +335,6 @@ target:
 ```
 
 Use these services in automations or scripts for more control.
-
-## Configuration Options
-
-### During Setup
-
-| Name         | Required | Description                                                             |
-| ------------ | -------- | ----------------------------------------------------------------------- |
-| Host         | Yes      | hostname or IP address                                                  |
-| Post         | Yes      | IPX board port number - defaults to 80                                  |
-| Import Names | Yes      | if ON, it will import the names from the IPX to create the entity names |
-| Username     | No       | Your account username                                                   |
-| Password     | No       | Your account password                                                   |
-
-### After Setup (Options)
-
-You can change these anytime by clicking the **Configure** gear box on the board device:
-
-| Name            | Default | Description               |
-| --------------- | ------- | ------------------------- |
-| Update Interval | 60 s    | How often to refresh data |
 
 ## Troubleshooting
 
