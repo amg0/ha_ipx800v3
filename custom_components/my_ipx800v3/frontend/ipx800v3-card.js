@@ -11,14 +11,16 @@ const { html, css } = LitElement.prototype;
 const editorTranslations = {
   en: {
     title: "Card Title (Optional)",
-    device_filter: "Device Filter (e.g., ipx800_1)",
+    device_filter: "Device Filter (comma-separated, e.g., ipx800_1, ipx800_2)",
+    device_exclude: "Device Exclude (comma-separated, e.g., light, temperature)",
     relay_columns: "Relay Columns",
     input_columns: "Input Columns",
     analog_columns: "Analog Columns"
   },
   fr: {
     title: "Titre de la carte (Optionnel)",
-    device_filter: "Filtre d'appareil (Ex: ipx800_1)",
+    device_filter: "Filtre d'appareil (séparé par des virgules, Ex: ipx800_1, ipx800_2)",
+    device_exclude: "Exclusion d'appareil (séparé par des virgules, Ex: light, temperature)",
     relay_columns: "Colonnes Relais",
     input_columns: "Colonnes Entrées",
     analog_columns: "Colonnes Analogiques"
@@ -275,11 +277,39 @@ class IPX800V3Card extends LitElement {
       .map(id => this.hass.states[id])
       .filter(stateObj => stateObj.attributes && stateObj.attributes.ipx_key !== undefined);
 
-    const filter = this.config.device_filter ? this.config.device_filter.toLowerCase() : '';
+    let filters = [];
+    if (this.config.device_filter) {
+      if (Array.isArray(this.config.device_filter)) {
+        filters = this.config.device_filter.map(f => String(f).trim().toLowerCase()).filter(f => f !== "");
+      } else if (typeof this.config.device_filter === "string") {
+        filters = this.config.device_filter.split(",").map(f => f.trim().toLowerCase()).filter(f => f !== "");
+      } else {
+        filters = [String(this.config.device_filter).trim().toLowerCase()];
+      }
+    }
+
+    let excludes = [];
+    if (this.config.device_exclude) {
+      if (Array.isArray(this.config.device_exclude)) {
+        excludes = this.config.device_exclude.map(f => String(f).trim().toLowerCase()).filter(f => f !== "");
+      } else if (typeof this.config.device_exclude === "string") {
+        excludes = this.config.device_exclude.split(",").map(f => f.trim().toLowerCase()).filter(f => f !== "");
+      } else {
+        excludes = [String(this.config.device_exclude).trim().toLowerCase()];
+      }
+    }
+
     const entities = allIpxEntities.filter(stateObj => {
-      if (!filter) return true;
-      return stateObj.entity_id.toLowerCase().includes(filter) ||
-             (stateObj.attributes.friendly_name && stateObj.attributes.friendly_name.toLowerCase().includes(filter));
+      const entityIdLower = stateObj.entity_id.toLowerCase();
+      const friendlyNameLower = stateObj.attributes.friendly_name ? stateObj.attributes.friendly_name.toLowerCase() : "";
+
+      if (excludes.length > 0) {
+        const matchesExclude = excludes.some(exclude => entityIdLower.includes(exclude) || friendlyNameLower.includes(exclude));
+        if (matchesExclude) return false;
+      }
+
+      if (filters.length === 0) return true;
+      return filters.some(filter => entityIdLower.includes(filter) || friendlyNameLower.includes(filter));
     });
 
     const relays = entities.filter(e => e.entity_id.startsWith('switch.'));
@@ -503,6 +533,10 @@ class IPX800V3CardEditor extends LitElement {
       },
       {
         name: "device_filter",
+        selector: { text: {} }
+      },
+      {
+        name: "device_exclude",
         selector: { text: {} }
       },
       {

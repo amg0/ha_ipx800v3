@@ -204,14 +204,15 @@ This integration includes a dedicated, high-density Lovelace Custom Card designe
 
 ### Card Configuration Options
 
-| Option           | Type    | Default       | Description                                                                      |
-| ---------------- | ------- | ------------- | -------------------------------------------------------------------------------- |
-| `type`           | string  | **Required**  | Must be `custom:ipx800v3-card`                                                   |
-| `title`          | string  | _Device Name_ | Custom title at the top of the card                                              |
-| `device_filter`  | string  | _None_        | Substring filter to match entity IDs (useful if you have multiple IPX800 boards) |
-| `relay_columns`  | integer | `4`           | Number of columns for the Relay grid (e.g. 4 or 8)                               |
-| `input_columns`  | integer | `4`           | Number of columns for the Digital Inputs grid                                    |
-| `analog_columns` | integer | `2`           | Number of columns for the Analog Inputs grid                                     |
+| Option           | Type          | Default       | Description                                                                     |
+| ---------------- | ------------- | ------------- | ------------------------------------------------------------------------------- |
+| `type`           | string        | **Required**  | Must be `custom:ipx800v3-card`                                                  |
+| `title`          | string        | _Device Name_ | Custom title at the top of the card                                             |
+| `device_filter`  | string / list | _None_        | Substring filter (comma-separated or list) to match entity IDs with OR matching |
+| `device_exclude` | string / list | _None_        | Substring filter (comma-separated or list) to exclude matching entity IDs       |
+| `relay_columns`  | integer       | `4`           | Number of columns for the Relay grid (e.g. 4 or 8)                              |
+| `input_columns`  | integer       | `4`           | Number of columns for the Digital Inputs grid                                   |
+| `analog_columns` | integer       | `2`           | Number of columns for the Analog Inputs grid                                    |
 
 ### Basic Card Example
 
