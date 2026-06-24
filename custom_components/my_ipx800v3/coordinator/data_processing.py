@@ -38,7 +38,9 @@ def validate_api_response(data: Any) -> bool:
         return False
 
     # Add validation logic based on your API structure
-    # This is a placeholder for future implementation
+    if "analog0" not in data or "led0" not in data or "btn0" not in data:
+        LOGGER.warning("Invalid API response: missing required keys 'analog0' or 'led0' or 'btn0'")
+        return False
     return True
 
 
