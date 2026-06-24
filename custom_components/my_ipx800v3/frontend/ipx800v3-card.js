@@ -85,12 +85,21 @@ class IPX800V3Card extends LitElement {
         box-shadow: 0 0 6px currentColor;
       }
       .section-title {
+        display: flex;
+        align-items: center;
         font-size: 0.8em;
         text-transform: uppercase;
         letter-spacing: 1.5px;
         color: var(--secondary-text-color, #bac2de);
-        margin: 14px 0 8px 0;
+        margin: 18px 0 10px 0; /* Légèrement augmenté pour aérer */
         font-weight: 600;
+      }
+      .section-title::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background-color: var(--divider-color, rgba(255, 255, 255, 0.1));
+        margin-left: 12px;
       }
       .grid {
         display: grid;
@@ -386,7 +395,13 @@ class IPX800V3Card extends LitElement {
           <div class="section-title">Analog Inputs</div>
           <div class="grid analog-grid">
             ${analogs.map(stateObj => {
-              const val = stateObj.state;
+              let val = stateObj.state;
+
+              const numVal = parseFloat(val);
+              if (!isNaN(numVal)) {
+                val = numVal.toFixed(1);
+              }
+
               const unit = stateObj.attributes.unit_of_measurement || '';
               const name = this._cleanEntityName(stateObj, 'analog');
               const deviceClass = stateObj.attributes.device_class;
