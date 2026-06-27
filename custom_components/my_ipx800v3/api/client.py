@@ -137,7 +137,7 @@ class MyIPX800V3ApiClient:
         # Default version to Unknown if not in XML
         if "version" not in data:
             data["version"] = "3.05.xx"
-
+        LOGGER.debug(f"data : {data}")
         return data
 
     async def async_get_names(self) -> dict[str, str]:
