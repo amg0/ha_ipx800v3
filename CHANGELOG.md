@@ -5,4 +5,4 @@
 
 ### Bug Fixes
 
-* add a debug statemet to display received data ([7b71793](https://github.com/amg0/ha_ipx800v3/commit/7b71793e69d59fe8405ca64a3c6f542563f0d8cb))
+* add a debug statement to display received data ([7b71793](https://github.com/amg0/ha_ipx800v3/commit/7b71793e69d59fe8405ca64a3c6f542563f0d8cb))
