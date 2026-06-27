@@ -137,7 +137,7 @@ class MyIPX800V3ApiClient:
         # Default version to Unknown if not in XML
         if "version" not in data:
             data["version"] = "3.05.xx"
-        LOGGER.debug(f"data : {data}")
+
         return data
 
     async def async_get_names(self) -> dict[str, str]:
@@ -447,8 +447,12 @@ class MyIPX800V3ApiClient:
                 )
                 _verify_response_or_raise(response)
                 if is_xml:
-                    return await response.text()
-                return await response.json()
+                    strdebug = await response.text()
+                    LOGGER.debug(f"response.text() : {strdebug}")
+                    return strdebug
+                strdebug = await response.json()
+                LOGGER.debug(f"response.json() : {strdebug}")
+                return strdebug
 
         except TimeoutError as exception:
             msg = f"Timeout error fetching information - {exception}"
