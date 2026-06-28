@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 
 from custom_components.my_ipx800v3.const import ATTRIBUTION
 from custom_components.my_ipx800v3.coordinator import MyIPX800V3DataUpdateCoordinator
-from homeassistant.helpers.device_registry import DeviceInfo
+from custom_components.my_ipx800v3.entity_utils.device_info import create_device_info
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 if TYPE_CHECKING:
@@ -61,14 +61,8 @@ class MyIPX800V3Entity(CoordinatorEntity[MyIPX800V3DataUpdateCoordinator]):
 
         # Extra attributes to be seen in HomeAssistant UI
         self._attr_extra_state_attributes = {"ipx_key": entity_description.key}
-
-        self._attr_device_info = DeviceInfo(
-            identifiers={
-                (
-                    coordinator.config_entry.domain,
-                    coordinator.config_entry.entry_id,
-                ),
-            },
+        self._attr_device_info = create_device_info(
+            config_entry=coordinator.config_entry,
             name="IPX800",
             manufacturer="GCE Electronics",
             model="IPX800 V3",
