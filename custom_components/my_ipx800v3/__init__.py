@@ -18,6 +18,7 @@ https://developers.home-assistant.io/docs/creating_integration_manifest
 
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -250,7 +251,7 @@ async def async_setup_entry(
 # IPX800 seems buggy, data received is incomplete ( no analog ), so we trigger a full refresh to get the latest data from the API instead of relying on the webhook payload
 
 
-async def handle_webhook(hass: HomeAssistant, webhook_id: str, request: web.Request) -> None:
+async def handle_webhook(hass: HomeAssistant, webhook_id: str, request: web.Request) -> web.Response:
     """Handle incoming webhook calls."""
 
     # 1. Find the entry associated with this specific webhook_id
@@ -271,9 +272,16 @@ async def handle_webhook(hass: HomeAssistant, webhook_id: str, request: web.Requ
     data = dict(request.query)
     LOGGER.debug("Webhook received data: %s", data)
 
+    # 3.5. Introduce 100ms latency
+    # This yields control back to the event loop, allowing HA to handle other
+    # tasks while waiting [1, 3].
+    await asyncio.sleep(0.1)
+
     # 4. Trigger the refresh
-    # coordinator.async_set_updated_data(data)
-    return await coordinator.async_request_refresh()
+    await coordinator.async_request_refresh()
+
+    # Webhooks in HA should ideally return a 200 OK response [4-6].
+    return web.Response(text="OK", status=200)
 
 
 async def async_unload_entry(
