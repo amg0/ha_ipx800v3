@@ -5,7 +5,7 @@
 
 ### Bug Fixes
 
-* add a debug statemet to display received data ([7b71793](https://github.com/amg0/ha_ipx800v3/commit/7b71793e69d59fe8405ca64a3c6f542563f0d8cb))
+* add a debug statement to display received data ([7b71793](https://github.com/amg0/ha_ipx800v3/commit/7b71793e69d59fe8405ca64a3c6f542563f0d8cb))
 * add a latency in the webhook handler ([deef68f](https://github.com/amg0/ha_ipx800v3/commit/deef68f4c58723649beff1c69038baf3723b33e4))
 * Add debug to track intermittent problem ([805c869](https://github.com/amg0/ha_ipx800v3/commit/805c86981dc65709809d2ad4adee5680fbfc1e39))
 * introduce a small latency in the webhook treatment ([aebb709](https://github.com/amg0/ha_ipx800v3/commit/aebb709813c98a50e78a78d5fe539ef541a79db8))
