@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.18](https://github.com/amg0/ha_ipx800v3/compare/v0.4.17...v0.4.18) (2026-06-29)
+
+
+### Bug Fixes
+
+* add trace on integration startup ([a13329f](https://github.com/amg0/ha_ipx800v3/commit/a13329f1779f8dd936ea75f0a8389c34d5d670f4))
+
 ## [0.4.17](https://github.com/amg0/ha_ipx800v3/compare/v0.1.0...v0.4.17) (2026-06-29)
 
 ### Bug Fixes
