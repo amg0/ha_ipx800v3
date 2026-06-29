@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import asyncio
 from datetime import timedelta
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
@@ -88,6 +89,23 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     For more information:
     https://developers.home-assistant.io/docs/dev_101_services
     """
+
+    # Path(__file__) donne le chemin du fichier actuel (__init__.py)
+    # .parent récupère le dossier contenant ce fichier
+    integration_dir = Path(__file__).parent
+    manifest_path = integration_dir / "manifest.json"
+    try:
+        # manifest_path.read_text() ouvre, lit et ferme le fichier automatiquement
+        manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
+        version = manifest_data.get("version", "unknown")
+        name = manifest_data.get("name", "noname for Integration")
+
+        LOGGER.info("Starting Integration %s (Version: %s)", name, version)
+    except FileNotFoundError:
+        LOGGER.error("File manifest.json cannot be found in %s", integration_dir)
+    except ValueError as err:
+        LOGGER.error("Erreur lors de la lecture du manifest : %s", err)
+
     await async_setup_services(hass)
 
     # 1. Cibler le dossier contenant le JS sur le disque
