@@ -7,8 +7,8 @@
     "config/**",
     ".local/**",
     // custom_components/hacs is a third-party integration — only lint our own integration
-    "custom_components/hacs/**",
+    "custom_components/hacs/**"
     // Auto-generated release file
-    "CHANGELOG.md"
+    // "CHANGELOG.md"
   ]
 }
