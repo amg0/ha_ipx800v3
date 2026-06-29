@@ -8,6 +8,7 @@ It handles fetching state from globalstatus.xml and controlling outputs.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import socket
 from typing import Any
 import xml.etree.ElementTree as ET
@@ -137,6 +138,19 @@ class MyIPX800V3ApiClient:
         # Default version to Unknown if not in XML
         if "version" not in data:
             data["version"] = "3.05.xx"
+
+        # Validate data: analog inputs sum must be non-zero and dnsstatus must not be pending
+        analog_sum = 0
+        for i in range(32):
+            key = f"analog{i}"
+            if key in data:
+                with contextlib.suppress(ValueError):
+                    analog_sum += int(data[key])
+
+        dns_status = data.get("dnsstatus", "")
+        if analog_sum == 0 or "pending" in dns_status.lower():
+            msg = "invalid data received from IPX, dnsstatus ?"
+            raise MyIPX800V3ApiClientCommunicationError(msg)
 
         return data
 
