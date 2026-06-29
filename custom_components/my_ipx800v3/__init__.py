@@ -263,7 +263,7 @@ async def handle_webhook(hass: HomeAssistant, webhook_id: str, request: web.Requ
 
     if not entry or not entry.runtime_data:
         LOGGER.error("Webhook received for unknown entry: %s", webhook_id)
-        return None
+        return web.Response(status=404)
 
     # 2. Access the coordinator from runtime_data
     coordinator = entry.runtime_data.coordinator
