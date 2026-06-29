@@ -461,9 +461,9 @@ class MyIPX800V3ApiClient:
                 )
                 _verify_response_or_raise(response)
                 if is_xml:
-                    strdebug = await response.text()
-                    LOGGER.debug(f"response.text() : {strdebug}")
-                    return strdebug
+                    # strdebug = await response.text()
+                    # LOGGER.debug(f"response.text() : {strdebug}")
+                    return await response.text()
                 strdebug = await response.json()
                 LOGGER.debug(f"response.json() : {strdebug}")
                 return strdebug
