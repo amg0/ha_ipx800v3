@@ -2,14 +2,9 @@
 
 ## [0.4.18](https://github.com/amg0/ha_ipx800v3/compare/v0.4.17...v0.4.18) (2026-06-29)
 
-
-### Bug Fixes
-
 - add trace on integration startup ([a13329f](https://github.com/amg0/ha_ipx800v3/commit/a13329f1779f8dd936ea75f0a8389c34d5d670f4))
 
 ## [0.4.17](https://github.com/amg0/ha_ipx800v3/compare/v0.1.0...v0.4.17) (2026-06-29)
-
-### Bug Fixes
 
 - add a debug statemet to display received data ([7b71793](https://github.com/amg0/ha_ipx800v3/commit/7b71793e69d59fe8405ca64a3c6f542563f0d8cb))
 - add a latency in the webhook handler ([deef68f](https://github.com/amg0/ha_ipx800v3/commit/deef68f4c58723649beff1c69038baf3723b33e4))
