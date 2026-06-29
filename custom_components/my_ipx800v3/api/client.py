@@ -148,7 +148,7 @@ class MyIPX800V3ApiClient:
                     analog_sum += int(data[key])
 
         dns_status = data.get("dnsstatus", "")
-        if analog_sum == 0 or "pending" in dns_status.lower():
+        if analog_sum == 0 and "pending" in dns_status.lower():
             msg = "invalid data received from IPX, dnsstatus ?"
             raise MyIPX800V3ApiClientCommunicationError(msg)
 
