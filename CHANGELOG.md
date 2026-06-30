@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.19](https://github.com/amg0/ha_ipx800v3/compare/v0.4.18...v0.4.19) (2026-06-30)
+
+
+### Bug Fixes
+
+* remove blocking call to read manifest file ([6e135b0](https://github.com/amg0/ha_ipx800v3/commit/6e135b001fdaf2e610c84b1c3733577dc1058d4d))
+
 ## [0.4.18](https://github.com/amg0/ha_ipx800v3/compare/v0.4.17...v0.4.18) (2026-06-29)
 
 - add trace on integration startup ([a13329f](https://github.com/amg0/ha_ipx800v3/commit/a13329f1779f8dd936ea75f0a8389c34d5d670f4))
