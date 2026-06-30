@@ -67,6 +67,12 @@ PLATFORMS: list[Platform] = [
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
+# small synchronous function to read the file content
+def _get_manifest_data(path: Path) -> dict:
+    """Lecture synchrone du manifest (exécutée dans un thread séparé)."""
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """
     Set up the integration.
@@ -90,13 +96,14 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     https://developers.home-assistant.io/docs/dev_101_services
     """
 
-    # Path(__file__) donne le chemin du fichier actuel (__init__.py)
-    # .parent récupère le dossier contenant ce fichier
+    # Path(__file__) gives path of this file (__init__.py)
+    # .parent gets the folder containing that file
     integration_dir = Path(__file__).parent
     manifest_path = integration_dir / "manifest.json"
     try:
         # manifest_path.read_text() ouvre, lit et ferme le fichier automatiquement
-        manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
+        # On utilise l'executor pour ne pas bloquer l'event loop [4]
+        manifest_data = await hass.async_add_executor_job(_get_manifest_data, manifest_path)
         version = manifest_data.get("version", "unknown")
         name = manifest_data.get("name", "noname for Integration")
 
