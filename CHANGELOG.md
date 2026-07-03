@@ -2,15 +2,10 @@
 
 ## [0.4.21](https://github.com/amg0/ha_ipx800v3/compare/v0.4.20...v0.4.21) (2026-07-03)
 
-
-### Bug Fixes
-
 - change log ([2b5c944](https://github.com/amg0/ha_ipx800v3/commit/2b5c9449b55c7d14ba672c7eb9c82d57daac38d8))
 - extend latency to 200ms in case of webhook to let IPX800 NIC cool down ([ff0e3cd](https://github.com/amg0/ha_ipx800v3/commit/ff0e3cd878fa082aa209bf3f9bc15753e17b08fe))
 
 ## [0.4.20](https://github.com/amg0/ha_ipx800v3/compare/v0.4.19...v0.4.20) (2026-07-03)
-
-### Bug Fixes
 
 - remove blocking call for displaying version ([107d05e](https://github.com/amg0/ha_ipx800v3/commit/107d05e94545ec8236eb22b0af9237142ec091e9))
 
