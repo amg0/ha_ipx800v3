@@ -2,10 +2,9 @@
 
 ## [0.4.20](https://github.com/amg0/ha_ipx800v3/compare/v0.4.19...v0.4.20) (2026-07-03)
 
-
 ### Bug Fixes
 
-* remove blocking call for displaying version ([107d05e](https://github.com/amg0/ha_ipx800v3/commit/107d05e94545ec8236eb22b0af9237142ec091e9))
+- remove blocking call for displaying version ([107d05e](https://github.com/amg0/ha_ipx800v3/commit/107d05e94545ec8236eb22b0af9237142ec091e9))
 
 ## [0.4.19](https://github.com/amg0/ha_ipx800v3/compare/v0.4.18...v0.4.19) (2026-06-30)
 
