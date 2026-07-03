@@ -30,18 +30,3 @@ with Path.open(MANIFEST_PATH, encoding="utf-8") as f:
 
 # Base URL for frontend resources
 URL_BASE: Final[str] = "/my_ipx800v3"
-
-# List of JavaScript modules to register
-JSMODULES: Final[list[dict[str, str]]] = [
-    {
-        "name": "My IPX800 Card",
-        "filename": "ipx800v3-card.js",
-        "version": INTEGRATION_VERSION,
-    },
-    # Add editor if needed
-    # {
-    #     "name": "Your Card Editor",
-    #     "filename": "your-card-editor.js",
-    #     "version": INTEGRATION_VERSION,
-    # },
-]

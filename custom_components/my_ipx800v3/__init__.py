@@ -44,7 +44,6 @@ from .const import (
     CONF_WEBHOOK_URL,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
-    INTEGRATION_VERSION,
     LOGGER,
     URL_BASE,
 )
@@ -138,7 +137,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
                 await resources.async_get_info()
 
                 base_file_url = f"{URL_BASE}/ipx800v3-card.js"
-                card_url = f"{base_file_url}?v={INTEGRATION_VERSION}"
+                card_url = f"{base_file_url}?v={version}"
 
                 resource_id = None
                 needs_update = False
