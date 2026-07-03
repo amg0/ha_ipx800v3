@@ -296,10 +296,10 @@ async def handle_webhook(hass: HomeAssistant, webhook_id: str, request: web.Requ
     data = dict(request.query)
     LOGGER.debug("Webhook received data: %s", data)
 
-    # 3.5. Introduce 100ms latency
+    # 3.5. Introduce 200ms latency
     # This yields control back to the event loop, allowing HA to handle other
     # tasks while waiting [1, 3].
-    await asyncio.sleep(0.1)
+    await asyncio.sleep(0.2)
 
     # 4. Trigger the refresh
     await coordinator.async_request_refresh()
