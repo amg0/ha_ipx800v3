@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.20](https://github.com/amg0/ha_ipx800v3/compare/v0.4.19...v0.4.20) (2026-07-03)
+
+
+### Bug Fixes
+
+* remove blocking call for displaying version ([107d05e](https://github.com/amg0/ha_ipx800v3/commit/107d05e94545ec8236eb22b0af9237142ec091e9))
+
 ## [0.4.19](https://github.com/amg0/ha_ipx800v3/compare/v0.4.18...v0.4.19) (2026-06-30)
 
 - remove blocking call to read manifest file ([6e135b0](https://github.com/amg0/ha_ipx800v3/commit/6e135b001fdaf2e610c84b1c3733577dc1058d4d))
