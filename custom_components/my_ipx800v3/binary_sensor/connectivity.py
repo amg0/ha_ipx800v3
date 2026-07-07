@@ -50,4 +50,5 @@ class MyIPX800V3ConnectivitySensor(BinarySensorEntity, MyIPX800V3Entity):
         return {
             "update_interval": str(self.coordinator.update_interval),
             "api_endpoint": self._api_endpoint,
+            "ipx_key": "api_connectivity",
         }

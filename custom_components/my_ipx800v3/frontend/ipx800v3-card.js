@@ -335,7 +335,7 @@ class IPX800V3Card extends LitElement {
 
     const connectionEntity = entities.find(e => e.attributes.ipx_key === 'api_connectivity');
     const isOnline = connectionEntity ? connectionEntity.state === 'on' : true;
-    const statusText = connectionEntity ? (isOnline ? "Online" : "Offline") : "Connected";
+    const statusText = connectionEntity ? (isOnline ? "Online" : "Offline") : "Unknown";
 
     const relayColumns = this.config.relay_columns || 4;
     const inputColumns = this.config.input_columns || 4;
