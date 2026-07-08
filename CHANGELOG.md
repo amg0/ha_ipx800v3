@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.22](https://github.com/amg0/ha_ipx800v3/compare/v0.4.21...v0.4.22) (2026-07-08)
+
+
+### Features
+
+* improved Lovelace card with responsive design ([56938e3](https://github.com/amg0/ha_ipx800v3/commit/56938e336f8c93cfffc997b0a1b2c21e4566bf2f))
+
+
+### Bug Fixes
+
+* api connectivity sensor needs the ipx_key attribute ([6221606](https://github.com/amg0/ha_ipx800v3/commit/6221606b5144c3ea080623ef76c5c6899675ad35))
+
 ## [0.4.21](https://github.com/amg0/ha_ipx800v3/compare/v0.4.20...v0.4.21) (2026-07-03)
 
 - change log ([2b5c944](https://github.com/amg0/ha_ipx800v3/commit/2b5c9449b55c7d14ba672c7eb9c82d57daac38d8))
