@@ -1,10 +1,8 @@
 /**
- * IPX800 V3 Lovelace Card
- * A synthetic and dense dashboard card for GCE IPX800 V3 integrations.
+ * IPX800 V3 Lovelace Card - Improved Version (Inspired by Ksenia UI & Responsive Layouts)
+ * A synthetic, dense, and fully responsive dashboard card for GCE IPX800 V3 integrations.
  */
 
-// We can load LitElement from the Home Assistant frontend helper if available,
-// otherwise fall back to a public CDN.
 const LitElement = Object.getPrototypeOf(customElements.get("ha-panel-lovelace") || HTMLElement);
 const { html, css } = LitElement.prototype;
 
@@ -91,7 +89,7 @@ class IPX800V3Card extends LitElement {
         text-transform: uppercase;
         letter-spacing: 1.5px;
         color: var(--secondary-text-color, #bac2de);
-        margin: 18px 0 10px 0; /* Légèrement augmenté pour aérer */
+        margin: 18px 0 10px 0;
         font-weight: 600;
       }
       .section-title::after {
@@ -101,41 +99,54 @@ class IPX800V3Card extends LitElement {
         background-color: var(--divider-color, rgba(255, 255, 255, 0.1));
         margin-left: 12px;
       }
+
+      /* Base Responsive Grids */
       .grid {
         display: grid;
-        gap: 8px;
+        gap: 10px;
         margin-bottom: 12px;
       }
-      /* Relay Styles */
+
+      /* Relays Ksenia Style Look & Feel with Transparent Green Active concept */
       .relay-grid {
         grid-template-columns: repeat(var(--relay-columns, 4), 1fr);
       }
       .relay-btn {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        padding: 10px 6px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 12px 8px;
         text-align: center;
         cursor: pointer;
         font-size: 0.85em;
         font-weight: 500;
-        transition: all 0.2s ease-in-out;
+        letter-spacing: 0.3px;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         user-select: none;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
       .relay-btn:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.15);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
       }
+      .relay-btn:active {
+        transform: translateY(0);
+      }
+      /* Keep the original good idea: transparent green when active */
       .relay-btn.active {
-        background: rgba(46, 204, 113, 0.15);
-        border-color: #2ecc71;
+        background: rgba(46, 204, 113, 0.16);
+        border-color: rgba(46, 204, 113, 0.6);
         color: #2ecc71;
-        box-shadow: 0 0 8px rgba(46, 204, 113, 0.15);
+        font-weight: 600;
+        box-shadow: 0 0 10px rgba(46, 204, 113, 0.12), inset 0 0 4px rgba(46, 204, 113, 0.1);
       }
-      /* Input Styles */
+
+      /* Inputs Layout */
       .input-grid {
         grid-template-columns: repeat(var(--input-columns, 4), 1fr);
       }
@@ -161,10 +172,11 @@ class IPX800V3Card extends LitElement {
         transition: all 0.3s ease;
       }
       .led.active {
-        background-color: #f1c40f;
-        box-shadow: 0 0 8px #f1c40f;
+        background-color: #2ecc71;
+        box-shadow: 0 0 8px #2ecc71;
       }
-      /* Analog Styles */
+
+      /* Analogs Layout */
       .analog-grid {
         grid-template-columns: repeat(var(--analog-columns, 2), 1fr);
         gap: 10px;
@@ -199,7 +211,8 @@ class IPX800V3Card extends LitElement {
         font-size: 1.05em;
         font-weight: 600;
       }
-      /* Counter Styles */
+
+      /* Counters Layout */
       .counter-container {
         display: flex;
         flex-direction: column;
@@ -227,9 +240,6 @@ class IPX800V3Card extends LitElement {
         display: flex;
         gap: 4px;
       }
-      .counter-actions mwc-button {
-        --mdc-theme-primary: var(--primary-text-color);
-      }
       .counter-btn {
         background: rgba(255, 255, 255, 0.08);
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -244,8 +254,46 @@ class IPX800V3Card extends LitElement {
       .counter-btn:hover {
         background: rgba(255, 255, 255, 0.15);
       }
-      .counter-btn:active {
-        background: rgba(255, 255, 255, 0.25);
+
+      /* ------------------------------------------------------------- */
+      /* SMALLEST SCREEN SIZE STRATEGY (Inspired by Ksenia Component)  */
+      /* Override fixed column counts automatically when space is low  */
+      /* ------------------------------------------------------------- */
+      @media (max-width: 768px) {
+        .relay-grid {
+          grid-template-columns: repeat(3, 1fr) !important;
+        }
+        .input-grid {
+          grid-template-columns: repeat(3, 1fr) !important;
+        }
+      }
+
+      @media (max-width: 480px) {
+        ha-card {
+          padding: 12px;
+        }
+        .relay-grid {
+          grid-template-columns: repeat(2, 1fr) !important;
+        }
+        .input-grid {
+          grid-template-columns: repeat(2, 1fr) !important;
+        }
+        .analog-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .counter-row {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+        .counter-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
+        .counter-btn {
+          flex: 1;
+          text-align: center;
+        }
       }
     `;
   }
