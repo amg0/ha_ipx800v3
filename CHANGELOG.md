@@ -36,3 +36,4 @@
 - restrict the filtering of invalid data with an and instead of or for the conditions ([e70b3df](https://github.com/amg0/ha_ipx800v3/commit/e70b3df1566b2636cfab0dbf95b822b2be37ea3c))
 - try to ignore invalid data when all values are zero and ddnsstatus is pending ([e90a553](https://github.com/amg0/ha_ipx800v3/commit/e90a553b1dde3dda0e9b2a3f235cffc1f020e583))
 - version 0.4.15 ([578c3c5](https://github.com/amg0/ha_ipx800v3/commit/578c3c502e1906c1fac5c2f4acf4f393b141d627))
+- initial
