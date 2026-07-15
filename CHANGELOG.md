@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.23](https://github.com/amg0/ha_ipx800v3/compare/v0.4.22...v0.4.23) (2026-07-15)
+
+
+### Bug Fixes
+
+* add longer timeout to API ([7accfcc](https://github.com/amg0/ha_ipx800v3/commit/7accfccc66522984301aa0f155b9e5f70fc3d71e))
+
 ## [0.4.22](https://github.com/amg0/ha_ipx800v3/compare/v0.4.21...v0.4.22) (2026-07-08)
 
 
