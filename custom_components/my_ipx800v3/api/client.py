@@ -450,7 +450,7 @@ class MyIPX800V3ApiClient:
 
         """
         try:
-            async with asyncio.timeout(10):
+            async with asyncio.timeout(30):
                 response = await self._session.request(
                     method=method,
                     url=url,
