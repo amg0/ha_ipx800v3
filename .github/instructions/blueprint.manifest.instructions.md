@@ -82,7 +82,7 @@ GitHub usernames with `@` prefix:
 
 ```json
 "codeowners": [
-  "@amg0"
+  "@jpawlowski"
 ]
 ```
 
