@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.24](https://github.com/amg0/ha_ipx800v3/compare/v0.4.23...v0.4.24) (2026-07-26)
+
+
+### Bug Fixes
+
+* avoid double message for loading lovelace ([f269dcc](https://github.com/amg0/ha_ipx800v3/commit/f269dcc4714af9faf48d50f464d92344bcb0eff0))
+
 ## [0.4.23](https://github.com/amg0/ha_ipx800v3/compare/v0.4.22...v0.4.23) (2026-07-15)
 
 
