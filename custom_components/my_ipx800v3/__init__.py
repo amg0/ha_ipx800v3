@@ -158,10 +158,11 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
                 elif not resource_id:
                     await resources.async_create_item({"res_type": "module", "url": card_url})
                     LOGGER.info("New resource Lovelace added : %s", card_url)
+                else:
+                    LOGGER.info("Lovelace resource loaded with success : %s", card_url)
         else:
             LOGGER.warning("Lovelace component is not loaded. impossible to add the resource.")
 
-        LOGGER.info("Lovelace resource loaded with success : %s", card_url)
     else:
         LOGGER.warning("The frontend folder does not exist or is not reachable : %s", frontend_dir)
 
