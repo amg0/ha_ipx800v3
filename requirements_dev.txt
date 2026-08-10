@@ -14,7 +14,7 @@
 
 # Git hook framework
 # Declared explicitly on purpose: HA Core does NOT ship pre-commit. As of
-# HA 2026.4 its requirements_test.txt pins `prek` (a Rust reimplementation)
+# Current HA test requirements pin `prek` (a Rust reimplementation)
 # instead, so relying on HA to provide the hook framework silently left
 # `pre-commit install` failing in script/setup/bootstrap and no hooks
 # installed at all. .pre-commit-config.yaml targets pre-commit, so the
@@ -23,6 +23,13 @@ pre-commit==4.6.1
 
 # Better logging for development scripts
 colorlog==6.12.0
+
+# Agent Skills reference validator (https://agentskills.io)
+# Optional cross-check used by script/skills-check on top of its own validation.
+# Upstream labels this a demonstration library, so the built-in checks in
+# script/.lib/skills_check.py stay authoritative and the script degrades
+# gracefully when it is absent.
+skills-ref==0.1.1
 
 # Performance optimizations (optional but recommended for faster development)
 # These speed up Home Assistant's startup and runtime
