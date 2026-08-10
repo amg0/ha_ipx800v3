@@ -420,6 +420,7 @@ class MyIPX800V3ApiClient:
 
     async def _api_wrapper(
         self,
+        *,  # <--- Forces all parameters below to be keyword-only
         method: str,
         url: str,
         data: dict | None = None,
