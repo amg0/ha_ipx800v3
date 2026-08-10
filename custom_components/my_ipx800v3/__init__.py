@@ -29,7 +29,7 @@ from aiohttp import web
 
 from custom_components.my_ipx800v3.config_flow_handler.config_flow import MyIPX800V3ConfigFlowHandler
 from homeassistant.components import webhook
-from homeassistant.components.http import StaticPathConfig
+from homeassistant.components.http.server import StaticPathConfig
 from homeassistant.components.lovelace.resources import ResourceStorageCollection
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL, CONF_USERNAME, Platform
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
