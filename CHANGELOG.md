@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.25](https://github.com/amg0/ha_ipx800v3/compare/v0.4.24...v0.4.25) (2026-08-10)
+
+
+### Bug Fixes
+
+* import StaticPathConfig from homeassistant.components.http.server instead of homeassistant.components.http ([0b4e14c](https://github.com/amg0/ha_ipx800v3/commit/0b4e14c8575cba2e47629fc61e5b8539ac48babe))
+
 ## [0.4.24](https://github.com/amg0/ha_ipx800v3/compare/v0.4.23...v0.4.24) (2026-07-26)
 
 
