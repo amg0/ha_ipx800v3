@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.26](https://github.com/amg0/ha_ipx800v3/compare/v0.4.25...v0.4.26) (2026-08-18)
+
+
+### Bug Fixes
+
+* relax the has_entity_name parameter to False for all entity descriptions in the IPX800v3 integration. This change ensures that entity names are not automatically prefixed with the device name, allowing for more flexible naming conventions. ([0539d25](https://github.com/amg0/ha_ipx800v3/commit/0539d255a096cadf1b3e14bbe181165e596a9ed7))
+* remove architecture check for description metadata fields ([27a8fc0](https://github.com/amg0/ha_ipx800v3/commit/27a8fc0262efb991e8e1f0eb8e76dd34f51dacb1))
+
 ## [0.4.25](https://github.com/amg0/ha_ipx800v3/compare/v0.4.24...v0.4.25) (2026-08-10)
 
 
