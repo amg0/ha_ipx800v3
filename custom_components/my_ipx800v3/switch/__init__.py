@@ -35,7 +35,7 @@ async def async_setup_entry(
             entity_description = SwitchEntityDescription(
                 key=key,
                 name=name,
-                has_entity_name=True,
+                has_entity_name=False,
             )
             entities.append(
                 MyIPX800V3SwitchEntity(

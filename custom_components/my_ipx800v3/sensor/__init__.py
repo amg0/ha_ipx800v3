@@ -33,7 +33,7 @@ async def async_setup_entry(
             name = (
                 coordinator.names.get(f"analog{analog_index + 1}") if entry.data.get(CONF_NAME_FROM_IPX) else None
             ) or f"Analog Input {analog_index + 1}"
-            entity_description = SensorEntityDescription(key=key, name=name, has_entity_name=True)
+            entity_description = SensorEntityDescription(key=key, name=name, has_entity_name=False)
             entities.append(
                 MyIPX800V3SensorEntity(
                     coordinator=coordinator,
@@ -50,7 +50,7 @@ async def async_setup_entry(
             entity_description = SensorEntityDescription(
                 key=key,
                 name=name,
-                has_entity_name=True,
+                has_entity_name=False,
             )
             entities.append(
                 MyIPX800V3SensorEntity(
