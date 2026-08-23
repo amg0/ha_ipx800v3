@@ -1,16 +1,24 @@
 /**
- * IPX800 V3 Lovelace Card - Improved Version (Inspired by Ksenia UI & Responsive Layouts)
- * A synthetic, dense, and fully responsive dashboard card for GCE IPX800 V3 integrations.
+ * IPX800 V3 Lovelace Card - Hybrid Version (PC/Mobile Editor + Cast/Nest Hub Compatible)
  */
 
-// Secure LitElement retrieval to ensure compatibility with Cast receivers / Nest Hub
-const LitElement = customElements.get("ha-panel-lovelace")
-  ? Object.getPrototypeOf(customElements.get("ha-panel-lovelace"))
-  : (customElements.get("hui-view")
-      ? Object.getPrototypeOf(customElements.get("hui-view"))
-      : Object.getPrototypeOf(customElements.get("hc-main") || HTMLElement));
+// 1. Détection dynamique et sécurisée du prototype LitElement
+const getLitElement = () => {
+  if (customElements.get("ha-panel-lovelace")) {
+    return Object.getPrototypeOf(customElements.get("ha-panel-lovelace"));
+  }
+  if (customElements.get("hui-view")) {
+    return Object.getPrototypeOf(customElements.get("hui-view"));
+  }
+  if (customElements.get("hc-main")) {
+    return Object.getPrototypeOf(customElements.get("hc-main"));
+  }
+  return HTMLElement;
+};
 
-const { html, css } = LitElement.prototype;
+const LitElement = getLitElement();
+const html = LitElement.prototype.html || window.litHtml;
+const css = LitElement.prototype.css || window.litCss;
 
 const editorTranslations = {
   en: {
@@ -75,12 +83,8 @@ class IPX800V3Card extends LitElement {
         font-size: 0.85em;
         font-weight: 500;
       }
-      .status.online {
-        color: #2ecc71;
-      }
-      .status.offline {
-        color: #e74c3c;
-      }
+      .status.online { color: #2ecc71; }
+      .status.offline { color: #e74c3c; }
       .status-dot {
         width: 8px;
         height: 8px;
@@ -105,15 +109,11 @@ class IPX800V3Card extends LitElement {
         background-color: var(--divider-color, rgba(255, 255, 255, 0.1));
         margin-left: 12px;
       }
-
-      /* Base Responsive Grids */
       .grid {
         display: grid;
         gap: 10px;
         margin-bottom: 12px;
       }
-
-      /* Relays Ksenia Style Look & Feel with Transparent Green Active concept */
       .relay-grid {
         grid-template-columns: repeat(var(--relay-columns, 4), 1fr);
       }
@@ -143,7 +143,6 @@ class IPX800V3Card extends LitElement {
       .relay-btn:active {
         transform: translateY(0);
       }
-      /* Keep the original good idea: transparent green when active */
       .relay-btn.active {
         background: rgba(46, 204, 113, 0.16);
         border-color: rgba(46, 204, 113, 0.6);
@@ -151,8 +150,6 @@ class IPX800V3Card extends LitElement {
         font-weight: 600;
         box-shadow: 0 0 10px rgba(46, 204, 113, 0.12), inset 0 0 4px rgba(46, 204, 113, 0.1);
       }
-
-      /* Inputs Layout */
       .input-grid {
         grid-template-columns: repeat(var(--input-columns, 4), 1fr);
       }
@@ -181,8 +178,6 @@ class IPX800V3Card extends LitElement {
         background-color: #2ecc71;
         box-shadow: 0 0 8px #2ecc71;
       }
-
-      /* Analogs Layout */
       .analog-grid {
         grid-template-columns: repeat(var(--analog-columns, 2), 1fr);
         gap: 10px;
@@ -217,8 +212,6 @@ class IPX800V3Card extends LitElement {
         font-size: 1.05em;
         font-weight: 600;
       }
-
-      /* Counters Layout */
       .counter-container {
         display: flex;
         flex-direction: column;
@@ -233,9 +226,7 @@ class IPX800V3Card extends LitElement {
         padding: 8px 12px;
         border-radius: 6px;
       }
-      .counter-name {
-        font-size: 0.9em;
-      }
+      .counter-name { font-size: 0.9em; }
       .counter-value {
         font-weight: 600;
         font-size: 0.95em;
@@ -261,45 +252,16 @@ class IPX800V3Card extends LitElement {
         background: rgba(255, 255, 255, 0.15);
       }
 
-      /* ------------------------------------------------------------- */
-      /* SMALLEST SCREEN SIZE STRATEGY (Inspired by Ksenia Component)  */
-      /* Override fixed column counts automatically when space is low  */
-      /* ------------------------------------------------------------- */
       @media (max-width: 768px) {
-        .relay-grid {
-          grid-template-columns: repeat(3, 1fr) !important;
-        }
-        .input-grid {
-          grid-template-columns: repeat(3, 1fr) !important;
-        }
+        .relay-grid, .input-grid { grid-template-columns: repeat(3, 1fr) !important; }
       }
-
       @media (max-width: 480px) {
-        ha-card {
-          padding: 12px;
-        }
-        .relay-grid {
-          grid-template-columns: repeat(2, 1fr) !important;
-        }
-        .input-grid {
-          grid-template-columns: repeat(2, 1fr) !important;
-        }
-        .analog-grid {
-          grid-template-columns: 1fr !important;
-        }
-        .counter-row {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 8px;
-        }
-        .counter-actions {
-          width: 100%;
-          justify-content: space-between;
-        }
-        .counter-btn {
-          flex: 1;
-          text-align: center;
-        }
+        ha-card { padding: 12px; }
+        .relay-grid, .input-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        .analog-grid { grid-template-columns: 1fr !important; }
+        .counter-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+        .counter-actions { width: 100%; justify-content: space-between; }
+        .counter-btn { flex: 1; text-align: center; }
       }
     `;
   }
@@ -314,14 +276,16 @@ class IPX800V3Card extends LitElement {
   }
 
   shouldUpdate(changedProps) {
+    // Détection dynamique de l'environnement Cast / Nest Hub
+    const isCast = navigator.userAgent.includes("CrKey") || !customElements.get("ha-panel-lovelace");
+    if (isCast) return true;
+
     if (changedProps.has('config')) return true;
 
     if (changedProps.has('hass')) {
       const oldHass = changedProps.get('hass');
       if (!oldHass) return true;
-
-      // Ensure state check is resilient when states object is loading
-      if (!this.hass.states) return true;
+      if (!this.hass || !this.hass.states) return true;
 
       for (const entityId in this.hass.states) {
         const stateObj = this.hass.states[entityId];
@@ -339,8 +303,9 @@ class IPX800V3Card extends LitElement {
   render() {
     if (!this.hass || !this.config) return html``;
 
-    const allIpxEntities = Object.keys(this.hass.states || {})
-      .map(id => this.hass.states[id])
+    const states = this.hass.states || {};
+    const allIpxEntities = Object.keys(states)
+      .map(id => states[id])
       .filter(stateObj => stateObj && stateObj.attributes && stateObj.attributes.ipx_key !== undefined);
 
     let filters = [];
@@ -366,8 +331,8 @@ class IPX800V3Card extends LitElement {
     }
 
     const entities = allIpxEntities.filter(stateObj => {
-      const entityIdLower = stateObj.entity_id.toLowerCase();
-      const friendlyNameLower = stateObj.attributes.friendly_name ? stateObj.attributes.friendly_name.toLowerCase() : "";
+      const entityIdLower = stateObj.entity_id ? stateObj.entity_id.toLowerCase() : "";
+      const friendlyNameLower = stateObj.attributes && stateObj.attributes.friendly_name ? stateObj.attributes.friendly_name.toLowerCase() : "";
 
       if (excludes.length > 0) {
         const matchesExclude = excludes.some(exclude => entityIdLower.includes(exclude) || friendlyNameLower.includes(exclude));
@@ -378,19 +343,19 @@ class IPX800V3Card extends LitElement {
       return filters.some(filter => entityIdLower.includes(filter) || friendlyNameLower.includes(filter));
     });
 
-    const relays = entities.filter(e => e.entity_id.startsWith('switch.'));
-    relays.sort((a, b) => this._sortIpxKeys(a.attributes.ipx_key, b.attributes.ipx_key));
+    const relays = entities.filter(e => e.entity_id && e.entity_id.startsWith('switch.'));
+    relays.sort((a, b) => this._sortIpxKeys(a.attributes?.ipx_key, b.attributes?.ipx_key));
 
-    const inputs = entities.filter(e => e.entity_id.startsWith('binary_sensor.') && e.attributes.ipx_key && e.attributes.ipx_key.startsWith('btn'));
-    inputs.sort((a, b) => this._sortIpxKeys(a.attributes.ipx_key, b.attributes.ipx_key));
+    const inputs = entities.filter(e => e.entity_id && e.entity_id.startsWith('binary_sensor.') && e.attributes?.ipx_key && String(e.attributes.ipx_key).startsWith('btn'));
+    inputs.sort((a, b) => this._sortIpxKeys(a.attributes?.ipx_key, b.attributes?.ipx_key));
 
-    const analogs = entities.filter(e => e.entity_id.startsWith('sensor.') && e.attributes.ipx_key && e.attributes.ipx_key.startsWith('analog'));
-    analogs.sort((a, b) => this._sortIpxKeys(a.attributes.ipx_key, b.attributes.ipx_key));
+    const analogs = entities.filter(e => e.entity_id && e.entity_id.startsWith('sensor.') && e.attributes?.ipx_key && String(e.attributes.ipx_key).startsWith('analog'));
+    analogs.sort((a, b) => this._sortIpxKeys(a.attributes?.ipx_key, b.attributes?.ipx_key));
 
-    const counters = entities.filter(e => e.entity_id.startsWith('sensor.') && e.attributes.ipx_key && e.attributes.ipx_key.startsWith('count'));
-    counters.sort((a, b) => this._sortIpxKeys(a.attributes.ipx_key, b.attributes.ipx_key));
+    const counters = entities.filter(e => e.entity_id && e.entity_id.startsWith('sensor.') && e.attributes?.ipx_key && String(e.attributes.ipx_key).startsWith('count'));
+    counters.sort((a, b) => this._sortIpxKeys(a.attributes?.ipx_key, b.attributes?.ipx_key));
 
-    const connectionEntity = entities.find(e => e.attributes.ipx_key === 'api_connectivity');
+    const connectionEntity = entities.find(e => e.attributes && e.attributes.ipx_key === 'api_connectivity');
     const isOnline = connectionEntity ? connectionEntity.state === 'on' : true;
     const statusText = connectionEntity ? (isOnline ? "Online" : "Offline") : "Unknown";
 
@@ -398,7 +363,7 @@ class IPX800V3Card extends LitElement {
     const inputColumns = this.config.input_columns || 4;
     const analogColumns = this.config.analog_columns || 2;
 
-    const cardTitle = this.config.title || (connectionEntity?.attributes.friendly_name ? connectionEntity.attributes.friendly_name.replace(" API connectivity", "") : "IPX800 V3 Panel");
+    const cardTitle = this.config.title || (connectionEntity?.attributes?.friendly_name ? connectionEntity.attributes.friendly_name.replace(" API connectivity", "") : "IPX800 V3 Panel");
 
     return html`
       <ha-card style="--relay-columns: ${relayColumns}; --input-columns: ${inputColumns}; --analog-columns: ${analogColumns};">
@@ -453,15 +418,14 @@ class IPX800V3Card extends LitElement {
           <div class="grid analog-grid">
             ${analogs.map(stateObj => {
               let val = stateObj.state;
-
               const numVal = parseFloat(val);
               if (!isNaN(numVal)) {
                 val = numVal.toFixed(1);
               }
 
-              const unit = stateObj.attributes.unit_of_measurement || '';
+              const unit = stateObj.attributes?.unit_of_measurement || '';
               const name = this._cleanEntityName(stateObj, 'analog');
-              const deviceClass = stateObj.attributes.device_class;
+              const deviceClass = stateObj.attributes?.device_class;
               const icon = this._getAnalogIcon(deviceClass);
               return html`
                 <div class="analog-card" title="${stateObj.entity_id}">
@@ -512,15 +476,15 @@ class IPX800V3Card extends LitElement {
 
   _sortIpxKeys(keyA, keyB) {
     if (!keyA || !keyB) return 0;
-    const numA = parseInt(keyA.replace(/^\D+/g, ''), 10);
-    const numB = parseInt(keyB.replace(/^\D+/g, ''), 10);
+    const numA = parseInt(String(keyA).replace(/^\D+/g, ''), 10) || 0;
+    const numB = parseInt(String(keyB).replace(/^\D+/g, ''), 10) || 0;
     return numA - numB;
   }
 
   _cleanEntityName(stateObj, type) {
-    let name = stateObj.attributes.friendly_name || '';
+    let name = stateObj.attributes?.friendly_name || '';
     if (!name) {
-      const parts = stateObj.entity_id.split('.');
+      const parts = (stateObj.entity_id || '').split('.');
       return parts[parts.length - 1];
     }
     name = name.replace(/^My IPX800 V3\s+/i, '');
@@ -530,27 +494,24 @@ class IPX800V3Card extends LitElement {
 
   _getAnalogIcon(deviceClass) {
     switch (deviceClass) {
-      case 'temperature':
-        return 'mdi:thermometer';
-      case 'illuminance':
-        return 'mdi:weather-sunny';
-      case 'humidity':
-        return 'mdi:water-percent';
-      case 'current':
-        return 'mdi:flash';
-      case 'voltage':
-        return 'mdi:sine-wave';
-      case 'ph':
-        return 'mdi:ph';
-      default:
-        return 'mdi:gauge';
+      case 'temperature': return 'mdi:thermometer';
+      case 'illuminance': return 'mdi:weather-sunny';
+      case 'humidity': return 'mdi:water-percent';
+      case 'current': return 'mdi:flash';
+      case 'voltage': return 'mdi:sine-wave';
+      case 'ph': return 'mdi:ph';
+      default: return 'mdi:gauge';
     }
   }
 
   _fireHaptic(type = "light") {
-    const event = new Event("haptic", { bubbles: true, composed: true });
-    event.detail = type;
-    this.dispatchEvent(event);
+    try {
+      const event = new Event("haptic", { bubbles: true, composed: true });
+      event.detail = type;
+      this.dispatchEvent(event);
+    } catch (e) {
+      // Ignoré silencieusement sur les appareils sans support haptique (Nest Hub)
+    }
   }
 
   _toggleSwitch(entityId) {
@@ -578,12 +539,16 @@ class IPX800V3Card extends LitElement {
   }
 
   static getConfigElement() {
+    // Si ha-form n'existe pas (Cast / Nest Hub), ne charge pas l'éditeur visuel
+    if (!customElements.get("ha-form")) {
+      return document.createElement("div");
+    }
     return document.createElement("ipx800v3-card-editor");
   }
 }
 
 /**
- * UI Editor for IPX800 V3 Card
+ * UI Editor pour PC / Mobile
  */
 class IPX800V3CardEditor extends LitElement {
   static get properties() {
@@ -600,6 +565,10 @@ class IPX800V3CardEditor extends LitElement {
   render() {
     if (!this.hass || !this._config) {
       return html``;
+    }
+
+    if (!customElements.get("ha-form")) {
+      return html`<div>L'éditeur n'est pas disponible sur cet appareil.</div>`;
     }
 
     const schema = [
@@ -659,7 +628,11 @@ class IPX800V3CardEditor extends LitElement {
 }
 
 customElements.define('ipx800v3-card', IPX800V3Card);
-customElements.define("ipx800v3-card-editor", IPX800V3CardEditor);
+
+// Enregistrement sécurisé de l'éditeur uniquement sur PC/Mobile
+if (customElements.get("ha-form")) {
+  customElements.define("ipx800v3-card-editor", IPX800V3CardEditor);
+}
 
 window.customCards = window.customCards || [];
 window.customCards.push({
@@ -667,17 +640,5 @@ window.customCards.push({
   name: 'IPX800 V3 Card',
   description: 'A dense synthetic card displaying Relays, Digital Inputs, Analogs, and Counters for IPX800 V3 custom integration.',
   preview: true,
-  documentationURL: 'https://github.com/amg0/ha_ipx800v3',
-
-  getEntitySuggestion: (hass, entityId) => {
-    const entityReg = hass.entities[entityId];
-
-    if (!entityReg || entityReg.platform !== "my_ipx800v3") {
-      return null;
-    }
-
-    return {
-      config: { type: "custom:ipx800v3-card" },
-    };
-  },
+  documentationURL: 'https://github.com/amg0/ha_ipx800v3'
 });
