@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.27](https://github.com/amg0/ha_ipx800v3/compare/v0.4.26...v0.4.27) (2026-08-23)
+
+
+### Bug Fixes
+
+* restore AGENTS.md ([1ea5a33](https://github.com/amg0/ha_ipx800v3/commit/1ea5a335bfb23fe6e7efc996a97220dc568fd9a3))
+* try to improve cast on google nest hub ([b3f490f](https://github.com/amg0/ha_ipx800v3/commit/b3f490fce9cfd01839af038b174bd303ac7abb18))
+
 ## [0.4.26](https://github.com/amg0/ha_ipx800v3/compare/v0.4.25...v0.4.26) (2026-08-18)
 
 
