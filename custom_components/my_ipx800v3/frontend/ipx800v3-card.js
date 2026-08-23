@@ -3,7 +3,13 @@
  * A synthetic, dense, and fully responsive dashboard card for GCE IPX800 V3 integrations.
  */
 
-const LitElement = Object.getPrototypeOf(customElements.get("ha-panel-lovelace") || HTMLElement);
+// Secure LitElement retrieval to ensure compatibility with Cast receivers / Nest Hub
+const LitElement = customElements.get("ha-panel-lovelace")
+  ? Object.getPrototypeOf(customElements.get("ha-panel-lovelace"))
+  : (customElements.get("hui-view")
+      ? Object.getPrototypeOf(customElements.get("hui-view"))
+      : Object.getPrototypeOf(customElements.get("hc-main") || HTMLElement));
+
 const { html, css } = LitElement.prototype;
 
 const editorTranslations = {
@@ -314,10 +320,13 @@ class IPX800V3Card extends LitElement {
       const oldHass = changedProps.get('hass');
       if (!oldHass) return true;
 
+      // Ensure state check is resilient when states object is loading
+      if (!this.hass.states) return true;
+
       for (const entityId in this.hass.states) {
         const stateObj = this.hass.states[entityId];
-        if (stateObj.attributes && stateObj.attributes.ipx_key !== undefined) {
-          if (oldHass.states[entityId] !== stateObj) {
+        if (stateObj && stateObj.attributes && stateObj.attributes.ipx_key !== undefined) {
+          if (!oldHass.states || oldHass.states[entityId] !== stateObj) {
             return true;
           }
         }
@@ -330,9 +339,9 @@ class IPX800V3Card extends LitElement {
   render() {
     if (!this.hass || !this.config) return html``;
 
-    const allIpxEntities = Object.keys(this.hass.states)
+    const allIpxEntities = Object.keys(this.hass.states || {})
       .map(id => this.hass.states[id])
-      .filter(stateObj => stateObj.attributes && stateObj.attributes.ipx_key !== undefined);
+      .filter(stateObj => stateObj && stateObj.attributes && stateObj.attributes.ipx_key !== undefined);
 
     let filters = [];
     if (this.config.device_filter) {
@@ -372,13 +381,13 @@ class IPX800V3Card extends LitElement {
     const relays = entities.filter(e => e.entity_id.startsWith('switch.'));
     relays.sort((a, b) => this._sortIpxKeys(a.attributes.ipx_key, b.attributes.ipx_key));
 
-    const inputs = entities.filter(e => e.entity_id.startsWith('binary_sensor.') && e.attributes.ipx_key.startsWith('btn'));
+    const inputs = entities.filter(e => e.entity_id.startsWith('binary_sensor.') && e.attributes.ipx_key && e.attributes.ipx_key.startsWith('btn'));
     inputs.sort((a, b) => this._sortIpxKeys(a.attributes.ipx_key, b.attributes.ipx_key));
 
-    const analogs = entities.filter(e => e.entity_id.startsWith('sensor.') && e.attributes.ipx_key.startsWith('analog'));
+    const analogs = entities.filter(e => e.entity_id.startsWith('sensor.') && e.attributes.ipx_key && e.attributes.ipx_key.startsWith('analog'));
     analogs.sort((a, b) => this._sortIpxKeys(a.attributes.ipx_key, b.attributes.ipx_key));
 
-    const counters = entities.filter(e => e.entity_id.startsWith('sensor.') && e.attributes.ipx_key.startsWith('count'));
+    const counters = entities.filter(e => e.entity_id.startsWith('sensor.') && e.attributes.ipx_key && e.attributes.ipx_key.startsWith('count'));
     counters.sort((a, b) => this._sortIpxKeys(a.attributes.ipx_key, b.attributes.ipx_key));
 
     const connectionEntity = entities.find(e => e.attributes.ipx_key === 'api_connectivity');
@@ -502,6 +511,7 @@ class IPX800V3Card extends LitElement {
   }
 
   _sortIpxKeys(keyA, keyB) {
+    if (!keyA || !keyB) return 0;
     const numA = parseInt(keyA.replace(/^\D+/g, ''), 10);
     const numB = parseInt(keyB.replace(/^\D+/g, ''), 10);
     return numA - numB;
