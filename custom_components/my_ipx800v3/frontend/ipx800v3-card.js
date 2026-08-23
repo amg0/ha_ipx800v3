@@ -567,6 +567,9 @@ class IPX800V3Card extends LitElement {
   }
 
   setConfig(config) {
+    if (!config) {
+      throw new Error("Configuration invalide");
+    }
     this.config = config;
   }
 
