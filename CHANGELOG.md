@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.28](https://github.com/amg0/ha_ipx800v3/compare/v0.4.27...v0.4.28) (2026-08-23)
+
+
+### Bug Fixes
+
+* fix in front end ([e2f32e8](https://github.com/amg0/ha_ipx800v3/commit/e2f32e897b5827fa0cf8089778d01e07b503d83a))
+* tentative for a more compatible code for Google Nest Hub ([4d75a26](https://github.com/amg0/ha_ipx800v3/commit/4d75a26eeb390d6ad4d4f158618328c31092f784))
+
 ## [0.4.27](https://github.com/amg0/ha_ipx800v3/compare/v0.4.26...v0.4.27) (2026-08-23)
 
 
