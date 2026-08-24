@@ -28,9 +28,7 @@ BANNED_FILENAMES = {
     "device_action.py": "device actions are frozen upstream — expose a service action instead",
 }
 DESCRIPTION_SUFFIX = "EntityDescription"
-DESCRIPTION_METADATA_FIELDS = {
-    # "icon", "name"
-}
+DESCRIPTION_METADATA_FIELDS = {"icon", "name"}
 DEVICE_REGISTRY_MODULE = "homeassistant.helpers.device_registry"
 
 
