@@ -254,8 +254,8 @@ async def async_setup_entry(
     base_url = get_url(hass, allow_external=False)
     parsed_url = urlparse(base_url)
     ip_address = parsed_url.hostname
-    port = parsed_url.port  # e.g., 8123
-
+    # port = parsed_url.port  # e.g., 8123
+    port = parsed_url.port or (443 if parsed_url.scheme == "https" else 80)
     # Configure the WebHook in the IPX 800
     if entry.data.get(CONF_AUTOMATIC_PUSH, True):
         await client.async_config_push(
