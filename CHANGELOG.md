@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/amg0/ha_ipx800v3/compare/v0.4.28...v0.5.0) (2026-09-21)
+
+
+### Bug Fixes
+
+* defaut port number when the geturl() returns a None value for the port number. ([52b0186](https://github.com/amg0/ha_ipx800v3/commit/52b01865a3c455e1797654aa33aa7a123e999401))
+
+
+### Maintenance
+
+* release 0.5.0 ([fff99b0](https://github.com/amg0/ha_ipx800v3/commit/fff99b0671fb080ead7a11ae571666b0383bfd54))
+
 ## [0.4.28](https://github.com/amg0/ha_ipx800v3/compare/v0.4.27...v0.4.28) (2026-08-23)
 
 
