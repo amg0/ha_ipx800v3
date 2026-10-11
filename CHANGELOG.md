@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/amg0/ha_ipx800v3/compare/v0.5.0...v0.5.1) (2026-10-11)
+
+
+### Features
+
+* reduce the retry period in case of API failure. ([f412a01](https://github.com/amg0/ha_ipx800v3/commit/f412a0197a42372e89ff99e183b9c91a684bd2c2))
+
 ## [0.5.0](https://github.com/amg0/ha_ipx800v3/compare/v0.4.28...v0.5.0) (2026-09-21)
 
 
