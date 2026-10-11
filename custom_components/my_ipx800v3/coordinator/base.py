@@ -142,10 +142,12 @@ class MyIPX800V3DataUpdateCoordinator(DataUpdateCoordinator):
             ) from exception
         except MyIPX800V3ApiClientError as exception:
             LOGGER.exception("Error communicating with API")
-            # If the API provides rate limit information, you can honor it:
-            # if hasattr(exception, 'retry_after'):
-            #     raise UpdateFailed(retry_after=exception.retry_after) from exception
+            retry_after: float | None = None
+            if self.update_interval:
+                retry_after = max(self.update_interval.total_seconds() / 2, 5.0)
+
             raise UpdateFailed(
                 translation_domain="my_ipx800v3",
                 translation_key="update_failed",
+                retry_after=retry_after,
             ) from exception
