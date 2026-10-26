@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/amg0/ha_ipx800v3/compare/v0.5.1...v0.5.2) (2026-10-26)
+
+
+### Bug Fixes
+
+* remove categories from manifest.json to avoid warning in HA 2024.6 ([aea2317](https://github.com/amg0/ha_ipx800v3/commit/aea2317382d2ea028815674a5885ecb48e53dc75))
+
 ## [0.5.1](https://github.com/amg0/ha_ipx800v3/compare/v0.5.0...v0.5.1) (2026-10-11)
 
 
