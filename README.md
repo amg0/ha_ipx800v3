@@ -107,7 +107,7 @@ Follow the setup wizard:
 > first, save the ip_add and port, then save the API path for the webhook.
 
 > [!TIP]
-> this PUSH api configuration is optional but is recommended for near real time updates. it is preferable to have a not so frequent polling interval and push option configured
+> this PUSH api configuration is optional but is recommended for near real time updates. it is preferable to have a not so frequent polling interval and push option configured.
 
 In the config dialog:
 
