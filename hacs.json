@@ -1,5 +1,6 @@
 {
   "name": "My IPX800 V3",
   "hacs": "2.0.5",
+  "homeassistant": "2026.8.0",
   "render_readme": true
 }
