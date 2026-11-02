@@ -124,7 +124,14 @@ resolve_venv_path() {
 # Silently skips when VIRTUAL_ENV is already set (e.g. in CI or nested calls).
 activate_venv() {
     if [[ -n ${VIRTUAL_ENV:-} ]]; then
-        return 0
+        case ":$PATH:" in
+        *":$VIRTUAL_ENV/bin:"*) return 0 ;;
+        esac
+        if [[ -f "$VIRTUAL_ENV/bin/activate" ]]; then
+            # shellcheck source=/dev/null
+            source "$VIRTUAL_ENV/bin/activate"
+            return 0
+        fi
     fi
     local venv_path
     if ! venv_path="$(resolve_venv_path)"; then
@@ -143,6 +150,13 @@ activate_venv() {
 # Like activate_venv, for a script that needs the venv only for optional extras: carries on without one.
 activate_venv_if_present() {
     if [[ -n ${VIRTUAL_ENV:-} ]]; then
+        case ":$PATH:" in
+        *":$VIRTUAL_ENV/bin:"*) return 0 ;;
+        esac
+        if [[ -f "$VIRTUAL_ENV/bin/activate" ]]; then
+            # shellcheck source=/dev/null
+            source "$VIRTUAL_ENV/bin/activate"
+        fi
         return 0
     fi
     local venv_path

@@ -42,6 +42,26 @@ def test_without_mise_nothing_changes(tmp_path: Path) -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize("activation", ["activate_venv", "activate_venv_if_present"])
+def test_existing_venv_is_activated_when_missing_from_path(tmp_path: Path, activation: str) -> None:
+    """A set VIRTUAL_ENV does not imply its executables are already on PATH."""
+    venv = tmp_path / "venv"
+    bin_dir = venv / "bin"
+    bin_dir.mkdir(parents=True)
+    (bin_dir / "activate").write_text(
+        f'VIRTUAL_ENV="{venv}"\nexport VIRTUAL_ENV\nPATH="{bin_dir}:$PATH"\nexport PATH\n', encoding="utf-8"
+    )
+    executable = bin_dir / "ruff"
+    executable.write_text("#!/bin/bash\n", encoding="utf-8")
+    executable.chmod(0o755)
+
+    result = _bash(tmp_path, f"{activation}; command -v ruff", VIRTUAL_ENV=str(venv))
+
+    assert result.returncode == 0
+    assert result.stdout == f"{executable}\n"
+
+
+@pytest.mark.unit
 @pytest.mark.parametrize(("exit_code", "state"), [(0, "done"), (3, "failed")])
 def test_track_run_records_the_outcome(tmp_path: Path, exit_code: int, state: str) -> None:
     """A tracked script ends up done or failed, and leaves no PID behind."""
