@@ -1,0 +1,14 @@
+{
+  "domain": "my_ipx800v3",
+  "name": "My IPX800 V3",
+  "codeowners": [
+    "@amg0"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/amg0/temp",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/amg0/temp/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
