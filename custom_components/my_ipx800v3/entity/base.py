@@ -1,28 +1,40 @@
-"""Base entity class for my_ipx800v3."""
+"""
+Base entity class for my_ipx800v3.
+
+This module provides the base entity class that all integration entities inherit from.
+It handles common functionality like device info, unique IDs, and coordinator integration.
+
+For more information on entities:
+https://developers.home-assistant.io/docs/core/entity
+https://developers.home-assistant.io/docs/core/entity/index/#common-properties
+"""
+
+from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from custom_components.my_ipx800v3.api import MyIPX800V3ApiClientError
-from custom_components.my_ipx800v3.const import ATTRIBUTION, DOMAIN
+from custom_components.my_ipx800v3.const import ATTRIBUTION
 from custom_components.my_ipx800v3.coordinator import MyIPX800V3DataUpdateCoordinator
-from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers.device_registry import DeviceInfo
+from custom_components.my_ipx800v3.entity_utils.device_info import create_device_info
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Callable
-
-    from custom_components.my_ipx800v3.api import MyIPX800V3ApiClient
     from homeassistant.helpers.entity import EntityDescription
 
 
 class MyIPX800V3Entity(CoordinatorEntity[MyIPX800V3DataUpdateCoordinator]):
     """
-    Base entity providing device info, unique ID and attribution.
+    Base entity class for my_ipx800v3.
 
-    The unique ID is `{entry_id}_{key}`, the documented identifier of last resort.
-    A real integration switches to the device's serial, MAC or account ID before its
-    first release, because changing it afterwards needs a registry migration.
+    All entities in this integration inherit from this class, which provides:
+    - Automatic coordinator updates
+    - Device info management
+    - Unique ID generation
+    - Attribution and naming conventions
+
+    For more information:
+    https://developers.home-assistant.io/docs/core/entity
+    https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
     """
 
     _attr_attribution = ATTRIBUTION
@@ -33,49 +45,26 @@ class MyIPX800V3Entity(CoordinatorEntity[MyIPX800V3DataUpdateCoordinator]):
         coordinator: MyIPX800V3DataUpdateCoordinator,
         entity_description: EntityDescription,
     ) -> None:
-        """Initialize the entity."""
-        super().__init__(coordinator)
-        self.entity_description = entity_description
-        self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{entity_description.key}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={
-                (
-                    coordinator.config_entry.domain,
-                    coordinator.config_entry.entry_id,
-                ),
-            },
-            name=coordinator.config_entry.title,
-            manufacturer="My IPX800 V3",
-            model=coordinator.data["model"],
-            serial_number=coordinator.data["serial_number"],
-            sw_version=coordinator.data["sw_version"],
-        )
-
-    async def _async_write(
-        self,
-        call: Callable[[MyIPX800V3ApiClient], Awaitable[None]],
-        translation_key: str,
-        **placeholders: str,
-    ) -> None:
         """
-        Run a write against the device, then refresh the coordinator.
+        Initialize the base entity.
 
         Args:
-            call: Receives the API client and performs the write.
-            translation_key: Key of the exception message used when the write fails.
-            **placeholders: Values for that message's placeholders.
-
-        Raises:
-            HomeAssistantError: If the device cannot be reached or rejects the write.
+            coordinator: The data update coordinator for this entity.
+            entity_description: The entity description defining characteristics.
 
         """
-        try:
-            await call(self.coordinator.config_entry.runtime_data.client)
-        except MyIPX800V3ApiClientError as exception:
-            raise HomeAssistantError(
-                translation_domain=DOMAIN,
-                translation_key=translation_key,
-                translation_placeholders=placeholders or None,
-            ) from exception
+        super().__init__(coordinator)
+        self.entity_description = entity_description
 
-        await self.coordinator.async_request_refresh()
+        # Include entity description key in unique_id to support multiple entities
+        self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{entity_description.key}"
+
+        # Extra attributes to be seen in HomeAssistant UI
+        self._attr_extra_state_attributes = {"ipx_key": entity_description.key}
+        self._attr_device_info = create_device_info(
+            config_entry=coordinator.config_entry,
+            name="IPX800",
+            manufacturer="GCE Electronics",
+            model="IPX800 V3",
+            sw_version=coordinator.data.get("version", "3.05.xx"),
+        )

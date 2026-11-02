@@ -4,33 +4,28 @@ This guide will help you install and set up the My IPX800 V3 custom integration 
 
 ## Prerequisites
 
-- Home Assistant 2026.10.0 or newer
+- Home Assistant 2025.7.0 or newer
+- HACS (Home Assistant Community Store) installed
 - Network connectivity to [external service/device]
 
 ## Installation
 
-### Via the Marketplace (Home Assistant 2026.11 and newer, recommended)
-
-1. Go to **Settings** → **Marketplace**
-2. Add this repository as a custom repository: `https://github.com/amg0/temp`, category "Integration". The Marketplace asks you to connect a GitHub account for repositories outside its catalog.
-3. Open "My IPX800 V3" and click "Download"
-
-A restart is not needed for the first installation; updates and removal ask for one.
-
-### Via HACS (before Home Assistant 2026.11)
+### Via HACS (Recommended)
 
 1. Open HACS in your Home Assistant instance
-2. Click the three dots in the top right corner
-3. Select "Custom repositories"
-4. Add this repository URL: `https://github.com/amg0/temp`
-5. Set category to "Integration"
-6. Click "Add"
-7. Find "My IPX800 V3" in the list and click "Download"
-8. Restart Home Assistant
+2. Go to "Integrations"
+3. Click the three dots in the top right corner
+4. Select "Custom repositories"
+5. Add this repository URL: `https://github.com/amg0/ha_ipx800v3`
+6. Set category to "Integration"
+7. Click "Add"
+8. Find "My IPX800 V3" in the integration list
+9. Click "Download"
+10. Restart Home Assistant
 
 ### Manual Installation
 
-1. Download the latest release from the [releases page](https://github.com/amg0/temp/releases)
+1. Download the latest release from the [releases page](https://github.com/amg0/ha_ipx800v3/releases)
 2. Extract the `my_ipx800v3` folder from the archive
 3. Copy it to `custom_components/my_ipx800v3/` in your Home Assistant configuration directory
 4. Restart Home Assistant
@@ -58,6 +53,7 @@ Click **Submit** to test the connection.
 
 Configure optional settings:
 
+- **Update Interval:** How often to poll for updates (default: 5 minutes)
 - **Name:** Friendly name for this integration instance
 
 Click **Submit** to complete setup.
@@ -185,11 +181,11 @@ Add this to `configuration.yaml`, restart, and reproduce the issue. Check logs f
 
 - See [CONFIGURATION.md](./CONFIGURATION.md) for detailed configuration options
 - See [EXAMPLES.md](./EXAMPLES.md) for more automation examples
-- Report issues at [GitHub Issues](https://github.com/amg0/temp/issues)
+- Report issues at [GitHub Issues](https://github.com/amg0/ha_ipx800v3/issues)
 
 ## Support
 
 For help and discussion:
 
-- [GitHub Discussions](https://github.com/amg0/temp/discussions)
+- [GitHub Discussions](https://github.com/amg0/ha_ipx800v3/discussions)
 - [Home Assistant Community Forum](https://community.home-assistant.io/)

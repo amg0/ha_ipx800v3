@@ -1,16 +1,87 @@
 # yaml-language-server: $schema=../../schemas/yaml/services_schema.yaml
-# The names and descriptions here are only the fallback shown when a translation is
-# missing; users see services.<action>.* from translations/en.json.
+# Describes the format for available services for my_ipx800v3
 
-refresh_data:
-  name: Refresh data
-  description: Fetch the current device state immediately instead of waiting for the next poll.
+# example_action:
+#   name: Example Action
+#   description: Execute an example action (dummy service for demonstration)
+#   fields:
+#     action_type:
+#       name: Action Type
+#       description: The type of action to perform
+#       required: false
+#       default: default
+#       example: "update"
+#       selector:
+#         select:
+#           options:
+#             - "default"
+#             - "update"
+#             - "reset"
+#     target_value:
+#       name: Target Value
+#       description: The target value for the action
+#       required: false
+#       example: "new_value"
+#       selector:
+#         text:
+
+# If the service action accepts entity IDs, target allows the user to specify
+# entities by entity, device, or area. If `target` is specified, `entity_id`
+# should not be  defined in the `fields` map. By default it shows only targets
+# matching entities from the same domain as the action, but if further
+# customization is required, target supports the entity, device, and area
+# selectors (https://www.home-assistant.io/docs/blueprint/selectors/).
+# Entity selector parameters will automatically be applied to device and area,
+# and device selector parameters will automatically be applied to area.
+reload_data:
+  name: Reload data
+  description: "Reload data from the IPX800 integration."
+  target: {}
+
+toggle_input:
+  name: Toggle digital input
+  description: "Toggle the state of a specific digital input."
+  target:
+    entity:
+      integration: my_ipx800v3
+      domain:
+        - binary_sensor
+        - switch
+
+set_counter_value:
+  name: Set counter value
+  description: "Sets a specific value for a counter."
+  target:
+    entity:
+      integration: my_ipx800v3
+      domain:
+        - sensor
   fields:
-    config_entry_id:
-      name: Integration entry
-      description: The configuration entry to refresh.
+    value:
+      name: Value
+      description: "The new value to assign to the counter."
       required: true
-      example: 01JG3T2Q6Z9K4V8P0N5R7X2M1A
       selector:
-        config_entry:
-          integration: my_ipx800v3
+        number:
+          min: 0
+          max: 4294967295
+          mode: box
+
+adjust_counter_value:
+  name: Adjust counter value
+  description: "Adjusts a counter value with a positive or negative offset."
+  target:
+    entity:
+      integration: my_ipx800v3
+      domain:
+        - sensor
+  fields:
+    offset:
+      name: Offset
+      description: "The offset value to apply (positive to increment, negative to decrement)."
+      required: true
+      selector:
+        number:
+          min: -255
+          max: 255
+          mode: box

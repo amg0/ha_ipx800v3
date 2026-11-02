@@ -1,142 +1,153 @@
 {
+  "services": {
+    "reload_data": {
+      "name": "Reload data",
+      "description": "Reload data from the IPX800 integration."
+    },
+    "toggle_input": {
+      "name": "Toggle digital input",
+      "description": "Toggle the state of a specific digital input."
+    },
+    "set_counter_value": {
+      "name": "Set counter value",
+      "description": "Sets a specific value for a counter.",
+      "fields": {
+        "value": {
+          "name": "Value",
+          "description": "The new value to assign to the counter."
+        }
+      }
+    },
+    "adjust_counter_value": {
+      "name": "Adjust counter value",
+      "description": "Adjusts a counter value with a positive or negative offset.",
+      "fields": {
+        "offset": {
+          "name": "Offset",
+          "description": "The offset value to apply (positive to increment, negative to decrement)."
+        }
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
-        "description": "If you need help with the configuration have a look at the [documentation]({documentation_url}).",
+        "title": "Initial Configuration of the Integration",
+        "description": "If you need help with the configuration have a look at the [documentation]({documentation_url}).\n\nPlease configure this **webhook** in the push configuration screen of your IPX800: >{webhook_url}",
         "data": {
           "username": "Username",
-          "password": "Password"
+          "password": "Password",
+          "names_from_ipx": "Copy names from IPX",
+          "automatic_push": "Automatic PUSH configuration"
         },
         "data_description": {
-          "username": "The account name you use to sign in to the device.",
-          "password": "The password for that account. It is stored encrypted and never written to the log."
+          "names_from_ipx": "Check if you want to import entity names from the IPX board",
+          "automatic_push": "Check if you want to automatically configure the PUSH settings on the IPX board"
+        }
+      },
+      "options_init": {
+        "title": "Configure Integration Options",
+        "description": "Customize how this integration operates.\n\n**Webhook**: >{webhook_url}",
+        "data": {
+          "scan_interval": "Polling interval (seconds)"
+        },
+        "data_description": {
+          "scan_interval": "Poll the IPX board data every x seconds"
         }
       },
       "reconfigure": {
-        "description": "Update the credentials for this integration.",
+        "title": "Reconfiguration of the Integration",
+        "description": "Update the interface configuration and reconfigure entities. \n\n**Webhook**: >{webhook_url}",
         "data": {
-          "username": "Username",
-          "password": "Password"
+          "names_from_ipx": "Copy names from IPX",
+          "automatic_push": "Automatic PUSH configuration"
         },
         "data_description": {
-          "username": "The account name you use to sign in to the device.",
-          "password": "The password for that account."
+          "names_from_ipx": "Check if you want to import entity names from the IPX board",
+          "automatic_push": "Check if you want to automatically configure the PUSH settings on the IPX board"
         }
       },
       "reauth_confirm": {
-        "title": "Reauthenticate integration",
-        "description": "The credentials for {username} are no longer valid. Provide updated credentials to restore access.",
+        "title": "Reauthenticate Integration",
+        "description": "The credentials for {username} are no longer valid. Please provide updated credentials to restore access.",
         "data": {
           "username": "Username",
           "password": "Password"
-        },
-        "data_description": {
-          "username": "The account name you use to sign in to the device.",
-          "password": "The current password for that account."
         }
       }
     },
     "error": {
-      "cannot_connect": "Unable to connect to the server.",
-      "invalid_auth": "The username or password is wrong.",
-      "unknown": "An unknown error occurred."
+      "auth": "Username/Password is wrong.",
+      "connection": "Unable to connect to the server.",
+      "unknown": "Unknown error occurred."
     },
     "abort": {
-      "already_configured": "This entry is already configured."
+      "already_configured": "This entry is already configured.",
+      "reconfigure_successful": "The configuration was updated successfully!"
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Integration options",
-        "description": "Adjust how this integration interprets the device.",
+        "title": "Configure Integration Options",
+        "description": "Customize how this integration operates.\n\n**Webhook**: >{webhook_url}",
         "data": {
-          "filter_replacement_threshold": "Filter replacement threshold"
+          "scan_interval": "Polling interval (seconds)"
         },
         "data_description": {
-          "filter_replacement_threshold": "Report that the filter needs replacing once its remaining life drops below this percentage."
+          "scan_interval": "Poll the IPX board data every x seconds"
         }
       }
     }
   },
   "exceptions": {
     "authentication_failed": {
-      "message": "Authentication failed during the data update."
+      "message": "Authentication failed during data update."
     },
     "update_failed": {
-      "message": "Failed to fetch data from the device."
+      "message": "Failed to update data from the server."
     },
-    "switch_set_failed": {
-      "message": "Failed to change the {name} setting on the device."
+    "switch_turn_on_failed": {
+      "message": "Failed to turn on the switch."
+    },
+    "switch_turn_off_failed": {
+      "message": "Failed to turn off the switch."
     },
     "number_set_failed": {
-      "message": "Failed to set the target humidity on the device."
-    },
-    "reset_filter_failed": {
-      "message": "Failed to reset the filter timer on the device."
-    },
-    "fan_speed_set_failed": {
-      "message": "Failed to change the fan speed on the device."
-    },
-    "fan_state_set_failed": {
-      "message": "Failed to turn the fan on or off."
-    },
-    "invalid_fan_speed": {
-      "message": "{speed} is not a fan speed this device supports."
+      "message": "Failed to set the target value."
     }
   },
   "entity": {
     "sensor": {
-      "filter_life": {
-        "name": "Filter life remaining"
-      },
-      "runtime": {
-        "name": "Total runtime"
-      }
     },
     "binary_sensor": {
-      "filter_replacement": {
-        "name": "Filter replacement needed"
+      "api_connectivity": {
+        "name": "API Connection"
       }
     },
     "switch": {
-      "child_lock": {
-        "name": "Child lock"
-      },
-      "led_display": {
-        "name": "LED display"
-      }
-    },
-    "select": {
-      "fan_speed": {
-        "name": "Fan speed",
-        "state": {
-          "low": "Low",
-          "medium": "Medium",
-          "high": "High",
-          "auto": "Auto"
+    }
+  },
+  "issues": {
+    "deprecated_api_endpoint": {
+      "title": "Deprecated API Endpoint",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Update API Endpoint",
+            "description": "Your device is using API version {api_version} which is deprecated. Please update to v2 for continued support and new features.\n\nClick Submit to update your device to use the new API endpoint (v2). This will reload the integration."
+          }
         }
       }
     },
-    "number": {
-      "target_humidity": {
-        "name": "Target humidity"
-      }
-    },
-    "button": {
-      "reset_filter": {
-        "name": "Reset filter timer"
-      }
-    }
-  },
-  "services": {
-    "refresh_data": {
-      "name": "Refresh data",
-      "description": "Fetches the current device state immediately instead of waiting for the next poll.",
-      "fields": {
-        "config_entry_id": {
-          "name": "Integration entry",
-          "description": "The configuration entry to refresh."
+    "missing_configuration": {
+      "title": "Missing Configuration",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Acknowledge Configuration Issue",
+            "description": "Some configuration options are missing or invalid. Please reconfigure the integration to ensure proper operation.\n\nClick Submit to acknowledge this issue. You may need to reconfigure the integration if problems persist."
+          }
         }
       }
     }

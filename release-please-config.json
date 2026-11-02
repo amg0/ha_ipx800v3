@@ -9,8 +9,7 @@
       "extra-files": [
         {
           "type": "json",
-          "path": "custom_components/*/manifest.json",
-          "glob": true,
+          "path": "custom_components/my_ipx800v3/manifest.json",
           "jsonpath": "$.version"
         }
       ],

@@ -1,42 +1,60 @@
-"""Options flow schemas."""
+"""
+Options flow schemas.
+
+Schemas for the options flow that allows users to modify settings
+after initial configuration.
+
+When adding many options, consider grouping them:
+- basic_options.py: Common settings (update interval, debug mode)
+- advanced_options.py: Advanced settings
+- device_options.py: Device-specific settings
+"""
+
+from __future__ import annotations
 
 from collections.abc import Mapping
 from typing import Any
 
 import probatio
 
-from custom_components.my_ipx800v3.const import CONF_FILTER_REPLACEMENT_THRESHOLD, DEFAULT_FILTER_REPLACEMENT_THRESHOLD
+from custom_components.my_ipx800v3.const import DEFAULT_SCAN_INTERVAL
+from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.helpers import selector
 
 
 def get_options_schema(defaults: Mapping[str, Any] | None = None) -> probatio.Schema:
     """
-    Build the options form schema.
+    Get schema for options flow.
 
     Args:
-        defaults: The entry's current options, used to pre-fill the form.
+        defaults: Optional dictionary of current option values.
 
     Returns:
-        The probatio schema for the options form.
+        Probatio schema for options configuration.
 
     """
     defaults = defaults or {}
     return probatio.Schema(
         {
-            probatio.Optional(
-                CONF_FILTER_REPLACEMENT_THRESHOLD,
-                default=defaults.get(CONF_FILTER_REPLACEMENT_THRESHOLD, DEFAULT_FILTER_REPLACEMENT_THRESHOLD),
-            ): selector.NumberSelector(
-                selector.NumberSelectorConfig(
-                    min=1,
-                    max=50,
-                    step=1,
-                    unit_of_measurement="%",
-                    mode=selector.NumberSelectorMode.SLIDER,
+            probatio.Required(
+                CONF_SCAN_INTERVAL,
+                default=defaults.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+            ): probatio.All(
+                probatio.Coerce(int),
+                selector.NumberSelector(
+                    selector.NumberSelectorConfig(
+                        min=1,
+                        max=300,
+                        step=1,
+                        unit_of_measurement="s",
+                        mode=selector.NumberSelectorMode.BOX,
+                    )
                 ),
             ),
         },
     )
 
 
-__all__ = ["get_options_schema"]
+__all__ = [
+    "get_options_schema",
+]

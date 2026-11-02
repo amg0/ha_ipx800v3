@@ -8,12 +8,6 @@ Releases are managed with [release-please](https://github.com/googleapis/release
 
 **Version source of truth:** `custom_components/my_ipx800v3/manifest.json`
 
-> [!NOTE]
-> This document explains _how the release machinery works_ and covers the one-time GitHub repository setup. The
-> step-by-step procedure for cutting a release, the commit-message rules that drive it, and the pre-release checklist
-> are maintained as the [`ha-release`](../../.agents/skills/ha-release/SKILL.md) agent skill, so humans and AI agents
-> follow the same process.
-
 ## How It Works
 
 ### The Release Cycle
@@ -30,11 +24,6 @@ Releases are managed with [release-please](https://github.com/googleapis/release
 5. release-please creates the GitHub Release + Git tag
    manifest.json version is already updated in the merged PR
 ```
-
-The Home Assistant Marketplace offers users the tag of the latest **published** GitHub Release —
-a bare tag is not enough — and refuses an integration whose `manifest.json` has no `version`. Its update entity shows
-the release body as the release notes. Release-please covers all three; a pre-release only reaches users who switched
-on pre-releases for the repository. Details: [Releases and updates](https://contributors.home-assistant.io/marketplace/guides/releases/).
 
 ### The Release PR
 
@@ -115,7 +104,7 @@ Generates AI-enhanced release notes using [GitHub Copilot CLI](https://docs.gith
 4. Sends everything to Copilot CLI via stdin (avoids shell-escaping issues with large prompts)
 5. Outputs the result to stdout, or updates the PR body with `--apply`
 
-**`--interactive` mode** writes the full prompt and context to `.agents/scratch/release-notes-context.md` and launches a Copilot CLI session so you can iterate manually.
+**`--interactive` mode** writes the full prompt and context to `.ai-scratch/release-notes-context.md` and launches a Copilot CLI session so you can iterate manually.
 
 **Skip a commit from release notes** by adding a trailer to the commit body:
 
@@ -138,26 +127,52 @@ User-Impact: none
 
 ## Typical Release Workflow
 
-The end-to-end procedure — commit conventions, the pre-release checklist, and troubleshooting a release that did not
-happen — is documented in the [`ha-release`](../../.agents/skills/ha-release/SKILL.md) skill.
-
-The short version:
+### Minimal (automated only)
 
 ```bash
-git commit -m "feat(sensor): add air quality index sensor"  # Conventional Commits
-# push to main — release-please opens or updates the release PR automatically
-./script/release-notes           # preview enhanced notes
-./script/release-notes --apply   # write them into the PR body
-# review the PR on GitHub, then merge it when you are ready to release
+# 1. Work on features, commit using Conventional Commits
+git commit -m "feat(sensor): add air quality index sensor"
+
+# 2. Push to main — release-please opens/updates PR automatically
+
+# 3. When ready to release: review the PR on GitHub, then merge it
+```
+
+### With enhanced release notes
+
+```bash
+# 1. Check the current version and open PR
+./script/version
+
+# 2. Generate Copilot-enhanced release notes and review
+./script/release-notes
+
+# 3. If satisfied, update the PR body
+./script/release-notes --apply
+
+# 4. Merge the PR on GitHub
 ```
 
 ## GitHub Repository Setup (One-Time)
 
 > [!NOTE]
-> These settings cannot be stored in the repository. [`script/setup/github`](REPOSITORY_SETUP.md) applies them:
-> workflows may open pull requests, which release-please needs, and the `main` ruleset requires a pull request with
-> `Lint and test`, `Hassfest validation` and `HACS validation` green — so a release PR with failing CI cannot be merged by
-> accident.
+> These settings cannot be stored in the repository — configure them once on GitHub.com.
+
+### Required: GitHub Actions Permissions
+
+In **Settings → Actions → General → Workflow permissions**, set:
+
+- **Read and write permissions** — release-please needs to create PRs and tags
+
+### Recommended: Branch Protection for `main`
+
+In **Settings → Branches → Add branch ruleset** (or classic protection rule for `main`):
+
+- **Require a pull request before merging** — prevents direct pushes
+- **Require status checks to pass** — add `Ruff`, `Hassfest validation`, `HACS validation` as required checks
+- This ensures the release PR can only be merged when CI is green, giving you a reliable safety net
+
+With required status checks in place, a release PR with failing CI simply cannot be merged accidentally.
 
 ### Optional: Protect the Release PR from Accidental Merge
 

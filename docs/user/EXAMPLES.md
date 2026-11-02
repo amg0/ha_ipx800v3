@@ -45,14 +45,18 @@ automation:
 
 ```yaml
 automation:
-  - alias: "Refresh the data every morning"
+  - alias: "Reset filter counter weekly"
     trigger:
       - trigger: time
         at: "03:00:00"
+    condition:
+      - condition: time
+        weekday:
+          - mon
     action:
-      - action: my_ipx800v3.refresh_data
-        data:
-          config_entry_id: 01JG3T2Q6Z9K4V8P0N5R7X2M1A
+      - action: my_ipx800v3.example_service
+        target:
+          entity_id: button.device_name_reset_filter
 ```
 
 ### Use a blueprint for threshold alerts
@@ -156,4 +160,4 @@ hours_to_show: 24
 
 - [Configuration Reference](./CONFIGURATION.md) - All configuration options
 - [Getting Started](./GETTING_STARTED.md) - Installation and initial setup
-- [GitHub Issues](https://github.com/amg0/temp/issues) - Report problems
+- [GitHub Issues](https://github.com/amg0/ha_ipx800v3/issues) - Report problems

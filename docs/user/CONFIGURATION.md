@@ -21,9 +21,10 @@ These options are configured during initial setup via the Home Assistant UI.
 
 #### Update Settings
 
-| Option   | Type   | Required | Default  | Description                                |
-| -------- | ------ | -------- | -------- | ------------------------------------------ |
-| **Name** | string | No       | "Device" | Friendly name for the integration instance |
+| Option              | Type              | Required | Default  | Description                                         |
+| ------------------- | ----------------- | -------- | -------- | --------------------------------------------------- |
+| **Update Interval** | integer (seconds) | No       | 300      | How often to poll for updates (minimum: 30 seconds) |
+| **Name**            | string            | No       | "Device" | Friendly name for the integration instance          |
 
 ### Options Flow (Reconfiguration)
 
@@ -37,7 +38,7 @@ After initial setup, you can modify settings:
 
 **Available options:**
 
-- Filter replacement threshold: the remaining filter life, in percent, below which the filter replacement warning turns on
+- Update interval
 - Name/identifier
 - Connection timeout
 - Additional features (device-specific)
@@ -86,39 +87,44 @@ Disabled entities won't update or consume resources.
 
 The integration provides the following services:
 
-### `my_ipx800v3.refresh_data`
+### `my_ipx800v3.example_service`
 
-Fetch the current device state immediately instead of waiting for the next poll.
+Execute an example service action on the device.
 
 **Service data:**
 
-| Parameter         | Type   | Required | Description                        |
-| ----------------- | ------ | -------- | ---------------------------------- |
-| `config_entry_id` | string | Yes      | The configuration entry to refresh |
-
-The action returns `refreshed_at`, `success` and `value_count`, so an automation can react to
-whether the refresh actually produced data.
+| Parameter   | Type           | Required | Description                                      |
+| ----------- | -------------- | -------- | ------------------------------------------------ |
+| `entity_id` | string or list | No       | Target entity/entities (if omitted, targets all) |
+| `parameter` | string         | Yes      | Service-specific parameter                       |
+| `value`     | integer        | No       | Numeric value for the action                     |
 
 **Example:**
 
 ```yaml
-action: my_ipx800v3.refresh_data
+service: my_ipx800v3.example_service
+target:
+  entity_id: switch.device_name_switch
 data:
-  config_entry_id: 01JG3T2Q6Z9K4V8P0N5R7X2M1A
+  parameter: "setting_name"
+  value: 42
 ```
 
 ### Using Services in Automations
 
 ```yaml
 automation:
-  - alias: "Refresh at sunset"
+  - alias: "Call service at sunset"
     trigger:
       - trigger: sun
         event: sunset
     action:
-      - action: my_ipx800v3.refresh_data
+      - action: my_ipx800v3.example_service
+        target:
+          entity_id: switch.device_name_switch
         data:
-          config_entry_id: 01JG3T2Q6Z9K4V8P0N5R7X2M1A
+          parameter: "mode"
+          value: 1
 ```
 
 ## Advanced Configuration
@@ -145,10 +151,17 @@ If the device is on a different network or behind a firewall:
 
 ### Polling Behavior
 
-The integration polls the device at a fixed interval chosen to suit it; the interval is not configurable. To fetch
-the current state sooner, call the `refresh_data` action, or use Home Assistant's
-[polling options](https://www.home-assistant.io/common-tasks/general/#defining-a-custom-polling-interval) to disable
-polling and drive updates from an automation.
+The integration uses polling to fetch updates:
+
+- **Minimum interval:** 30 seconds (prevents overloading the device)
+- **Recommended interval:** 5 minutes (default)
+- **Longer intervals:** Save resources but reduce responsiveness
+
+Adjust based on your needs:
+
+- Real-time monitoring: 30-60 seconds
+- Regular updates: 5 minutes
+- Slow-changing values: 15-30 minutes
 
 ## Diagnostic Data
 
@@ -233,4 +246,4 @@ If configuration changes aren't persisted:
 
 - [Getting Started](./GETTING_STARTED.md) - Installation and initial setup
 - [Examples](./EXAMPLES.md) - Automation and dashboard examples
-- [GitHub Issues](https://github.com/amg0/temp/issues) - Report problems
+- [GitHub Issues](https://github.com/amg0/ha_ipx800v3/issues) - Report problems
