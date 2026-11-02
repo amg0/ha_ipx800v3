@@ -13,9 +13,9 @@ if TYPE_CHECKING:
 
 
 async def async_create_fix_flow(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     issue_id: str,
-    data: dict[str, str | int | float | None] | None,
+    _data: dict[str, str | int | float | None] | None,
 ) -> RepairsFlow:
     """Create a repair flow based on the issue_id."""
     # Map issue IDs to their corresponding repair flow classes

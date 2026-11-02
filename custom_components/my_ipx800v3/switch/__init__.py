@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     entry: MyIPX800V3ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
@@ -69,7 +69,7 @@ class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
         val = self.coordinator.data.get(self._led_key)
         return val == "1"
 
-    async def async_turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, **_kwargs: Any) -> None:
         """Turn the switch on."""
         # await self.coordinator.config_entry.runtime_data.client.async_set_relay(
         #     self._relay_index,
@@ -85,7 +85,7 @@ class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
                 "Successfully switched ON switch %d for entity '%s' (%s)", self._relay_index, self.name, self._led_key
             )
 
-    async def async_turn_off(self, **kwargs: Any) -> None:
+    async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn the switch off."""
         # await self.coordinator.config_entry.runtime_data.client.async_set_relay(
         #     self._relay_index,

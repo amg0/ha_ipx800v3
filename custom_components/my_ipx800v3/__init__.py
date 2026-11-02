@@ -32,6 +32,7 @@ from homeassistant.components import webhook
 from homeassistant.components.http.server import StaticPathConfig
 from homeassistant.components.lovelace.resources import ResourceStorageCollection
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL, CONF_USERNAME, Platform
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.network import get_url
@@ -72,7 +73,7 @@ def _get_manifest_data(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+async def async_setup(hass: HomeAssistant, _config: dict) -> bool:
     """
     Set up the integration.
 
@@ -86,7 +87,6 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 
     Args:
         hass: The Home Assistant instance.
-        config: The Home Assistant configuration.
 
     Returns:
         True if setup was successful.
@@ -250,14 +250,14 @@ async def async_setup_entry(
     # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
     await coordinator.async_config_entry_first_refresh()
 
-    # Get the URL string, Parse out just the hostname/IP and the port
-    base_url = get_url(hass, allow_external=False)
-    parsed_url = urlparse(base_url)
-    ip_address = parsed_url.hostname
-    # bug reported by Ced20
-    port = parsed_url.port or (443 if parsed_url.scheme == "https" else 80)
-    # Configure the WebHook in the IPX 800
     if entry.data.get(CONF_AUTOMATIC_PUSH, True):
+        base_url = get_url(hass, allow_external=False)
+        parsed_url = urlparse(base_url)
+        ip_address = parsed_url.hostname
+        if ip_address is None:
+            raise HomeAssistantError("Home Assistant internal URL does not include a hostname")
+        # bug reported by Ced20
+        port = parsed_url.port or (443 if parsed_url.scheme == "https" else 80)
         await client.async_config_push(
             internal_addr=ip_address,
             internal_port=port,

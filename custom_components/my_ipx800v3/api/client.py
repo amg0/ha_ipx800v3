@@ -394,11 +394,21 @@ class MyIPX800V3ApiClient:
     # 192.168.0.227 :  8123
     # /api/webhook/1cf08c7f22b665875f0f36c4d7bac2f03ec41e95f217a427dcb4e61686858def
 
-    async def async_config_push(self, internal_addr, internal_port, webhook_url):
+    async def async_config_push(
+        self,
+        internal_addr: str,
+        internal_port: int,
+        webhook_url: str,
+    ) -> str:
         """
         Configures the IPX800 V3 push settings.
 
         Ported from Jeedom to Home Assistant.
+
+        Args:
+            internal_addr: Home Assistant's internal hostname or IP address.
+            internal_port: Home Assistant's internal HTTP or HTTPS port.
+            webhook_url: The path to the Home Assistant webhook.
         """
         LOGGER.debug("config_push called")
 

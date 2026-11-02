@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     entry: MyIPX800V3ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
