@@ -10,7 +10,7 @@ Exception hierarchy:
     MyIPX800V3ApiClientError (base)
     ├── MyIPX800V3ApiClientCommunicationError (network/timeout)
     └── MyIPX800V3ApiClientAuthenticationError (401/403)
-
+.
 Coordinator exception mapping:
     ApiClientAuthenticationError → ConfigEntryAuthFailed (triggers reauth)
     ApiClientCommunicationError → UpdateFailed (auto-retry)
