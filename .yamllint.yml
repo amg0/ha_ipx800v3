@@ -1,5 +1,5 @@
 ---
-# yamllint configuration for my_ipx800v3
+# yamllint configuration
 # Documentation: https://yamllint.readthedocs.io/en/stable/rules.html
 
 extends: default

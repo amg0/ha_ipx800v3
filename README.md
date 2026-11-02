@@ -7,74 +7,60 @@
 [![hacs][hacsbadge]][hacs]
 ![Project Maintenance][maintenance-shield]
 
-[![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
-
- <!--
+<!--
 Uncomment and customize these badges if you want to use them:
+
+[![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 [![Discord][discord-shield]][discord]
 -->
 
 **✨ Develop in the cloud:** Want to contribute or customize this integration? Open it directly in GitHub Codespaces - no local setup required!
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/amg0/ha_ipx800v3?quickstart=1)
-
-![Integration_Image](img/Integration.png)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/amg0/temp?quickstart=1)
 
 ## ✨ Features
 
 - **Easy Setup**: Simple configuration through the UI - no YAML required
-- **Configuration**: hostname, port, refresh rate, options: name import, user/password
-- **Optimized Polling**: only one API call for all entities/sensors and configurable refresh rate
-- **Push mode**: if option requested, it will automatically configure the PUSH url on the IPX. otherwise a manual copy/paste is requested. with Push mode, the IPX will push changes into Home assistant for near real time updates
-- **Diagnostic Info**: returns some device statistics
-- **Reconfigurable**: Change option like the choice to import I/O names from the IPX.
-- **Options Flow**: Adjust polling settings like update interval after setup
-- **Custom Services**: "Reload data": force a refresh; "toggle_input": change a relay state or simulate a change on a digital input contact; "set_counter_value" & "adjust_counter_value": manage your pulse counters.
-- **Custom Lovelace Card**: with editor form support and auto registration installation of the javascript module.
-- **Analog Sensor calculation**: depending on the type of sensor configured on the IPX, the raw value is translated to its meaningful value by the same calculation that IPX is itself using in its Web App.
-- Localization for EN 🇬🇧 and FR 🇫🇷.
+- **Air Quality Monitoring**: Track AQI and PM2.5 levels in real-time
+- **Filter Management**: Monitor filter life and get replacement alerts
+- **Smart Control**: Adjust fan speed, target humidity, and operating modes
+- **Child Lock**: Safety feature to prevent accidental changes
+- **Diagnostic Info**: View filter life, runtime hours, and device statistics
+- **Reconfigurable**: Change credentials anytime without removing the integration
+- **Options Flow**: Choose when the filter replacement warning turns on
+- **Custom Actions**: Advanced control with built-in actions
 
-**This integration will set up the following platforms:**
+**This integration will set up the following platforms.**
 
-| Platform        | Description                     |
-| --------------- | ------------------------------- |
-| `sensor`        | Analog Sensor, Counter          |
-| `binary_sensor` | Digital Input, API connectivity |
-| `switch`        | Output Relays                   |
+| Platform        | Description                                              |
+| --------------- | -------------------------------------------------------- |
+| `sensor`        | Air quality index (AQI), PM2.5, filter life, and runtime |
+| `binary_sensor` | API connection status and filter replacement alert       |
+| `switch`        | Child lock and LED display controls                      |
+| `select`        | Fan speed selection (Low/Medium/High/Auto)               |
+| `number`        | Target humidity setting (30-80%)                         |
+| `button`        | Reset filter timer after replacement                     |
+| `fan`           | Air purifier fan control with speed settings             |
 
-## ✨ Caveats
-
-- I fully leveraging the excellent integration template from: <https://github.com/amg0/ha_ipx800v3> so many thanks to him.
-
-- This is a work in progress, use at your own risk and please accept evolutions.
-
-- HACS integration is not official yet. Just use this repository directly into Home Assistant as a custom repo.
-
-- **for developers**: if you test and develop under DevContainer/Docker, the webhook url displayed is not correct. you will need to replace the IP_ADDRESS by the ip address of your computer instead of the internal docker ip address. this issue is only when using devcontainer. also you will likely need to edit your devcontainer.json to force the port exposure by docker so that the IPX800 can call it. forwardPorts is not enough, runArgs is needed to force docker to map the ports
-
-```json
-  "runArgs": ["-p", "8123:8123"],
-  "forwardPorts": [8123],
-```
-
-Not Yet Implemented Features:
-
-- **HACS**: HACS integration not made yet but it can be installed in HA as a **custom repository link**
+> [!TIP]
+> **Interactive Demo:** The entities are interconnected for demonstration.
+> Press the **Reset Filter Timer** button to see **Filter Life Remaining** update to 100%.
+> Changing the **Air Purifier** fan speed syncs the **Fan Speed** select, and vice versa.
 
 ## 🚀 Quick Start
 
 ### Step 1: Install the Integration
 
-**Prerequisites:** This integration requires [HACS](https://hacs.xyz/) (Home Assistant Community Store) to be installed.
+**Prerequisites:** Home Assistant 2026.11 or newer has the Marketplace built in (**Settings** → **Marketplace**). On older versions, install [HACS](https://hacs.xyz/) (Home Assistant Community Store) first.
 
-Click the button below to open the integration directly in HACS:
+Click the button below to open the integration in the Marketplace, or in HACS on older versions:
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=amg0&repository=ha_ipx800v3&category=integration)
+[![Open your Home Assistant instance and open this repository in the Marketplace.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jpawlowski&repository=temp&category=integration)
 
 Then:
 
 1. Click "Download" to install the integration
-2. **Restart Home Assistant** (required after installation)
+2. With HACS (before Home Assistant 2026.11), **restart Home Assistant**. The Marketplace loads it right away.
 
 > [!NOTE]
 > The My Home Assistant redirect will first take you to a landing page. Click the button there to open your Home Assistant instance.
@@ -82,7 +68,7 @@ Then:
 <details>
 <summary><strong>Manual Installation (Advanced)</strong></summary>
 
-If you prefer not to use HACS:
+If you prefer not to use the Marketplace or HACS:
 
 1. Download the `custom_components/my_ipx800v3/` folder from this repository
 2. Copy it to your Home Assistant's `custom_components/` directory
@@ -92,7 +78,7 @@ If you prefer not to use HACS:
 
 ### Step 2: Add and Configure the Integration
 
-**Important:** You must have installed the integration first (see Step 1) and restarted Home Assistant!
+**Important:** You must have installed the integration first (see Step 1), and restarted Home Assistant if Step 1 asked you to.
 
 #### Option 1: One-Click Setup (Quick)
 
@@ -102,29 +88,11 @@ Click the button below to open the configuration dialog:
 
 Follow the setup wizard:
 
-> [!TIP]
-> if you do not use the option to automatically setup the PUSH url on the IPX, you can look at the webhook url at the top of the parameter dialog box, copy it and go to your IPX Push settings page to configure ip_addr, the port and the webhook path on your IPX800 board.
-> first, save the ip_add and port, then save the API path for the webhook.
-
-> [!TIP]
-> this PUSH api configuration is optional but is recommended for near real time updates. it is preferable to have a not so frequent polling interval and push option configured.
-
-In the config dialog:
-
-1. Enter your ipx board hostname or ip address
-2. Enter your port ( 80 by default )
-3. Chose if you want to import the names from the IPX board or accept default names
-4. Chose if you want to automatically configure the PUSH settings on the IPX board
-5. if your IPX is configured with a user/pwd security, enter a user name and a password
-6. Click Submit
-7. You will be moved to another dialog to enter the polling interval in seconds
-8. Click Submit
-9. if the API is tested successfully, Home Assistant will accept it and propose you to associate the new device with an Area
+1. Enter your username
+2. Enter your password
+3. Click Submit
 
 That's it! The integration will start loading your data.
-
-> [!TIP]
-> **Import Names:** when set, the integration reads and reuse the names configured on the IPX800 board.
 
 #### Option 2: Manual Configuration
 
@@ -141,200 +109,123 @@ After setup, you can adjust options:
 2. Find **My IPX800 V3**
 3. Click **Configure** to adjust:
    - Update interval (how often to refresh data)
-   - it is recommended not to overload the IPX with too frequent update and instead use the push mode to have near real time updates
+   - Enable debug logging
 
-You can use the **Reconfigure** command your board to chose to change the import name options ( it will impact your entities names but not the ID )
-
-#### Configuration Options
-
-##### During Setup
-
-| Name         | Required | Description                                                             |
-| ------------ | -------- | ----------------------------------------------------------------------- |
-| Host         | Yes      | hostname or IP address                                                  |
-| Post         | Yes      | IPX board port number - defaults to 80                                  |
-| Import Names | Yes      | if ON, it will import the names from the IPX to create the entity names |
-| Username     | No       | Your account username                                                   |
-| Password     | No       | Your account password                                                   |
-
-##### After Setup (Options)
-
-You can change these anytime by clicking the **Configure** gear box on the board device:
-
-| Name            | Default | Description               |
-| --------------- | ------- | ------------------------- |
-| Update Interval | 60 s    | How often to refresh data |
+You can also **Reconfigure** your credentials anytime without removing the integration.
 
 ### Step 4: Start Using!
 
-The integration creates several entities for your IPX800 V3 board
+The integration creates several entities for your air purifier:
 
-- **Sensors**: Analog sensors, Counter
-- **Binary Sensors**: Digital Inputs, API connectivity sensor
-- **Switches**: Output relays
+- **Sensors**: Air quality index, PM2.5 levels, filter life remaining, total runtime
+- **Binary Sensors**: API connection status, filter replacement alert
+- **Switches**: Child lock, LED display control
+- **Select**: Fan speed (Low/Medium/High/Auto)
+- **Number**: Target humidity (30-80%)
+- **Button**: Reset filter timer
+- **Fan**: Air purifier fan control
 
 Find all entities in **Settings** → **Devices & Services** → **My IPX800 V3** → click on the device.
 
-## ⚒️ Available Entities
+## Available Entities
 
-### 🌡️ Sensors
+### Sensors
 
-- **Analog**: a sensor per each analog ('analog') input and per each counter ('count') of the IPX. The type of analog sensor is retrieved directly from the IPX configuration on the IPX board and the sensor value calculation from the raw data is made according to the same calculation that the IPX board does itself.
-  - Analog
-  - Volt
-  - TC4012 Sensor
-  - SHT-X3:Light-LS100
-  - SHT-X3:Temp-TC5050
-  - SHT-X3:RH-SH100
-  - TC100 Sensor
-  - X400 CT10A
-  - X400 CT20A
-  - X400 CT50A
-  - X400 CT100A
-  - X200 pH Probe
-  - X200 ORP Probe
+- **Air Quality Index (AQI)**: Real-time air quality measurement (0-500 scale)
+  - Includes air quality category (Good/Moderate/Unhealthy/etc.)
+  - Health recommendations based on current AQI
+- **PM2.5**: Fine particulate matter concentration in µg/m³
+- **Filter Life Remaining** (Diagnostic): Shows remaining filter life as percentage
+- **Total Runtime** (Diagnostic): Total operating hours of the device
 
-### 🚦 Binary Sensors
+### Binary Sensors
 
-- **Digital Input**: one sensor per each digital input ('btn'). Reflects the states of digital inputs on the board.
+- **API Connection**: Shows whether the connection to the API is active
+  - On: Connected and receiving data
+  - Off: Connection lost or authentication failed
+  - Shows update interval and API endpoint information
+- **Filter Replacement Needed**: Alerts when filter needs replacement
+  - Shows estimated days remaining
+  - Turns on when filter life is low
 
-- **API health sensor**: tells if the connection to the IPX is established
+### Switches
 
-### 🎚️ Switches
+- **Child Lock**: Prevents accidental button presses on the device
+  - Icon changes based on state (locked/unlocked)
+- **LED Display**: Enable/disable the LED display
+  - Disabled by default - enable in entity settings if needed
 
-- **Output Relays**: a switch sensor per each output relays ('led') on the IPX. it reflects and enable to control (on/off) the states on the board
+### Select
 
-### ⚙ Entities Attribute
+- **Fan Speed**: Choose from Low, Medium, High, or Auto
+  - Icon changes dynamically based on selected speed
+  - Auto mode adjusts speed based on air quality
+  - Syncs bidirectionally with the Air Purifier fan entity
 
-Entities have special attributes to keep some interesting information handy for scripting
+### Number
 
-- **ipx_key** : the unique key on the IPX board ( led0, btn3, counter1, analog2 ... )
+- **Target Humidity**: Set desired humidity level (30-80%)
+  - Adjustable in 5% increments
+  - Displayed as a slider in the UI
 
-## 🎨 Lovelace Custom Dashboard Card
+### Button
 
-This integration includes a dedicated, high-density Lovelace Custom Card designed specifically for the IPX800 V3. It presents a compact overview of all relays, digital inputs, analog inputs, and counters associated with your board.
+- **Reset Filter Timer**: Reset the filter life to 100%
+  - Press to reset after replacing the filter
+  - Instantly updates the Filter Life Remaining sensor
 
-![Integration_Image](img/customcard.png)
+### Fan
 
-### Features
-
-- **Auto-Discovery**: Automatically finds and groups all entities (switches, binary sensors, analogs, and counters) belonging to the IPX800 V3 integration.
-- **Compact Relays Grid**: Displays output relays in a dense grid with toggle controls and active state highlighting.
-- **Digital Inputs LED indicators**: Shows digital inputs as passive LED dots (green/yellow when active, grey when inactive).
-- **Analog Sensors**: Visualizes temperature, lux, humidity, pH, current, and voltage with matching icons and values.
-- **Counter Adjustments**: Shows pulse counters with step buttons (`-10`, `-1`, `+1`, `+10`) targeting the integration's custom services directly.
-
-### Installation & Registration
-
-- **Automatic**: The integration registers the Lovelace Card automatically at Home Assistant startup. No manual actions are required for storage-controlled dashboards!
-- **Manual (YAML or if auto-registration fails)**:
-  1. Go to **Settings** → **Dashboards**
-  2. Click the three dots (top right) → **Resources**
-  3. Click **"+ Add Resource"**
-  4. Set the URL to `/my_ipx800v3/ipx800v3-card.js` and Resource type to `JavaScript Module`.
-  5. Click **Create** and refresh your browser.
-
-### Card Configuration Options
-
-| Option           | Type          | Default       | Description                                                                     |
-| ---------------- | ------------- | ------------- | ------------------------------------------------------------------------------- |
-| `type`           | string        | **Required**  | Must be `custom:ipx800v3-card`                                                  |
-| `title`          | string        | _Device Name_ | Custom title at the top of the card                                             |
-| `device_filter`  | string / list | _None_        | Substring filter (comma-separated or list) to match entity IDs with OR matching |
-| `device_exclude` | string / list | _None_        | Substring filter (comma-separated or list) to exclude matching entity IDs       |
-| `relay_columns`  | integer       | `4`           | Number of columns for the Relay grid (e.g. 4 or 8)                              |
-| `input_columns`  | integer       | `4`           | Number of columns for the Digital Inputs grid                                   |
-| `analog_columns` | integer       | `2`           | Number of columns for the Analog Inputs grid                                    |
-
-### Basic Card Example
-
-Add this card to your dashboard using the Code Editor:
-
-```yaml
-type: custom:ipx800v3-card
-title: Ground Floor IPX800
-device_filter: my_ipx800v3
-device_exclude: Relay, Input, Analog, Counter
-relay_columns: 4
-input_columns: 4
-```
+- **Air Purifier**: Control the air purifier fan speed and power
+  - Three speed levels: Low, Medium, High
+  - Syncs bidirectionally with the Fan Speed select entity
+  - Turn on/off functionality
 
 ## Custom Services
 
 The integration provides services for advanced automation:
 
+### `my_ipx800v3.example_action`
+
+Perform a custom action (customize this for your needs).
+
+**Example:**
+
+```yaml
+service: my_ipx800v3.example_action
+data:
+  # Add your parameters here
+```
+
 ### `my_ipx800v3.reload_data`
 
 Manually refresh data from the API without waiting for the update interval.
-Takes a target device as parameter (so it applies to the IPX800 board, not the entities).
-You can use developer tools Action page to test with the UI form and device selector, or use the yaml way.
 
 **Example:**
 
 ```yaml
-action: my_ipx800v3.reload_data
-data: {}
-target:
-  device_id: your_device_id like 8723064826443c1c71e4177d2204eae9
-```
-
-### `my_ipx800v3.toggle_input`
-
-Toggle the state of a digital input or output relay on the IPX800 board.
-Takes a target entity as parameter (one or more digital input entities).
-This service allows you to remotely trigger digital inputs connected to the board.
-
-**Example:**
-
-```yaml
-action: my_ipx800v3.toggle_input
-data: {}
-target:
-  entity_id: binary_sensor.your_device_digital_input_name
-```
-
-**Multiple inputs:**
-
-```yaml
-action: my_ipx800v3.toggle_input
-data: {}
-target:
-  entity_id:
-    - binary_sensor.device_digital_input_1
-    - binary_sensor.device_digital_input_2
-```
-
-### `my_ipx800v3.set_counter_value`
-
-sets a value for a counter on the IPX800 board
-target is one or several counter entities for the IPX800 board
-**Example :**
-
-```yaml
-action: my_ipx800v3.set_counter_value
-data:
-  value: 1000
-target:
-  entity_id: sensor.your_device_counter_1
-```
-
-### `my_ipx800v3.adjust_counter_value`
-
-Adjust a counter with a positive or negative increment offset
-works on counter entities for the IPX800 boar
-target is one or several counter entities for the IPX800 board and offset value is in the range (-255 <=> 255).
-
-**Example :**
-
-```yaml
-action: my_ipx800v3.adjust_counter_value
-data:
-  offset: 10
-target:
-  entity_id: sensor.your_device_counter_1
+service: my_ipx800v3.reload_data
 ```
 
 Use these services in automations or scripts for more control.
+
+## Configuration Options
+
+### During Setup
+
+| Name     | Required | Description           |
+| -------- | -------- | --------------------- |
+| Username | Yes      | Your account username |
+| Password | Yes      | Your account password |
+
+### After Setup (Options)
+
+You can change these anytime by clicking **Configure**:
+
+| Name             | Default | Description                |
+| ---------------- | ------- | -------------------------- |
+| Update Interval  | 1 hour  | How often to refresh data  |
+| Enable Debugging | Off     | Enable extra debug logging |
 
 ## Troubleshooting
 
@@ -385,16 +276,6 @@ logger:
 
 ### Common Issues
 
-#### Development inside devcontainer or docker
-
-Home assistant by default will see the internal container IP address instead of the IP address of your host on the LAN
-
-1. in that case you can go into HA system / network settings
-2. uncheck local network automatic setting option
-3. enter the host IP and port that you want to use like : <http://192.168.0.227:8123>
-
-then IPX800 webhook will be correct and your container will be reachable
-
 #### Authentication Errors
 
 If you receive authentication errors:
@@ -411,7 +292,7 @@ If your device is not responding:
 1. Check the **API Connection** binary sensor - it should be "On"
 2. Check your network connection
 3. Verify the device is powered on
-4. Check the integration diagnostics (Settings → Devices & Services → My IPX800 V3→ 3 dots → Download diagnostics)
+4. Check the integration diagnostics (Settings → Devices & Services → My IPX800 V3 → 3 dots → Download diagnostics)
 
 ## 🤝 Contributing
 
@@ -424,7 +305,7 @@ You have two options to set up a development environment — expand below for fu
 
 Both options provide the same fully-configured environment with Home Assistant, Python 3.14, Node.js LTS, and all necessary tools.
 
-### Option 1: GitHub Codespaces ☁️
+### Option 1: GitHub Codespaces (Recommended) ☁️
 
 Develop directly in your browser without installing anything locally!
 
@@ -437,7 +318,7 @@ Develop directly in your browser without installing anything locally!
 > [!TIP]
 > Codespaces gives you **60 hours/month free** for personal accounts. When you start Home Assistant (`script/develop`), port 8123 forwards automatically.
 
-### Option 2: Local Development with VS Code (Recommended) 💻
+### Option 2: Local Development with VS Code 💻
 
 #### Prerequisites
 
@@ -495,6 +376,21 @@ You'll need these installed locally:
 > [!NOTE]
 > Both Codespaces and local DevContainer provide the exact same experience. The only difference is where the container runs (GitHub's cloud vs. your machine).
 
+### Option 3: Without a Dev Container 🧑‍💻
+
+Claude Code, Codex, OpenCode or GitHub Copilot can work on the repository directly — on your machine or in their
+cloud environments. When a session starts, the agent's hook prepares the checkout: in a Claude Code cloud session it
+installs everything by itself, and Codex cloud picks up the install command from `AGENTS.md`. Nothing has to be
+configured in the cloud environment.
+
+On your own machine, install [mise](https://mise.jdx.dev/getting-started.html) for the pinned tool versions (optional,
+the scripts fall back to what is on your `PATH`) and run:
+
+```bash
+script/setup/bootstrap  # Python, the tools from mise.toml, Home Assistant and the test dependencies
+script/develop          # Home Assistant runs at http://localhost:8123
+```
+
 </details>
 
 ---
@@ -502,13 +398,28 @@ You'll need these installed locally:
 ## 🤖 AI-Assisted Development
 
 > [!NOTE]
-> **Transparency Notice:** This integration was developed with assistance from AI coding agents (GitHub Copilot, Claude, and others). While the codebase follows Home Assistant Core standards, AI-generated code may not be reviewed or tested to the same extent as manually written code. AI tools were used to generate boilerplate code, implement standard integration features (config flow, coordinator, entities), ensure code quality and type safety, and write documentation. If you encounter unexpected behavior, please [open an issue](https://github.com/amg0/ha_ipx800v3/issues) on GitHub.
+> **Transparency Notice:** This integration was developed with assistance from AI coding agents (GitHub Copilot,
+> Claude, and others). AI assistance by itself neither guarantees nor rules out software quality. To make an informed
+> installation decision, review the project's stated maturity, known limitations, automated test coverage, real-device
+> testing, and the extent of human review. The maintainer should replace the fields below with accurate project-specific
+> details rather than implying checks that were not performed. See the blueprint's [`AI_POLICY.md`](AI_POLICY.md) for
+> guidance.
+>
+> - **AI assistance:** limited / substantial / predominant
+> - **Human review:** complete / partial / spot-checked / not performed
+> - **Automated tests:** [describe or state "not performed"]
+> - **Real-device or service testing:** [describe or state "not performed"]
+> - **Maturity and known limitations:** [describe]
+>
+> If you encounter unexpected behavior, please [open an issue](../../issues) on GitHub.
+>
+> _This section can be removed or modified if AI assistance was not used in your integration's development._
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details..
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
@@ -516,19 +427,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-[commits-shield]: https://img.shields.io/github/commit-activity/y/amg0/ha_ipx800v3.svg?style=for-the-badge
-[commits]: https://github.com/amg0/ha_ipx800v3/commits/main
-[hacs]: https://github.com/hacs/integration
-[hacsbadge]: https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge
-[license-shield]: https://img.shields.io/github/license/amg0/ha_ipx800v3.svg?style=for-the-badge
+[commits-shield]: https://img.shields.io/github/commit-activity/y/amg0/temp.svg?style=for-the-badge
+[commits]: https://github.com/amg0/temp/commits/main
+[hacs]: https://www.hacs.xyz/docs/marketplace/
+[hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/amg0/temp.svg?style=for-the-badge
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40amg0-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/amg0/ha_ipx800v3.svg?style=for-the-badge
-[releases]: https://github.com/amg0/ha_ipx800v3/releases
-[user_profile]: https://github.com/amg0
-[buymecoffee]: https://buymeacoffee.com/amg0
-[buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/amg0/temp.svg?style=for-the-badge
+[releases]: https://github.com/amg0/temp/releases
+[user_profile]: https://github.com/jpawlowski
 
 <!-- Optional badge definitions - uncomment if needed:
+[buymecoffee]: https://www.buymeacoffee.com/jpawlowski
+[buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
 [discord]: https://discord.gg/Qa5fW2R
 [discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
 -->
