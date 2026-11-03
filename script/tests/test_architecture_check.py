@@ -158,10 +158,15 @@ def test_detects_entity_description_metadata(tmp_path: Path, source: str, expect
         'from unrelated import AuditEntityDescription\nAuditEntityDescription(name="Audit")\n',
         'async def load(api):\n    return await api.async_get_device("device-id")\n',
         'from homeassistant.components.fan import FanEntityDescription\nFanEntityDescription(key="fan", name=None)\n',
+        (
+            "from homeassistant.components.switch import SwitchEntityDescription\n"
+            "name = coordinator.names.get('output1') or f'Relay {relay_index + 1}'\n"
+            "SwitchEntityDescription(key='led0', name=name)\n"
+        ),
     ],
 )
-def test_allows_unrelated_calls_and_documented_name_none(tmp_path: Path, source: str) -> None:
-    """Unrelated same-named APIs and the documented main-entity name remain valid."""
+def test_allows_unrelated_calls_and_dynamic_names(tmp_path: Path, source: str) -> None:
+    """Unrelated APIs, documented name=None, and device-supplied names remain valid."""
     result = _run_checker(tmp_path, source)
 
     assert result.returncode == 0

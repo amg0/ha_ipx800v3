@@ -1,6 +1,6 @@
 """Service actions package for my_ipx800v3."""
 
-from __future__ import annotations
+# from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
@@ -72,18 +72,15 @@ async def async_setup_services(hass: HomeAssistant) -> None:  # noqa: C901
             if not device_entry:
                 continue
 
-            if not any(
-                (entry := hass.config_entries.async_get_entry(entry_id)) and entry.domain == DOMAIN
-                for entry_id in device_entry.config_entries
-            ):
+            entry_id = device_entry.config_entry_id
+            if entry_id is None:
                 continue
 
-            for entry_id in device_entry.config_entries:
-                target_config_entry = hass.config_entries.async_get_entry(entry_id)
-                if target_config_entry and target_config_entry.domain == DOMAIN:
-                    processed_entries[target_config_entry.entry_id] = await async_handle_reload_data(
-                        hass, target_config_entry, call
-                    )
+            target_config_entry = hass.config_entries.async_get_entry(entry_id)
+            if target_config_entry and target_config_entry.domain == DOMAIN:
+                processed_entries[target_config_entry.entry_id] = await async_handle_reload_data(
+                    hass, target_config_entry, call
+                )
 
         if not processed_entries:
             return {}

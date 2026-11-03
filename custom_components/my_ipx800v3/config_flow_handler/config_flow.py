@@ -10,7 +10,7 @@ For more information:
 https://developers.home-assistant.io/docs/config_entries_config_flow_handler
 """
 
-from __future__ import annotations
+# from __future__ import annotations
 
 from typing import Any
 
@@ -63,7 +63,7 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     def async_get_options_flow(
-        _config_entry: config_entries.ConfigEntry,
+        config_entry: config_entries.ConfigEntry,
     ) -> MyIPX800V3OptionsFlow:
         """
         Get the options flow for this handler.

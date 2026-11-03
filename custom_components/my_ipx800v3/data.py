@@ -8,7 +8,7 @@ The MyIPX800V3ConfigEntry type alias is used throughout the integration
 for type-safe access to the config entry's runtime data.
 """
 
-from __future__ import annotations
+# from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import TYPE_CHECKING

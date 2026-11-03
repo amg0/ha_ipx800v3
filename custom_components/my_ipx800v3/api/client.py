@@ -5,7 +5,7 @@ This module provides the API client for communicating with the GCE IPX800 V3.
 It handles fetching state from globalstatus.xml and controlling outputs.
 """
 
-from __future__ import annotations
+# from __future__ import annotations
 
 import asyncio
 import contextlib
@@ -113,14 +113,10 @@ class MyIPX800V3ApiClient:
         """
         url = f"{self._base_url}/globalstatus.xml"
 
-        auth = None
-        if self._username and self._password:
-            auth = aiohttp.BasicAuth(self._username, self._password)
-
         xml_text = await self._api_wrapper(
             method="get",
             url=url,
-            auth=auth,
+            headers=self._auth_headers(),
             is_xml=True,
         )
 
@@ -171,14 +167,10 @@ class MyIPX800V3ApiClient:
         """
         url = f"{self._base_url}/ioname.xml"
 
-        auth = None
-        if self._username and self._password:
-            auth = aiohttp.BasicAuth(self._username, self._password)
-
         xml_text = await self._api_wrapper(
             method="get",
             url=url,
-            auth=auth,
+            headers=self._auth_headers(),
             is_xml=True,
         )
 
@@ -220,14 +212,10 @@ class MyIPX800V3ApiClient:
         url = f"{self._base_url}/preset.htm"
         params = {f"set{param_num}": param_val}
 
-        auth = None
-        if self._username and self._password:
-            auth = aiohttp.BasicAuth(self._username, self._password)
-
         return await self._api_wrapper(
             method="get",
             url=url,
-            auth=auth,
+            headers=self._auth_headers(),
             params=params,
             is_xml=True,
         )
@@ -255,14 +243,10 @@ class MyIPX800V3ApiClient:
         url = f"{self._base_url}/leds.cgi"
         params = {"led": relay_index}
 
-        auth = None
-        if self._username and self._password:
-            auth = aiohttp.BasicAuth(self._username, self._password)
-
         return await self._api_wrapper(
             method="get",
             url=url,
-            auth=auth,
+            headers=self._auth_headers(),
             params=params,
             is_xml=True,
         )
@@ -293,14 +277,10 @@ class MyIPX800V3ApiClient:
         url = f"{self._base_url}/protect/assignio/counter1.htm"
         params = {"num": counter_index, "counter": value}
 
-        auth = None
-        if self._username and self._password:
-            auth = aiohttp.BasicAuth(self._username, self._password)
-
         return await self._api_wrapper(
             method="get",
             url=url,
-            auth=auth,
+            headers=self._auth_headers(),
             params=params,
             is_xml=True,
         )
@@ -334,14 +314,10 @@ class MyIPX800V3ApiClient:
         url = f"{self._base_url}/protect/assignio/counter1.htm"
         params = {"num": counter_index, "inc": amount}
 
-        auth = None
-        if self._username and self._password:
-            auth = aiohttp.BasicAuth(self._username, self._password)
-
         return await self._api_wrapper(
             method="get",
             url=url,
-            auth=auth,
+            headers=self._auth_headers(),
             params=params,
             is_xml=True,
         )
@@ -375,14 +351,10 @@ class MyIPX800V3ApiClient:
         url = f"{self._base_url}/protect/assignio/counter1.htm"
         params = {"num": counter_index, "dec": amount}
 
-        auth = None
-        if self._username and self._password:
-            auth = aiohttp.BasicAuth(self._username, self._password)
-
         return await self._api_wrapper(
             method="get",
             url=url,
-            auth=auth,
+            headers=self._auth_headers(),
             params=params,
             is_xml=True,
         )
@@ -394,39 +366,32 @@ class MyIPX800V3ApiClient:
     # 192.168.0.227 :  8123
     # /api/webhook/1cf08c7f22b665875f0f36c4d7bac2f03ec41e95f217a427dcb4e61686858def
 
-    async def async_config_push(
-        self,
-        internal_addr: str,
-        internal_port: int,
-        webhook_url: str,
-    ) -> str:
+    async def async_config_push(self, internal_addr, internal_port, webhook_url):
         """
         Configures the IPX800 V3 push settings.
 
         Ported from Jeedom to Home Assistant.
-
-        Args:
-            internal_addr: Home Assistant's internal hostname or IP address.
-            internal_port: Home Assistant's internal HTTP or HTTPS port.
-            webhook_url: The path to the Home Assistant webhook.
         """
         LOGGER.debug("config_push called")
 
         # --- FIRST CALL: Configure Server & Port ---
         url = f"{self._base_url}/protect/settings/push3.htm"
         params = {"channel": "65", "server": internal_addr, "port": internal_port, "pass": "user:pass", "enph": 1}
-        auth = None
-        if self._username and self._password:
-            auth = aiohttp.BasicAuth(self._username, self._password)
         LOGGER.debug(f"calling first time {url}")
 
-        await self._api_wrapper(method="get", url=url, auth=auth, params=params, is_xml=True)
+        await self._api_wrapper(method="get", url=url, headers=self._auth_headers(), params=params, is_xml=True)
 
         # --- SECOND CALL: Configure the Callback URL ---
         params = {"channel": "65", "cmd1": webhook_url}
         LOGGER.debug(f"callback url {url} webhook:{webhook_url} params {params}")
 
-        return await self._api_wrapper(method="get", url=url, auth=auth, params=params, is_xml=True)
+        return await self._api_wrapper(method="get", url=url, headers=self._auth_headers(), params=params, is_xml=True)
+
+    def _auth_headers(self) -> dict[str, str] | None:
+        """Return the Basic Authentication header when credentials are configured."""
+        if not self._username or not self._password:
+            return None
+        return {"Authorization": aiohttp.encode_basic_auth(self._username, self._password)}
 
     async def _api_wrapper(
         self,
@@ -436,7 +401,6 @@ class MyIPX800V3ApiClient:
         data: dict | None = None,
         headers: dict | None = None,
         params: dict | None = None,
-        auth: aiohttp.BasicAuth | None = None,
         is_xml: bool = False,
     ) -> Any:
         """
@@ -468,7 +432,6 @@ class MyIPX800V3ApiClient:
                     headers=headers,
                     json=data,
                     params=params,
-                    auth=auth,
                 )
                 _verify_response_or_raise(response)
                 if is_xml:

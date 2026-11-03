@@ -11,15 +11,13 @@ custom_components/my_ipx800v3/
 ├── const.py                 # Constants and configuration keys
 ├── coordinator/             # Data update coordinator package
 │   ├── __init__.py          # Exports MyIPX800V3DataUpdateCoordinator
-│   ├── base.py              # Main coordinator class
-│   ├── data_processing.py   # Data validation and transformation
-│   ├── error_handling.py    # Error recovery and retry logic
-│   └── listeners.py         # Entity callbacks and event listeners
+│   └── base.py              # Main coordinator class
 ├── data.py                  # Data classes and type definitions
 ├── diagnostics.py           # Diagnostic data for troubleshooting
 ├── entity/                  # Base entity package
 │   ├── __init__.py          # Exports MyIPX800V3Entity
 │   └── base.py              # Base entity class implementation
+├── icons.json               # Entity and service action icons
 ├── manifest.json            # Integration metadata
 ├── repairs.py               # Repair flows for fixing issues
 ├── services.yaml            # Service action definitions (legacy filename)
@@ -28,31 +26,28 @@ custom_components/my_ipx800v3/
 │   └── client.py            # API client implementation
 ├── config_flow_handler/     # Config flow implementation
 │   ├── __init__.py          # Package exports
-│   ├── handler.py           # Backward compatibility wrapper
 │   ├── config_flow.py       # Main config flow (user, reauth, reconfigure)
 │   ├── options_flow.py      # Options flow
-│   ├── subentry_flow.py     # Subentry flow template
-│   ├── schemas/             # Voluptuous schemas
+│   ├── schemas/             # probatio schemas
 │   │   ├── __init__.py      # Schema exports
 │   │   ├── config.py        # Config flow schemas
 │   │   └── options.py       # Options flow schemas
 │   └── validators/          # Input validation
 │       ├── __init__.py      # Validator exports
-│       ├── credentials.py   # Credential validation
-│       └── sanitizers.py    # Input sanitizers
-├── entity_utils/            # Entity helper utilities
-│   ├── __init__.py
-│   ├── device_info.py       # Device information helpers
-│   └── state_helpers.py     # State management utilities
+│       └── credentials.py   # Credential validation
 ├── service_actions/         # Service action implementations
-│   ├── __init__.py
-│   └── example_service.py   # Example service action handler
+│   ├── __init__.py          # Registration in async_setup()
+│   └── refresh_data.py      # The refresh_data handler
 ├── translations/            # Localization files
 │   └── en.json              # English translations
 └── <platform>/              # Platform-specific implementations
-    ├── __init__.py          # Platform setup
-    └── <entity>.py          # Individual entity implementations
+    ├── __init__.py          # Platform setup and PARALLEL_UPDATES
+    └── <entity>.py          # Entity descriptions and entity class
 ```
+
+`entity_utils/` and `utils/` are part of the permitted package set in
+[`AGENTS.md`](../../AGENTS.md) but do not exist until something needs them — an entity helper
+used by three or more entity classes, or an integration-wide utility.
 
 ## Core Components
 
@@ -60,35 +55,25 @@ custom_components/my_ipx800v3/
 
 **Directory:** `coordinator/`
 
-The coordinator package manages periodic data fetching from the external API and distributes
-updates to all entities. It is organized as a package with separate modules for different concerns:
-
-**Package structure:**
-
-- `base.py` - Main coordinator class (`MyIPX800V3DataUpdateCoordinator`)
-- `data_processing.py` - Data validation, transformation, and caching utilities
-- `error_handling.py` - Error recovery strategies, retry logic, and circuit breaker patterns
-- `listeners.py` - Entity callbacks, event listeners, and performance monitoring
+The coordinator fetches the device state once per interval and hands the same payload to every
+entity, so no entity ever calls the API itself.
 
 **Core functionality:**
 
-- Configurable update interval (default: 5 minutes)
-- Error handling with exponential backoff
-- Shared data access for all entities
-- Automatic retry on transient failures
-- Data validation and transformation before distribution
-- Performance monitoring and metrics
+- A fixed one-hour update interval (`UPDATE_INTERVAL`), chosen by the developer rather than the user
+- Translation of API client exceptions into `ConfigEntryAuthFailed` and `UpdateFailed`
+- Raising and clearing the repair issue for the deprecated API version
 
 **Key class:** `MyIPX800V3DataUpdateCoordinator` (exported from `coordinator/__init__.py`)
 
+Retries and backoff are **not** implemented here. Home Assistant already retries `UpdateFailed`
+with exponential backoff, and failures are logged by Home Assistant, not by the coordinator.
+
 **Design rationale:**
 
-The coordinator is structured as a package rather than a single file to support future extensibility:
-
-- **Separation of concerns**: Core logic, error handling, and data processing are isolated
-- **Easy extension**: New features (caching, metrics, webhooks) can be added as new modules
-- **Maintainability**: Individual modules stay focused and manageable (<400 lines)
-- **Testability**: Each module can be tested independently
+The coordinator is a package rather than a single file so that transform helpers, a cache or a
+push listener can be added as separate modules once they are needed — each staying under the
+200–400 line guideline and testable on its own.
 
 ### API Client
 
@@ -114,16 +99,18 @@ is organized modularly to support complex flows without becoming monolithic.
 
 - `config_flow.py`: Main flow (user setup, reauth, reconfigure)
 - `options_flow.py`: Options flow for post-setup configuration
-- `schemas/`: Voluptuous schemas for all forms
+- `schemas/`: probatio schemas for all forms
 - `validators/`: Validation logic separated from flow logic
-- `subentry_flow.py`: Template for multi-device/location support
 
 **Supported flows:**
 
 - Initial user setup with validation
-- Options flow for reconfiguration
+- Options flow for the filter replacement threshold
 - Reauthentication flow for expired credentials
-- Ready for subentry flows (multi-device support)
+- Reconfiguration of the stored credentials
+
+A subentry flow goes in `config_flow_handler/subentry_flow.py` when the integration grows to
+need one; see [`ha-config-flow`](../../.agents/skills/ha-config-flow/SKILL.md).
 
 **Key classes:**
 
@@ -183,108 +170,29 @@ Platform entities inherit from both:
 └─────────┘         └─────────┘
 ```
 
-## AI Agent Instructions
+## AI Agent Context
 
-This project includes comprehensive instruction files for AI coding assistants (GitHub Copilot, Claude, etc.) to ensure consistent code generation that follows Home Assistant patterns and project conventions.
+Agent-facing content is layered so each piece is loaded only when it is relevant:
 
-### Instruction File Architecture
+| Layer                             | Loaded                      | Contains                                          |
+| --------------------------------- | --------------------------- | ------------------------------------------------- |
+| `AGENTS.md`                       | always                      | project identity, workflow rules, validation loop |
+| `.agents/instructions/*.md`       | per touched file            | passive style rules for one file type             |
+| `.agents/skills/*/SKILL.md`       | when a task matches         | active procedures for a specific kind of work     |
+| `docs/development/`, `docs/user/` | when a human or agent reads | explanations, decisions, guides — this document   |
 
-**Layered approach:**
+Style rules belong in `.agents/instructions/`, procedures belong in a skill, explanations belong in `docs/`.
 
-1. **`AGENTS.md`** - High-level "survival guide" for all AI agents (project overview, workflow, validation)
-2. **`.github/instructions/*.instructions.md`** - Detailed path-specific patterns (applied based on file being edited)
-3. **`.github/copilot-instructions.md`** - GitHub Copilot-specific workflow guidance
+One copy of each instruction file serves two agents: GitHub Copilot and VS Code match its `applyTo` glob string,
+Claude Code matches the same patterns via `paths` (a YAML list, one pattern per item) and reaches the same files
+through the `.claude/rules/instructions` symlink. Codex and OpenCode have no comparable file-triggered mechanism —
+their nested `AGENTS.md` support keys off the working directory or the files read, not on file-type patterns — so
+they rely on the root `AGENTS.md` plus the pointers each skill carries.
 
-### Available Instruction Files
+The skill catalogue, the symlink layout that makes one directory work for every agent vendor, and the rules for writing
+a new skill are documented in [`.agents/skills/README.md`](../../.agents/skills/README.md).
 
-| File                                           | Applies To                                            | Purpose                                                                        |
-| ---------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `blueprint.python.instructions.md`             | `**/*.py`                                             | Python code style, imports, type hints, async patterns, linting                |
-| `blueprint.yaml.instructions.md`               | `**/*.yaml`, `**/*.yml`                               | YAML formatting, Home Assistant YAML conventions                               |
-| `blueprint.json.instructions.md`               | `**/*.json`                                           | JSON formatting, schema validation, no trailing commas                         |
-| `blueprint.markdown.instructions.md`           | `**/*.md`                                             | Markdown formatting, documentation structure, linting                          |
-| `blueprint.manifest.instructions.md`           | `**/manifest.json`                                    | Integration manifest requirements, quality scale, IoT class                    |
-| `blueprint.configuration_yaml.instructions.md` | `**/configuration.yaml`                               | Home Assistant configuration patterns (deprecated for device integrations)     |
-| `blueprint.config_flow.instructions.md`        | `**/config_flow_handler/**/*.py`, `**/config_flow.py` | Config flow patterns, discovery, reauth, reconfigure, unique IDs               |
-| `blueprint.service_actions.instructions.md`    | `**/service_actions/**/*.py`                          | Service action implementation, registration in `async_setup()`, error handling |
-| `blueprint.services_yaml.instructions.md`      | `**/services.yaml`                                    | Service action definitions, schema, descriptions, examples (legacy filename)   |
-| `blueprint.entities.instructions.md`           | Entity platform files                                 | Entity implementation, EntityDescription, device info, state management        |
-| `blueprint.coordinator.instructions.md`        | `**/coordinator/**/*.py`, `**/api/**/*.py`            | DataUpdateCoordinator patterns, error handling, caching, pull vs push          |
-| `blueprint.api.instructions.md`                | `**/api/**/*.py`, `**/coordinator/**/*.py`            | API client implementation, exceptions, rate limiting, pagination               |
-| `blueprint.diagnostics.instructions.md`        | `**/diagnostics.py`                                   | Diagnostics data collection, `async_redact_data()` for sensitive data          |
-| `blueprint.repairs.instructions.md`            | `**/repairs.py`                                       | Repair flows, issue creation, severity levels, fix flows                       |
-| `blueprint.translations.instructions.md`       | `**/translations/*.json`                              | Translation file structure, placeholders, nested keys                          |
-| `blueprint.tests.instructions.md`              | `tests/**/*.py`                                       | Test patterns, fixtures, mocking, pytest conventions                           |
-
-> [!NOTE]
-> Entity platform files include: `alarm_control_panel/**/*.py`, `binary_sensor/**/*.py`, `button/**/*.py`, `camera/**/*.py`, `climate/**/*.py`, `cover/**/*.py`, `fan/**/*.py`, `humidifier/**/*.py`, `light/**/*.py`, `lock/**/*.py`, `number/**/*.py`, `select/**/*.py`, `sensor/**/*.py`, `siren/**/*.py`, `switch/**/*.py`, `vacuum/**/*.py`, `water_heater/**/*.py`, `entity/**/*.py`, `entity_utils/**/*.py`
-
-### Instruction File Application
-
-**GitHub Copilot:**
-
-Uses frontmatter `applyTo` patterns to automatically apply instructions based on file being edited:
-
-```yaml
----
-applyTo:
-  - "**/*.py"
----
-```
-
-**Other AI Agents:**
-
-Typically read `AGENTS.md` for project overview and may use path-specific instructions when available.
-
-### Benefits
-
-- ✅ **Consistent code quality** - AI generates code that passes validation on first run
-- ✅ **Home Assistant patterns** - Follows Core development standards and best practices
-- ✅ **Context-aware** - File-specific instructions ensure appropriate patterns
-- ✅ **Reduced iteration** - Fewer validation errors and corrections needed
-- ✅ **Knowledge transfer** - Instructions document project conventions and decisions
-
-### Maintaining Instructions
-
-- Keep `AGENTS.md` concise (high-level guidance only, ~30,000 ft view)
-- Put detailed patterns in path-specific `.instructions.md` files
-- Update instructions when patterns change or new conventions emerge
-- Remove outdated rules to prevent bloat
-- Document major architectural decisions in `DECISIONS.md`
-
-### Using GitHub Copilot Coding Agent
-
-**GitHub Copilot Coding Agent** ([github.com/copilot/agents](https://github.com/copilot/agents)) can autonomously initialize new projects from this template and implement features.
-
-**Template Initialization:**
-
-When creating a repository from this template, you can provide a prompt to Copilot Coding Agent that includes:
-
-- Integration domain, title, and repository details
-- Instructions to run `initialize.sh` in unattended mode with `--force` flag
-- The agent will set up the project and create an initialization pull request
-
-**Working with initialized projects:**
-
-Once a project is initialized, Copilot Coding Agent:
-
-- Automatically reads all instruction files (`AGENTS.md`, `.github/copilot-instructions.md`, `.github/instructions/*.instructions.md`)
-- Runs validation scripts (`script/check`) to verify changes
-- Creates pull requests with comprehensive implementations
-- Can iterate based on test failures and linter errors
-
-**Agent-specific instructions (since November 2025):**
-
-Use `excludeAgent` frontmatter to control which agents use specific instructions:
-
-```yaml
----
-applyTo: "**/*.py"
-excludeAgent: "code-review" # Only coding-agent uses this
----
-```
-
-See [`COPILOT_AGENT.md`](./COPILOT_AGENT.md) for detailed usage instructions, example prompts, and troubleshooting.
+For working with AI coding agents in this repository, see [`AI_AGENTS.md`](./AI_AGENTS.md).
 
 ## Key Design Decisions
 
@@ -299,7 +207,7 @@ To add new functionality:
 1. Create directory: `custom_components/my_ipx800v3/<platform>/`
 2. Implement `__init__.py` with `async_setup_entry()`
 3. Create entity classes inheriting from platform base + `MyIPX800V3Entity`
-4. Add platform to `PLATFORMS` in `const.py`
+4. Add platform to `PLATFORMS` in `__init__.py`
 
 ### Adding a New Service Action
 

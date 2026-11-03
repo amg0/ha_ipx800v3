@@ -1,6 +1,6 @@
 """Repairs platform for my_ipx800v3."""
 
-from __future__ import annotations
+# from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
@@ -13,9 +13,9 @@ if TYPE_CHECKING:
 
 
 async def async_create_fix_flow(
-    _hass: HomeAssistant,
+    hass: HomeAssistant,
     issue_id: str,
-    _data: dict[str, str | int | float | None] | None,
+    data: dict[str, str | int | float | None] | None,
 ) -> RepairsFlow:
     """Create a repair flow based on the issue_id."""
     # Map issue IDs to their corresponding repair flow classes

@@ -8,7 +8,7 @@ once it is done. Run the check from the repository root.
 
 **Check:** `grep -q 'jpawlowski/ha-integration-blueprint' .github/workflows/template-sync.yml`
 
-The blueprint moved from `amg0/ha_ipx800v3` to `jpawlowski/ha-integration-blueprint`. GitHub
+The blueprint moved from `jpawlowski/hacs.integration_blueprint` to `jpawlowski/ha-integration-blueprint`. GitHub
 redirects the old name, so the sync keeps working, but only for as long as nobody claims that name again. Replace the
 old name in `source_repo_path` of this repository's `template-sync.yml`; the workflow is excluded from the sync.
 

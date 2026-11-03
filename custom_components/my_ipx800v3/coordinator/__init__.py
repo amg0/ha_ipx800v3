@@ -14,7 +14,7 @@ For more information on coordinators:
 https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
 """
 
-from __future__ import annotations
+# from __future__ import annotations
 
 from .base import MyIPX800V3DataUpdateCoordinator
 

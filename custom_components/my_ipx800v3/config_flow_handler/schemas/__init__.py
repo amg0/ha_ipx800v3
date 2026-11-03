@@ -1,7 +1,7 @@
 """
 Data schemas for config flow forms.
 
-This package contains all Probatio schemas used in config flows, options flows,
+This package contains all voluptuous schemas used in config flows, options flows,
 and subentry flows. Schemas are organized into separate modules for better
 maintainability as the integration grows.
 
@@ -18,7 +18,7 @@ When schemas grow (>300 lines per file), split further:
 All schemas are re-exported from this __init__.py for convenient imports.
 """
 
-from __future__ import annotations
+# from __future__ import annotations
 
 from custom_components.my_ipx800v3.config_flow_handler.schemas.config import (
     get_reauth_schema,

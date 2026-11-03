@@ -54,6 +54,8 @@ filterwarnings = [
     # never from this integration, so they would only mask Core's upstream work.
     "ignore:Setting custom ClientSession\\..* attribute is discouraged:DeprecationWarning",
     "ignore:Inheritance class .* from web\\.Application is discouraged:DeprecationWarning",
+    # Home Assistant Core's HTTP server still assigns a string key to web.Application.
+    "ignore:It is recommended to use web.AppKey instances for keys\\.:aiohttp.web_exceptions.NotAppKeyWarning",
 ]
 
 [tool.coverage.run]

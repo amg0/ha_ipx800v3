@@ -1,6 +1,6 @@
 """Binary sensor platform for my_ipx800v3."""
 
-from __future__ import annotations
+# from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 async def async_setup_entry(
-    _hass: HomeAssistant,
+    hass: HomeAssistant,
     entry: MyIPX800V3ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
