@@ -8,7 +8,7 @@ Repositories created from this blueprint can receive upstream improvements autom
 
 ### How it works
 
-Every Monday at 07:00 UTC, the workflow checks whether the upstream blueprint (`amg0/ha_ipx800v3`) has new commits. If it does, it opens a pull request with the diff against your repository.
+Every Monday at 07:00 UTC, the workflow checks whether the upstream blueprint (`amg0/temp`) has new commits. If it does, it opens a pull request with the diff against your repository.
 
 The workflow is configured to update an existing open template-sync PR when possible (force-push + PR edit) instead of closing it and opening a new one each run.
 
@@ -27,8 +27,7 @@ By default, this blueprint handles that gracefully:
 
 Make sure the target repository has:
 
-- **Settings → Actions → General → Workflow permissions** set to **Read and write permissions**
-- **Allow GitHub Actions to create and approve pull requests** enabled
+- **Allow GitHub Actions to create and approve pull requests** enabled — [`script/setup/github`](REPOSITORY_SETUP.md) sets it, with the default workflow permissions left at read, since every workflow declares its own
 - A repository secret named `TEMPLATE_SYNC_TARGET_PAT` with a PAT that has at least: `contents: write`, `pull requests: write`, `workflows: write`, `metadata: read`
 
 The template sync workflow in this blueprint is already configured to use that secret when present and to fall back to `github.token` otherwise.
@@ -61,6 +60,10 @@ In practice:
 - If you changed a synced file that upstream did not touch, the PR contains nothing for that file — your local changes are unaffected.
 
 Review the PR diff before merging. If it would overwrite something you want to keep, close the PR and manually apply the changes you actually want.
+
+**Versions are the exception.** Where your Dependabot or Renovate raised a pin further than the blueprint has, `-X theirs` would lower it again. After the sync, the workflow runs [`script/template-sync-guard`](../../script/template-sync-guard): it compares every pin the dependency bots raise — the managers and patterns in [`.github/renovate.json`](../../.github/renovate.json), so `mise.toml`, the requirements files, `package.json` (regenerating `package-lock.json` to match), the workflows and the mise version pins — with your default branch, restores each occurrence the sync lowered (a release still replaces its own pre-release), commits the higher version back to the sync branch, and comments the list on the PR. A repository made from the blueprint before this step existed does not get it through the sync, since `template-sync.yml` is excluded; copy the _Keep this repository's newer versions_ step from the blueprint's workflow.
+
+**What the sync cannot bring.** Files in `.templatesyncignore` — `AGENTS.md`, `template-sync.yml`, this documentation — never change through the sync, and some blueprint changes need a step only you can take. Ask your agent to run the `blueprint-update` skill (`/blueprint-update` in Claude Code), or run `script/blueprint-update` yourself: it shows what the blueprint changed in those files since you last went through them, already spelled with your integration's names, and the skill walks through the manual steps one at a time.
 
 ### Modifying synced files locally
 
@@ -104,17 +107,17 @@ Files already excluded by default:
 | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
 | `custom_components/`                                                           | Your integration code                                                    |
 | `tests/`                                                                       | Test files reference your domain (set by `initialize.sh`)                |
-| `pyproject.toml`                                                               | Contains your domain in package metadata                                 |
-| `.yamllint.yml`                                                                | Contains your domain in configuration comment                            |
-| `.pre-commit-config.yaml`                                                      | Contains your domain in file-match patterns                              |
+| `pyproject.toml`                                                               | Your package metadata and tool settings                                  |
 | `requirements.txt`                                                             | Your integration's PyPI dependencies (managed alongside `manifest.json`) |
-| `.vscode/launch.json`, `.vscode/tasks.json`                                    | Contain your domain in debugger/task arguments                           |
+| `.vscode/launch.json`, `.vscode/tasks.json`                                    | Your own debug configurations and tasks                                  |
 | `README.md`, `LICENSE`, etc.                                                   | Replaced by `initialize.sh`                                              |
-| `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md`       | Contain domain-specific references                                       |
+| `AGENTS.md`, `CLAUDE.md`                                                       | Contain domain-specific references                                       |
+| `AI_POLICY.md`, `.github/pull_request_template.md`                             | Project-specific governance and contribution process                     |
 | `.github/CODEOWNERS`, `.github/FUNDING.yml`, `.github/COPILOT_CODING_AGENT.md` | Per-project GitHub settings                                              |
 | `config/`                                                                      | Local HA instance (credentials, test data)                               |
 | `docs/`                                                                        | Your project documentation                                               |
 | `script/hooks/`, `.devcontainer/hooks/`                                        | Your hook scripts                                                        |
+| `.devcontainer/project-feature/`                                               | Your project's dev container additions, such as required extensions      |
 | `.devcontainer/.env`                                                           | Your HA_VERSION pin and DevContainer settings                            |
 | `release-please-config.json`, `.release-please-manifest.json`                  | Release management                                                       |
 | `.github/workflows/template-sync.yml`                                          | Sync workflow itself                                                     |
@@ -122,6 +125,18 @@ Files already excluded by default:
 
 > [!TIP]
 > If a file keeps causing conflicts in every sync PR, add it to `.templatesyncignore` instead of resolving the conflict every week.
+
+### Staying on an older Home Assistant version
+
+The blueprint tracks the current Home Assistant release, so a sync PR can raise the version your tooling targets. Your integration code and `hacs.json` are never synced, which means your minimum Home Assistant version only changes when you change it.
+
+`requirements_test.txt` is synced, and `pytest-homeassistant-custom-component` in it is tied to one Home Assistant release. If your integration stays on an older release, the pinned plugin no longer matches your `hacs.json`, tests fail, and `script/ha-version-sync` reports a mismatch. To keep control of the pin, add the file to `.templatesyncignore` and set the plugin to the release matching your minimum version:
+
+```text
+requirements_test.txt
+```
+
+Moving up later needs the minimum in `hacs.json` and the plugin pin raised together. Since Home Assistant 2026.9, schemas use `probatio` instead of `voluptuous`. Existing `import voluptuous as vol` code keeps working at runtime because Home Assistant aliases it, and only the type checker complains. Switching to `import probatio` is optional, and it is only needed for probatio-only features such as dataclass schemas.
 
 ### Opting out of template sync entirely
 
@@ -132,7 +147,7 @@ rm .github/workflows/template-sync.yml
 rm .templatesyncignore
 ```
 
-That's it. No workflow runs, no PRs, no noise. You can still pull upstream changes manually at any time by comparing your repository against `amg0/ha_ipx800v3`.
+That's it. No workflow runs, no PRs, no noise. You can still pull upstream changes manually at any time by comparing your repository against `amg0/temp`.
 
 ---
 
@@ -164,86 +179,15 @@ script/hooks/          # Hooks for scripts in script/
 
 Both directories are listed in `.templatesyncignore` and are never touched by template sync.
 
-### Naming convention
+### Writing a hook
 
-```text
-script/hooks/<script-name>.<phase>.sh
-```
+The naming convention, the complete table of every available pre/post hook, worked examples, and the rules that apply
+to sourced scripts are maintained as an agent skill reference so that humans and AI agents work from the same source:
 
-- `<script-name>` mirrors the script path relative to `script/` (e.g. `setup/bootstrap` for `script/setup/bootstrap`)
-- `<phase>` is either `pre` or `post`
+📖 [`.agents/skills/blueprint-tooling/references/hooks.md`](../../.agents/skills/blueprint-tooling/references/hooks.md)
 
-For `.devcontainer/` scripts the same pattern applies under `.devcontainer/hooks/`.
-
-### Available hooks
-
-| Script                            | pre hook                                    | post hook                                    |
-| --------------------------------- | ------------------------------------------- | -------------------------------------------- |
-| `script/check`                    | `script/hooks/check.pre.sh`                 | `script/hooks/check.post.sh`                 |
-| `script/clean`                    | `script/hooks/clean.pre.sh`                 | `script/hooks/clean.post.sh`                 |
-| `script/develop`                  | `script/hooks/develop.pre.sh`               | — (long-running process)                     |
-| `script/hassfest`                 | `script/hooks/hassfest.pre.sh`              | `script/hooks/hassfest.post.sh`              |
-| `script/help`                     | `script/hooks/help.pre.sh`                  | `script/hooks/help.post.sh`                  |
-| `script/lint`                     | `script/hooks/lint.pre.sh`                  | `script/hooks/lint.post.sh`                  |
-| `script/lint-check`               | `script/hooks/lint-check.pre.sh`            | `script/hooks/lint-check.post.sh`            |
-| `script/markdown`                 | `script/hooks/markdown.pre.sh`              | `script/hooks/markdown.post.sh`              |
-| `script/markdown-check`           | `script/hooks/markdown-check.pre.sh`        | `script/hooks/markdown-check.post.sh`        |
-| `script/python`                   | `script/hooks/python.pre.sh`                | `script/hooks/python.post.sh`                |
-| `script/python-check`             | `script/hooks/python-check.pre.sh`          | `script/hooks/python-check.post.sh`          |
-| `script/release-notes`            | `script/hooks/release-notes.pre.sh`         | `script/hooks/release-notes.post.sh`         |
-| `script/shell`                    | `script/hooks/shell.pre.sh`                 | `script/hooks/shell.post.sh`                 |
-| `script/shell-check`              | `script/hooks/shell-check.pre.sh`           | `script/hooks/shell-check.post.sh`           |
-| `script/spell`                    | `script/hooks/spell.pre.sh`                 | `script/hooks/spell.post.sh`                 |
-| `script/spell-check`              | `script/hooks/spell-check.pre.sh`           | `script/hooks/spell-check.post.sh`           |
-| `script/test`                     | `script/hooks/test.pre.sh`                  | `script/hooks/test.post.sh`                  |
-| `script/type-check`               | `script/hooks/type-check.pre.sh`            | `script/hooks/type-check.post.sh`            |
-| `script/version`                  | `script/hooks/version.pre.sh`               | `script/hooks/version.post.sh`               |
-| `script/yaml-check`               | `script/hooks/yaml-check.pre.sh`            | `script/hooks/yaml-check.post.sh`            |
-| `script/setup/bootstrap`          | `script/hooks/setup/bootstrap.pre.sh`       | `script/hooks/setup/bootstrap.post.sh`       |
-| `script/setup/reset`              | `script/hooks/setup/reset.pre.sh`           | `script/hooks/setup/reset.post.sh`           |
-| `script/setup/setup`              | — (calls bootstrap)                         | `script/hooks/setup/setup.post.sh`           |
-| `script/setup/sync-hacs`          | `script/hooks/setup/sync-hacs.pre.sh`       | `script/hooks/setup/sync-hacs.post.sh`       |
-| `.devcontainer/on-create.sh`      | `.devcontainer/hooks/on-create.pre.sh`      | `.devcontainer/hooks/on-create.post.sh`      |
-| `.devcontainer/update-content.sh` | `.devcontainer/hooks/update-content.pre.sh` | `.devcontainer/hooks/update-content.post.sh` |
-| `.devcontainer/post-create.sh`    | `.devcontainer/hooks/post-create.pre.sh`    | `.devcontainer/hooks/post-create.post.sh`    |
-| `.devcontainer/post-start.sh`     | `.devcontainer/hooks/post-start.pre.sh`     | `.devcontainer/hooks/post-start.post.sh`     |
-| `.devcontainer/setup-shell.sh`    | `.devcontainer/hooks/setup-shell.pre.sh`    | `.devcontainer/hooks/setup-shell.post.sh`    |
-| `.devcontainer/setup-git.sh`      | `.devcontainer/hooks/setup-git.pre.sh`      | `.devcontainer/hooks/setup-git.post.sh`      |
-| `.devcontainer/post-attach.sh`    | `.devcontainer/hooks/post-attach.pre.sh`    | `.devcontainer/hooks/post-attach.post.sh`    |
-
-### Example: install extra tools after bootstrap
-
-```bash
-# script/hooks/setup/bootstrap.post.sh
-log_header "Installing project-specific tools"
-uv pip install -q some-extra-tool
-log_success "Extra tools installed"
-```
-
-### Example: run a custom linter after lint
-
-```bash
-# script/hooks/lint.post.sh
-if command -v my-custom-linter >/dev/null 2>&1; then
-    log_header "Running custom linter"
-    my-custom-linter custom_components/
-fi
-```
-
-### Example: set environment variables before tests
-
-```bash
-# script/hooks/test.pre.sh
-export MY_DEVICE_API_KEY="test-key-123"
-export MY_DEVICE_HOST="localhost"
-```
-
-### Notes
-
-- Hooks are sourced (not executed), so `exit` would terminate the calling script — use `return` instead
-- Hooks have access to all variables and functions defined in the calling script at that point
-- A missing hook file is silently ignored — no error
-- Hook scripts in `.devcontainer/hooks/` are not validated by `script/shell-check`; write them with care
+Use hooks instead of editing the scripts themselves — the scripts are template-managed and will be overwritten by
+template sync, the hook directories never are.
 
 ---
 
@@ -261,7 +205,7 @@ The devcontainer setup can be customized through environment variable files with
 Values in `.env.local` always win over `.env`. Both files use standard shell variable syntax:
 
 ```bash
-HA_VERSION=2026.4
+HA_VERSION=2026.10
 HA_INSTALL_HACS=1
 APT_UPDATE=0
 ```
@@ -270,11 +214,11 @@ After changing either file, run **Dev Containers: Rebuild Container** to apply.
 
 ### Available variables
 
-| Variable          | Default                  | Description                                                                                                     |
-| ----------------- | ------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| `HA_VERSION`      | version from `hacs.json` | Home Assistant version to install. Accepts `latest`, `beta`, `YEAR.MONTH`, or an exact version like `2026.4.2`. |
-| `HA_INSTALL_HACS` | `1`                      | Set to `0` to skip HACS installation (speeds up first-time setup).                                              |
-| `APT_UPDATE`      | `0`                      | Set to `1` to run `apt-get update && apt-get upgrade` during setup.                                             |
+| Variable          | Default                  | Description                                                                                                                                           |
+| ----------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HA_VERSION`      | version from `hacs.json` | Home Assistant version to install. Accepts `latest`, `beta`, `YEAR.MONTH`, or an exact version like `2026.10.1`.                                      |
+| `HA_INSTALL_HACS` | `1`                      | Set to `0` to skip HACS installation (speeds up first-time setup). Ignored from Home Assistant 2026.11, which ships HACS as the built-in Marketplace. |
+| `APT_UPDATE`      | `0`                      | Set to `1` to run `apt-get update && apt-get upgrade` during setup.                                                                                   |
 
 ### Scope limitations
 
@@ -284,6 +228,26 @@ These files are sourced by lifecycle hook scripts (`onCreateCommand`, `postCreat
 - **`containerEnv`** — set independently by the Docker runtime
 
 For feature versions (Python, Node.js) or Python runtime flags (`PYTHONASYNCIODEBUG` etc.), edit `devcontainer.json` directly.
+
+Scripts under `script/` are also outside this scope — they read the **process** environment and never source these
+files. Variables that steer them belong in a hook script (see [Hook Scripts](#hook-scripts)):
+
+| Variable            | Default                 | Description                                                                                |
+| ------------------- | ----------------------- | ------------------------------------------------------------------------------------------ |
+| `HA_DEV_TOKEN`      | `1`                     | Set to `0` so `script/develop` does not mint the access token `script/ha` uses.            |
+| `HA_DEV_TOKEN_DAYS` | `30`                    | Lifetime of that token in days. It is rotated automatically once fewer than 7 days remain. |
+| `HA_URL`            | `http://127.0.0.1:8123` | Which instance `script/ha` talks to.                                                       |
+| `HA_TOKEN`          | the seeded token file   | Authenticate `script/ha` as someone else, e.g. against a real installation.                |
+
+```bash
+# script/hooks/develop.pre.sh
+export HA_DEV_TOKEN=0
+```
+
+The token itself lives in `config/.storage/dev_access_token` (mode `0600`), next to the Home Assistant auth store it
+belongs to — gitignored, excluded from template sync, and removed by `script/setup/reset` along with that store.
+`script/setup/seed-auth --revoke` removes it and its refresh token; `--force` rotates it. Both require Home Assistant
+to be stopped.
 
 ### Personal overrides
 
@@ -325,6 +289,27 @@ You do **not** need to add `.vscode/settings.json` to `.templatesyncignore`:
 
 If you intentionally want to share a tracked workspace settings file with collaborators, use `settings.default.jsonc` for that purpose.
 
+### Recommended and required extensions
+
+When your project settles on one AI agent ([`AI_AGENTS.md`](AI_AGENTS.md#editor-extensions)), there are two places
+for its extension:
+
+- **Recommend only it** by removing the other agents from `.vscode/extensions.json`. VS Code offers it when the
+  repository is opened, and contributors can decline. The file is template-managed, so add it to
+  `.templatesyncignore` at the same time (see [Modifying synced files locally](#modifying-synced-files-locally)).
+- **Require it** in `.devcontainer/project-feature/devcontainer-feature.json`, under
+  `customizations.vscode.extensions`. The dev container installs it for everyone on the next rebuild, alongside the
+  extensions from `devcontainer.json`. The directory is listed in `.templatesyncignore`, so your entries stay yours;
+  a repository created before it existed adds the entry with `./script/prune-blueprint --apply`.
+
+```json
+"customizations": {
+  "vscode": {
+    "extensions": ["anthropic.claude-code"]
+  }
+}
+```
+
 ---
 
 ## Python Dependencies
@@ -333,13 +318,9 @@ If you intentionally want to share a tracked workspace settings file with collab
 
 `manifest.json → requirements` is the authoritative list — Home Assistant reads it at runtime and installs those packages automatically. `requirements.txt` exists solely as a development mirror of the same packages, so tools like type-checkers, pytest, and your IDE can resolve imports without running Home Assistant.
 
-Both files must be kept in sync by hand. This is by HA design and is unavoidable.
-
-When you add a new dependency to your integration:
-
-1. Add the package to `manifest.json` → `requirements`
-2. Add the same package (with version pin) to `requirements.txt`
-3. Run `script/setup/bootstrap` (or rebuild the container) to install it
+Both files must be kept in sync by hand. This is by HA design and is unavoidable. The step-by-step procedure for adding
+a dependency — including how to decide whether a third-party library is worth taking on — lives in the
+[`blueprint-tooling`](../../.agents/skills/blueprint-tooling/SKILL.md) skill.
 
 `requirements.txt` is **excluded from template sync** because it is integration-specific content.
 

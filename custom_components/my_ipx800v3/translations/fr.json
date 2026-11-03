@@ -1,0 +1,155 @@
+{
+  "services": {
+    "reload_data": {
+      "name": "Recharger les données",
+      "description": "Recharge les données de l'intégration IPX800."
+    },
+    "toggle_input": {
+      "name": "Basculer l'entrée numérique",
+      "description": "Bascule l'état d'un digital input spécifique."
+    },
+    "set_counter_value": {
+      "name": "Définir la valeur du compteur",
+      "description": "Définit une valeur spécifique pour un compteur.",
+      "fields": {
+        "value": {
+          "name": "Valeur",
+          "description": "La nouvelle valeur à affecter au compteur."
+        }
+      }
+    },
+    "adjust_counter_value": {
+      "name": "Ajuster la valeur du compteur",
+      "description": "Ajuste la valeur d'un compteur avec un décalage positif ou négatif.",
+      "fields": {
+        "offset": {
+          "name": "Décalage",
+          "description": "La valeur de décalage à appliquer (positif pour incrémenter, négatif pour décrémenter)."
+        }
+      }
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuration initiale de l'intégration",
+        "description": "Si vous avez besoin d'aide pour la configuration, consultez la [documentation]({documentation_url}).\n\nVeuillez configurer ce **webhook** dans l'écran de configuration push de votre IPX800 : >{webhook_url}",
+        "data": {
+          "username": "Nom d'utilisateur",
+          "password": "Mot de passe",
+          "names_from_ipx": "Copier les noms depuis l'IPX",
+          "automatic_push": "Configuration automatique du PUSH"
+        },
+        "data_description": {
+          "names_from_ipx": "Cochez si vous souhaitez importer les noms d'entités depuis la carte IPX",
+          "automatic_push": "Cochez si vous souhaitez configurer automatiquement les paramètres PUSH sur la carte IPX"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfiguration de l'intégration",
+        "description": "Mettez à jour la configuration de l'interface et reconfigurez les entités. \n\n**Webhook** : >{webhook_url}",
+        "data": {
+          "names_from_ipx": "Copier les noms depuis l'IPX",
+          "automatic_push": "Configuration automatique du PUSH"
+        },
+        "data_description": {
+          "names_from_ipx": "Cochez si vous souhaitez importer les noms d'entités depuis la carte IPX",
+          "automatic_push": "Cochez si vous souhaitez configurer automatiquement les paramètres PUSH sur la carte IPX"
+        }
+      },
+      "options_init": {
+        "title": "Configurer les options de l'intégration",
+        "description": "Personnalisez le fonctionnement de cette intégration.\n\n**Webhook** : >{webhook_url}",
+        "data": {
+          "scan_interval": "Intervalle de sondage (secondes)"
+        },
+        "data_description": {
+          "scan_interval": "Interroger les données de la carte IPX toutes les x secondes"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Réauthentifier l'intégration",
+        "description": "Les identifiants pour {username} ne sont plus valides. Veuillez fournir des identifiants mis à jour pour rétablir l'accès.",
+        "data": {
+          "username": "Nom d'utilisateur",
+          "password": "Mot de passe"
+        }
+      }
+    },
+    "error": {
+      "auth": "Nom d'utilisateur/mot de passe incorrect.",
+      "connection": "Impossible de se connecter au serveur.",
+      "unknown": "Une erreur inconnue est survenue."
+    },
+    "abort": {
+      "already_configured": "Cette entrée est déjà configurée.",
+      "reconfigure_successful": "La configuration a été mise à jour avec succès !"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configurer les options de l'intégration",
+        "description": "Personnalisez le fonctionnement de cette intégration.\n\n**Webhook** : >{webhook_url}",
+        "data": {
+          "scan_interval": "Intervalle de sondage (secondes)"
+        },
+        "data_description": {
+          "scan_interval": "Interroger les données de la carte IPX toutes les x secondes"
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "authentication_failed": {
+      "message": "Authentification échouée lors de la mise à jour des données."
+    },
+    "update_failed": {
+      "message": "Échec de la mise à jour des données depuis le serveur."
+    },
+    "switch_turn_on_failed": {
+      "message": "Échec de l'activation de l'interrupteur."
+    },
+    "switch_turn_off_failed": {
+      "message": "Échec de la désactivation de l'interrupteur."
+    },
+    "number_set_failed": {
+      "message": "Échec de la définition de la valeur cible."
+    }
+  },
+  "entity": {
+    "sensor": {
+    },
+    "binary_sensor": {
+      "api_connectivity": {
+        "name": "Connexion API"
+      }
+    },
+    "switch": {
+    }
+  },
+  "issues": {
+    "deprecated_api_endpoint": {
+      "title": "Point de terminaison API obsolète",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Mettre à jour le point de terminaison API",
+            "description": "Votre appareil utilise la version d'API {api_version} qui est obsolète. Veuillez passer à la v2 pour continuer à être supporté et bénéficier des nouvelles fonctionnalités.\n\nCliquez sur Soumettre pour mettre à jour votre appareil afin d'utiliser le nouveau point de terminaison API (v2). Cela rechargera l'intégration."
+          }
+        }
+      }
+    },
+    "missing_configuration": {
+      "title": "Configuration manquante",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Reconnaître le problème de configuration",
+            "description": "Certaines options de configuration sont manquantes ou invalides. Veuillez reconfigurer l'intégration pour assurer un fonctionnement correct.\n\nCliquez sur Soumettre pour reconnaître ce problème. Il se peut que vous deviez reconfigurer l'intégration si les problèmes persistent."
+          }
+        }
+      }
+    }
+  }
+}

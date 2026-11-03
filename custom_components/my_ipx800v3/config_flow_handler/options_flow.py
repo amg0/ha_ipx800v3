@@ -8,7 +8,7 @@ For more information:
 https://developers.home-assistant.io/docs/config_entries_options_flow_handler
 """
 
-from __future__ import annotations
+# from __future__ import annotations
 
 from typing import Any
 

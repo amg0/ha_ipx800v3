@@ -23,7 +23,7 @@ For more information:
 https://developers.home-assistant.io/docs/config_entries_config_flow_handler
 """
 
-from __future__ import annotations
+# from __future__ import annotations
 
 from .config_flow import MyIPX800V3ConfigFlowHandler
 from .options_flow import MyIPX800V3OptionsFlow

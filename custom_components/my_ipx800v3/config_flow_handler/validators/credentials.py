@@ -9,7 +9,7 @@ When this file grows, consider splitting into:
 - api_auth.py: API authentication methods
 """
 
-from __future__ import annotations
+# from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
