@@ -27,7 +27,7 @@ touch. See [`blueprint-tooling`](.agents/skills/blueprint-tooling/SKILL.md).
 - **Domain:** `my_ipx800v3`
 - **Title:** My IPX800 V3
 - **Class prefix:** `MyIPX800V3`
-- **Repository:** amg0/temp
+- **Repository:** amg0/ha_ipx800v3
 
 **Key directories:**
 

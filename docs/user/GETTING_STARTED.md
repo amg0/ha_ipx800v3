@@ -12,7 +12,7 @@ This guide will help you install and set up the My IPX800 V3 custom integration 
 ### Via the Marketplace (Home Assistant 2026.11 and newer, recommended)
 
 1. Go to **Settings** → **Marketplace**
-2. Add this repository as a custom repository: `https://github.com/amg0/temp`, category "Integration". The Marketplace asks you to connect a GitHub account for repositories outside its catalog.
+2. Add this repository as a custom repository: `https://github.com/amg0/ha_ipx800v3`, category "Integration". The Marketplace asks you to connect a GitHub account for repositories outside its catalog.
 3. Open "My IPX800 V3" and click "Download"
 
 A restart is not needed for the first installation; updates and removal ask for one.
@@ -22,7 +22,7 @@ A restart is not needed for the first installation; updates and removal ask for 
 1. Open HACS in your Home Assistant instance
 2. Click the three dots in the top right corner
 3. Select "Custom repositories"
-4. Add this repository URL: `https://github.com/amg0/temp`
+4. Add this repository URL: `https://github.com/amg0/ha_ipx800v3`
 5. Set category to "Integration"
 6. Click "Add"
 7. Find "My IPX800 V3" in the list and click "Download"
@@ -30,7 +30,7 @@ A restart is not needed for the first installation; updates and removal ask for 
 
 ### Manual Installation
 
-1. Download the latest release from the [releases page](https://github.com/amg0/temp/releases)
+1. Download the latest release from the [releases page](https://github.com/amg0/ha_ipx800v3/releases)
 2. Extract the `my_ipx800v3` folder from the archive
 3. Copy it to `custom_components/my_ipx800v3/` in your Home Assistant configuration directory
 4. Restart Home Assistant
@@ -185,11 +185,11 @@ Add this to `configuration.yaml`, restart, and reproduce the issue. Check logs f
 
 - See [CONFIGURATION.md](./CONFIGURATION.md) for detailed configuration options
 - See [EXAMPLES.md](./EXAMPLES.md) for more automation examples
-- Report issues at [GitHub Issues](https://github.com/amg0/temp/issues)
+- Report issues at [GitHub Issues](https://github.com/amg0/ha_ipx800v3/issues)
 
 ## Support
 
 For help and discussion:
 
-- [GitHub Discussions](https://github.com/amg0/temp/discussions)
+- [GitHub Discussions](https://github.com/amg0/ha_ipx800v3/discussions)
 - [Home Assistant Community Forum](https://community.home-assistant.io/)

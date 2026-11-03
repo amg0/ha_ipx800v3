@@ -233,4 +233,4 @@ If configuration changes aren't persisted:
 
 - [Getting Started](./GETTING_STARTED.md) - Installation and initial setup
 - [Examples](./EXAMPLES.md) - Automation and dashboard examples
-- [GitHub Issues](https://github.com/amg0/temp/issues) - Report problems
+- [GitHub Issues](https://github.com/amg0/ha_ipx800v3/issues) - Report problems
