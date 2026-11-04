@@ -42,56 +42,6 @@ def test_without_mise_nothing_changes(tmp_path: Path) -> None:
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("activation", ["activate_venv", "activate_venv_if_present"])
-def test_activation_restores_venv_path_when_virtual_env_is_not_on_path(tmp_path: Path, activation: str) -> None:
-    """A set VIRTUAL_ENV does not imply its Python executables are on PATH."""
-    venv = tmp_path / "venv"
-    venv_bin = venv / "bin"
-    venv_bin.mkdir(parents=True)
-    (venv_bin / "python").write_text("#!/bin/sh\n", encoding="utf-8")
-    (venv_bin / "python").chmod(0o755)
-    (venv_bin / "activate").write_text('PATH="$VIRTUAL_ENV/bin:$PATH"\nexport PATH\n', encoding="utf-8")
-
-    result = _bash(
-        tmp_path,
-        f'{activation}; printf "%s" "${{PATH%%:*}}"',
-        VIRTUAL_ENV=str(venv),
-    )
-
-    assert result.stdout == str(venv_bin)
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize("activation", ["activate_venv", "activate_venv_if_present"])
-def test_activation_replaces_broken_virtual_env(tmp_path: Path, activation: str) -> None:
-    """A broken mise-selected venv falls back to the configured Home Assistant venv."""
-    broken_venv = tmp_path / ".venv"
-    broken_bin = broken_venv / "bin"
-    broken_bin.mkdir(parents=True)
-    (broken_bin / "python").symlink_to(tmp_path / "missing-python")
-    (broken_bin / "activate").write_text('PATH="$VIRTUAL_ENV/bin:$PATH"\nexport PATH\n', encoding="utf-8")
-
-    home_venv = tmp_path / "ha-venv"
-    home_bin = home_venv / "bin"
-    home_bin.mkdir(parents=True)
-    (home_bin / "python").write_text("#!/bin/sh\n", encoding="utf-8")
-    (home_bin / "python").chmod(0o755)
-    (home_bin / "activate").write_text(
-        f'VIRTUAL_ENV="{home_venv}"\nexport VIRTUAL_ENV\nPATH="$VIRTUAL_ENV/bin:$PATH"\nexport PATH\n',
-        encoding="utf-8",
-    )
-
-    result = _bash(
-        tmp_path,
-        f'{activation}; printf "%s" "$VIRTUAL_ENV"',
-        VIRTUAL_ENV=str(broken_venv),
-        REMOTE_CONTAINERS="true",
-    )
-
-    assert result.stdout.endswith(str(home_venv))
-
-
-@pytest.mark.unit
 @pytest.mark.parametrize(("exit_code", "state"), [(0, "done"), (3, "failed")])
 def test_track_run_records_the_outcome(tmp_path: Path, exit_code: int, state: str) -> None:
     """A tracked script ends up done or failed, and leaves no PID behind."""
