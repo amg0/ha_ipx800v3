@@ -121,16 +121,10 @@ resolve_venv_path() {
 }
 
 # Activate the Home Assistant virtual environment if not already active.
+# Silently skips when VIRTUAL_ENV is already set (e.g. in CI or nested calls).
 activate_venv() {
     if [[ -n ${VIRTUAL_ENV:-} ]]; then
-        if [[ -x "$VIRTUAL_ENV/bin/python" && ":$PATH:" == *":$VIRTUAL_ENV/bin:"* ]]; then
-            return 0
-        fi
-        if [[ -x "$VIRTUAL_ENV/bin/python" && -f "$VIRTUAL_ENV/bin/activate" ]]; then
-            # shellcheck source=/dev/null
-            source "$VIRTUAL_ENV/bin/activate"
-            return 0
-        fi
+        return 0
     fi
     local venv_path
     if ! venv_path="$(resolve_venv_path)"; then
@@ -149,14 +143,7 @@ activate_venv() {
 # Like activate_venv, for a script that needs the venv only for optional extras: carries on without one.
 activate_venv_if_present() {
     if [[ -n ${VIRTUAL_ENV:-} ]]; then
-        if [[ -x "$VIRTUAL_ENV/bin/python" && ":$PATH:" == *":$VIRTUAL_ENV/bin:"* ]]; then
-            return 0
-        fi
-        if [[ -x "$VIRTUAL_ENV/bin/python" && -f "$VIRTUAL_ENV/bin/activate" ]]; then
-            # shellcheck source=/dev/null
-            source "$VIRTUAL_ENV/bin/activate"
-            return 0
-        fi
+        return 0
     fi
     local venv_path
     venv_path="$(resolve_venv_path)" || return 0
