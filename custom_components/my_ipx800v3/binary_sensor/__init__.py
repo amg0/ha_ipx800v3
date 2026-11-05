@@ -37,13 +37,12 @@ async def async_setup_entry(
             ) or f"Input {input_index + 1}"
             entity_description = BinarySensorEntityDescription(
                 key=key,
-                name=name,
-                has_entity_name=False,
             )
             entities.append(
                 MyIPX800V3BinarySensorEntity(
                     coordinator=coordinator,
                     entity_description=entity_description,
+                    name=name,
                 )
             )
 
@@ -60,16 +59,19 @@ async def async_setup_entry(
         async_add_entities(entities)
 
 
-class MyIPX800V3BinarySensorEntity(MyIPX800V3Entity, BinarySensorEntity):
+class MyIPX800V3BinarySensorEntity(BinarySensorEntity, MyIPX800V3Entity):
     """my_ipx800v3 binary_sensor class."""
 
     def __init__(
         self,
         coordinator: Any,
         entity_description: BinarySensorEntityDescription,
+        name: str | None = None,
     ) -> None:
         """Initialize the binary sensor."""
         super().__init__(coordinator, entity_description)
+        if name:
+            self._attr_name = name
         self._btn_key = entity_description.key
 
     @property

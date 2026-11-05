@@ -33,12 +33,13 @@ async def async_setup_entry(
             name = (
                 coordinator.names.get(f"analog{analog_index + 1}") if entry.data.get(CONF_NAME_FROM_IPX) else None
             ) or f"Analog Input {analog_index + 1}"
-            entity_description = SensorEntityDescription(key=key, name=name, has_entity_name=False)
+            entity_description = SensorEntityDescription(key=key)
             entities.append(
                 MyIPX800V3SensorEntity(
                     coordinator=coordinator,
                     entity_description=entity_description,
                     anselect=coordinator.data.get(f"anselect{analog_index}"),
+                    name=name,
                 )
             )
         # Pulse counters
@@ -49,13 +50,12 @@ async def async_setup_entry(
             ) or f"Counter {count_index + 1}"
             entity_description = SensorEntityDescription(
                 key=key,
-                name=name,
-                has_entity_name=False,
             )
             entities.append(
                 MyIPX800V3SensorEntity(
                     coordinator=coordinator,
                     entity_description=entity_description,
+                    name=name,
                 )
             )
 
@@ -63,7 +63,7 @@ async def async_setup_entry(
         async_add_entities(entities)
 
 
-class MyIPX800V3SensorEntity(MyIPX800V3Entity, SensorEntity):
+class MyIPX800V3SensorEntity(SensorEntity, MyIPX800V3Entity):
     """my_ipx800v3 sensor class."""
 
     def __init__(
@@ -71,9 +71,12 @@ class MyIPX800V3SensorEntity(MyIPX800V3Entity, SensorEntity):
         coordinator: Any,
         entity_description: SensorEntityDescription,
         anselect: str | None = None,
+        name: str | None = None,
     ) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator, entity_description)
+        if name:
+            self._attr_name = name
         self._sensor_key = entity_description.key
         self._anselect = anselect
         self._initialize_sensor(self._sensor_key)

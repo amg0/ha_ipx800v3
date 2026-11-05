@@ -34,14 +34,13 @@ async def async_setup_entry(
             ) or f"Relay {relay_index + 1}"
             entity_description = SwitchEntityDescription(
                 key=key,
-                name=name,
-                has_entity_name=False,
             )
             entities.append(
                 MyIPX800V3SwitchEntity(
                     coordinator=coordinator,
                     entity_description=entity_description,
                     relay_index=relay_index,
+                    name=name,
                 )
             )
 
@@ -49,7 +48,7 @@ async def async_setup_entry(
         async_add_entities(entities)
 
 
-class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
+class MyIPX800V3SwitchEntity(SwitchEntity, MyIPX800V3Entity):
     """my_ipx800v3 switch class."""
 
     def __init__(
@@ -57,9 +56,12 @@ class MyIPX800V3SwitchEntity(MyIPX800V3Entity, SwitchEntity):
         coordinator: Any,
         entity_description: SwitchEntityDescription,
         relay_index: int,
+        name: str | None = None,
     ) -> None:
         """Initialize the switch."""
         super().__init__(coordinator, entity_description)
+        if name:
+            self._attr_name = name
         self._relay_index = relay_index
         self._led_key = entity_description.key
 
