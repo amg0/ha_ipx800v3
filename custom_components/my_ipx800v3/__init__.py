@@ -20,7 +20,6 @@ https://developers.home-assistant.io/docs/creating_integration_manifest
 
 import asyncio
 from datetime import timedelta
-import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
@@ -34,10 +33,10 @@ from homeassistant.components.lovelace.resources import ResourceStorageCollectio
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_SCAN_INTERVAL, CONF_USERNAME, Platform
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.network import get_url
+from homeassistant.helpers.network import NoURLAvailableError, get_url
 from homeassistant.loader import async_get_loaded_integration
 
-from .api import MyIPX800V3ApiClient
+from .api import MyIPX800V3ApiClient, MyIPX800V3ApiClientError
 from .const import (
     CONF_AUTOMATIC_PUSH,
     CONF_WEBHOOK_ID,
@@ -66,12 +65,6 @@ PLATFORMS: list[Platform] = [
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
-# small synchronous function to read the file content
-def _get_manifest_data(path: Path) -> dict:
-    """Lecture synchrone du manifest (exécutée dans un thread séparé)."""
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """
     Set up the integration.
@@ -94,31 +87,16 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     For more information:
     https://developers.home-assistant.io/docs/dev_101_services
     """
-
-    # Path(__file__) gives path of this file (__init__.py)
-    # .parent gets the folder containing that file
-    integration_dir = Path(__file__).parent
-    manifest_path = integration_dir / "manifest.json"
-    try:
-        # manifest_path.read_text() ouvre, lit et ferme le fichier automatiquement
-        # On utilise l'executor pour ne pas bloquer l'event loop [4]
-        manifest_data = await hass.async_add_executor_job(_get_manifest_data, manifest_path)
-        version = manifest_data.get("version", "unknown")
-        name = manifest_data.get("name", "noname for Integration")
-
-        LOGGER.info("Starting Integration %s (Version: %s)", name, version)
-    except FileNotFoundError:
-        LOGGER.error("File manifest.json cannot be found in %s", integration_dir)
-    except ValueError as err:
-        LOGGER.error("Erreur lors de la lecture du manifest : %s", err)
+    integration = async_get_loaded_integration(hass, DOMAIN)
+    version = str(integration.version or "0.0.0")
+    LOGGER.info("Starting Integration %s (Version: %s)", integration.name, version)
 
     await async_setup_services(hass)
 
-    # 1. Cibler le dossier contenant le JS sur le disque
     frontend_dir = Path(__file__).parent / "frontend"
-    LOGGER.debug(f"async_setup() - frontend dir {frontend_dir}")
+    LOGGER.debug("async_setup() - frontend dir %s", frontend_dir)
 
-    if frontend_dir.exists():
+    if await hass.async_add_executor_job(frontend_dir.exists):
         # 2. Enregistrer la route HTTP statique avec la nouvelle API asynchrone
         # cache_headers=False est recommandé en développement. À passer à True en production.
         await hass.http.async_register_static_paths(
@@ -225,7 +203,6 @@ async def async_setup_entry(
         always_update=False,  # Only update entities when data actually changes
     )
 
-    # Register the webhook
     webhook_id = entry.data[CONF_WEBHOOK_ID]
     try:
         webhook.async_register(
@@ -235,34 +212,33 @@ async def async_setup_entry(
             webhook_id,
             handle_webhook,
             allowed_methods=("GET", "POST"),
+            local_only=True,
         )
         LOGGER.debug("Registered webhook with url: %s", entry.data[CONF_WEBHOOK_URL])
     except ValueError:
         LOGGER.warning("Le webhook %s est déjà défini !", webhook_id)
 
-    # Store runtime data
     entry.runtime_data = MyIPX800V3Data(
         client=client,
         integration=async_get_loaded_integration(hass, entry.domain),
         coordinator=coordinator,
     )
 
-    # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
     await coordinator.async_config_entry_first_refresh()
 
-    # Get the URL string, Parse out just the hostname/IP and the port
-    base_url = get_url(hass, allow_external=False)
-    parsed_url = urlparse(base_url)
-    ip_address = parsed_url.hostname
-    # bug reported by Ced20
-    port = parsed_url.port or (443 if parsed_url.scheme == "https" else 80)
-    # Configure the WebHook in the IPX 800
     if entry.data.get(CONF_AUTOMATIC_PUSH, True):
-        await client.async_config_push(
-            internal_addr=ip_address,
-            internal_port=port,
-            webhook_url=webhook.async_generate_path(entry.data[CONF_WEBHOOK_ID]),
-        )
+        try:
+            base_url = get_url(hass, allow_external=False)
+            parsed_url = urlparse(base_url)
+            ip_address = parsed_url.hostname
+            port = parsed_url.port or (443 if parsed_url.scheme == "https" else 80)
+            await client.async_config_push(
+                internal_addr=ip_address,
+                internal_port=port,
+                webhook_url=webhook.async_generate_path(entry.data[CONF_WEBHOOK_ID]),
+            )
+        except (NoURLAvailableError, MyIPX800V3ApiClientError) as err:
+            LOGGER.warning("Unable to configure automatic push on IPX800 V3: %s", err)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))

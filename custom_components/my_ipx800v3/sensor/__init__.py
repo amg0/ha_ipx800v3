@@ -7,12 +7,14 @@ from typing import TYPE_CHECKING, Any
 from custom_components.my_ipx800v3.const import CONF_NAME_FROM_IPX
 from custom_components.my_ipx800v3.entity import MyIPX800V3Entity
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorEntityDescription, SensorStateClass
-from homeassistant.const import LIGHT_LUX, PERCENTAGE, UnitOfElectricCurrent, UnitOfTemperature
+from homeassistant.const import LIGHT_LUX, PERCENTAGE, UnitOfElectricCurrent, UnitOfElectricPotential, UnitOfTemperature
 
 if TYPE_CHECKING:
     from custom_components.my_ipx800v3.data import MyIPX800V3ConfigEntry
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+PARALLEL_UPDATES = 0
 
 
 async def async_setup_entry(
@@ -81,10 +83,18 @@ class MyIPX800V3SensorEntity(SensorEntity, MyIPX800V3Entity):
         self._anselect = anselect
         self._initialize_sensor(self._sensor_key)
 
-    def _initialize_sensor(self, sensorkey) -> None:
+    def _initialize_sensor(self, sensorkey: str) -> None:
         """Initialize sensor-specific attributes based on the key."""
+        if sensorkey.startswith("count"):
+            self._attr_state_class = SensorStateClass.TOTAL
+            return
+
         if sensorkey.startswith("analog") and self._anselect is not None:
             match self._anselect:
+                case "1":  # Volt
+                    self._attr_device_class = SensorDeviceClass.VOLTAGE
+                    self._attr_state_class = SensorStateClass.MEASUREMENT
+                    self._attr_native_unit_of_measurement = UnitOfElectricPotential.VOLT
                 case "2" | "4" | "6":  # X400T Temperature Sensor
                     self._attr_device_class = SensorDeviceClass.TEMPERATURE
                     self._attr_state_class = SensorStateClass.MEASUREMENT
@@ -104,11 +114,10 @@ class MyIPX800V3SensorEntity(SensorEntity, MyIPX800V3Entity):
                 case "10":  # X200 pH Probe
                     self._attr_device_class = SensorDeviceClass.PH
                     self._attr_state_class = SensorStateClass.MEASUREMENT
-                    self._attr_native_unit_of_measurement = "Ph"
                 case "11":  # X200 ORP Probe
                     self._attr_device_class = SensorDeviceClass.VOLTAGE
                     self._attr_state_class = SensorStateClass.MEASUREMENT
-                    self._attr_native_unit_of_measurement = "mV"
+                    self._attr_native_unit_of_measurement = UnitOfElectricPotential.MILLIVOLT
 
     @property
     def native_value(self) -> float | int | str | None:

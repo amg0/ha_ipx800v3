@@ -366,7 +366,12 @@ class MyIPX800V3ApiClient:
     # 192.168.0.227 :  8123
     # /api/webhook/1cf08c7f22b665875f0f36c4d7bac2f03ec41e95f217a427dcb4e61686858def
 
-    async def async_config_push(self, internal_addr, internal_port, webhook_url):
+    async def async_config_push(
+        self,
+        internal_addr: str | None,
+        internal_port: int,
+        webhook_url: str,
+    ) -> Any:
         """
         Configures the IPX800 V3 push settings.
 
@@ -374,16 +379,14 @@ class MyIPX800V3ApiClient:
         """
         LOGGER.debug("config_push called")
 
-        # --- FIRST CALL: Configure Server & Port ---
         url = f"{self._base_url}/protect/settings/push3.htm"
         params = {"channel": "65", "server": internal_addr, "port": internal_port, "pass": "user:pass", "enph": 1}
-        LOGGER.debug(f"calling first time {url}")
+        LOGGER.debug("calling first time %s", url)
 
         await self._api_wrapper(method="get", url=url, headers=self._auth_headers(), params=params, is_xml=True)
 
-        # --- SECOND CALL: Configure the Callback URL ---
         params = {"channel": "65", "cmd1": webhook_url}
-        LOGGER.debug(f"callback url {url} webhook:{webhook_url} params {params}")
+        LOGGER.debug("callback url %s webhook:%s params %s", url, webhook_url, params)
 
         return await self._api_wrapper(method="get", url=url, headers=self._auth_headers(), params=params, is_xml=True)
 
@@ -435,11 +438,9 @@ class MyIPX800V3ApiClient:
                 )
                 _verify_response_or_raise(response)
                 if is_xml:
-                    # strdebug = await response.text()
-                    # LOGGER.debug(f"response.text() : {strdebug}")
                     return await response.text()
                 strdebug = await response.json()
-                LOGGER.debug(f"response.json() : {strdebug}")
+                LOGGER.debug("response.json() : %s", strdebug)
                 return strdebug
 
         except TimeoutError as exception:

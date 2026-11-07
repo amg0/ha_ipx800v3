@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from custom_components.my_ipx800v3.api.client import MyIPX800V3ApiClientError
 from custom_components.my_ipx800v3.const import LOGGER
-from homeassistant.exceptions import ServiceValidationError
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 
 if TYPE_CHECKING:
     from custom_components.my_ipx800v3.data import MyIPX800V3ConfigEntry
@@ -49,8 +49,7 @@ async def async_handle_set_counter_value(
             value,
         )
     except MyIPX800V3ApiClientError as err:
-        LOGGER.error("Error setting counter value: %s", err)
-        raise ServiceValidationError(f"Error setting counter value: {err}") from err
+        raise HomeAssistantError(f"Error setting counter value: {err}") from err
 
 
 async def async_handle_change_counter_value(
@@ -97,5 +96,4 @@ async def async_handle_change_counter_value(
             offset,
         )
     except MyIPX800V3ApiClientError as err:
-        LOGGER.error("Error adjusting counter value: %s", err)
-        raise ServiceValidationError(f"Error adjusting counter value: {err}") from err
+        raise HomeAssistantError(f"Error adjusting counter value: {err}") from err

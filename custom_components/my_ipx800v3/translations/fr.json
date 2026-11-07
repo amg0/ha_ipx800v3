@@ -35,24 +35,16 @@
         "title": "Configuration initiale de l'intégration",
         "description": "Si vous avez besoin d'aide pour la configuration, consultez la [documentation]({documentation_url}).\n\nVeuillez configurer ce **webhook** dans l'écran de configuration push de votre IPX800 : >{webhook_url}",
         "data": {
+          "host": "Hôte",
+          "port": "Port",
           "username": "Nom d'utilisateur",
           "password": "Mot de passe",
           "names_from_ipx": "Copier les noms depuis l'IPX",
           "automatic_push": "Configuration automatique du PUSH"
         },
         "data_description": {
-          "names_from_ipx": "Cochez si vous souhaitez importer les noms d'entités depuis la carte IPX",
-          "automatic_push": "Cochez si vous souhaitez configurer automatiquement les paramètres PUSH sur la carte IPX"
-        }
-      },
-      "reconfigure": {
-        "title": "Reconfiguration de l'intégration",
-        "description": "Mettez à jour la configuration de l'interface et reconfigurez les entités. \n\n**Webhook** : >{webhook_url}",
-        "data": {
-          "names_from_ipx": "Copier les noms depuis l'IPX",
-          "automatic_push": "Configuration automatique du PUSH"
-        },
-        "data_description": {
+          "host": "Adresse IP ou nom d'hôte de la carte IPX800 V3",
+          "port": "Port HTTP de la carte IPX800 V3",
           "names_from_ipx": "Cochez si vous souhaitez importer les noms d'entités depuis la carte IPX",
           "automatic_push": "Cochez si vous souhaitez configurer automatiquement les paramètres PUSH sur la carte IPX"
         }
@@ -65,6 +57,18 @@
         },
         "data_description": {
           "scan_interval": "Interroger les données de la carte IPX toutes les x secondes"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfiguration de l'intégration",
+        "description": "Mettez à jour la configuration de l'interface et reconfigurez les entités. \n\n**Webhook** : >{webhook_url}",
+        "data": {
+          "names_from_ipx": "Copier les noms depuis l'IPX",
+          "automatic_push": "Configuration automatique du PUSH"
+        },
+        "data_description": {
+          "names_from_ipx": "Cochez si vous souhaitez importer les noms d'entités depuis la carte IPX",
+          "automatic_push": "Cochez si vous souhaitez configurer automatiquement les paramètres PUSH sur la carte IPX"
         }
       },
       "reauth_confirm": {
@@ -83,7 +87,9 @@
     },
     "abort": {
       "already_configured": "Cette entrée est déjà configurée.",
-      "reconfigure_successful": "La configuration a été mise à jour avec succès !"
+      "reauth_successful": "La réauthentification a réussi.",
+      "reconfigure_successful": "La configuration a été mise à jour avec succès !",
+      "unique_id_mismatch": "L'adresse MAC de l'appareil ne correspond pas à l'entrée configurée."
     }
   },
   "options": {

@@ -19,6 +19,7 @@ from slugify import slugify
 from custom_components.my_ipx800v3.config_flow_handler.options_flow import MyIPX800V3OptionsFlow
 from custom_components.my_ipx800v3.config_flow_handler.schemas import (
     get_options_schema,
+    get_reauth_schema,
     get_reconfigure_schema,
     get_user_schema,
 )
@@ -178,8 +179,8 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     self.hass,
                     host=host,
                     port=port,
-                    username=user_input.get(CONF_USERNAME, ""),
-                    password=user_input.get(CONF_PASSWORD, ""),
+                    username=user_input.get(CONF_USERNAME, entry.data.get(CONF_USERNAME, "")),
+                    password=user_input.get(CONF_PASSWORD, entry.data.get(CONF_PASSWORD, "")),
                 )
             except Exception as exception:  # noqa: BLE001
                 errors["base"] = self._map_exception_to_error(exception)
@@ -188,10 +189,6 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 await self.async_set_unique_id(uniqueid)
                 self._abort_if_unique_id_mismatch()
                 return self.async_update_reload_and_abort(entry, data={**entry.data, **user_input})
-                # return self.async_update_reload_and_abort(
-                #     entry,
-                #     data={**entry.data, **user_input},
-                # )
 
         webhook_url = entry.data[CONF_WEBHOOK_URL]
         return self.async_show_form(
@@ -201,72 +198,72 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             description_placeholders={"webhook_url": webhook_url},
         )
 
-    def _build_unique_id(self, data):
+    def _build_unique_id(self, data: dict[str, str]) -> str:
         return slugify(f"{data['config_mac']}")
 
-    # async def async_step_reauth(
-    #     self,
-    #     entry_data: dict[str, Any] | None = None,
-    # ) -> config_entries.ConfigFlowResult:
-    #     """
-    #     Handle reauthentication when credentials are invalid.
+    async def async_step_reauth(
+        self,
+        entry_data: dict[str, Any] | None = None,
+    ) -> config_entries.ConfigFlowResult:
+        """
+        Handle reauthentication when credentials are invalid.
 
-    #     This flow is automatically triggered when the coordinator catches
-    #     an authentication error (ConfigEntryAuthFailed).
+        This flow is automatically triggered when the coordinator catches
+        an authentication error (ConfigEntryAuthFailed).
 
-    #     Args:
-    #         entry_data: The existing entry data (unused, per convention).
+        Args:
+            entry_data: The existing entry data (unused, per convention).
 
-    #     Returns:
-    #         The result of the reauth_confirm step.
+        Returns:
+            The result of the reauth_confirm step.
 
-    #     """
-    #     return await self.async_step_reauth_confirm()
+        """
+        return await self.async_step_reauth_confirm()
 
-    # async def async_step_reauth_confirm(
-    #     self,
-    #     user_input: dict[str, Any] | None = None,
-    # ) -> config_entries.ConfigFlowResult:
-    #     """
-    #     Handle reauthentication confirmation.
+    async def async_step_reauth_confirm(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> config_entries.ConfigFlowResult:
+        """
+        Handle reauthentication confirmation.
 
-    #     Shows the reauthentication form and processes updated credentials.
+        Shows the reauthentication form and processes updated credentials.
 
-    #     Args:
-    #         user_input: The user input with updated credentials, or None for initial display.
+        Args:
+            user_input: The user input with updated credentials, or None for initial display.
 
-    #     Returns:
-    #         The config flow result, either showing a form or updating the entry.
+        Returns:
+            The config flow result, either showing a form or updating the entry.
 
-    #     """
-    #     entry = self._get_reauth_entry()
-    #     errors: dict[str, str] = {}
+        """
+        entry = self._get_reauth_entry()
+        errors: dict[str, str] = {}
 
-    #     if user_input is not None:
-    #         try:
-    #             await validate_credentials(
-    #                 self.hass,
-    #                 host=entry.data[CONF_HOST],
-    #                 port=int(entry.data[CONF_PORT]),
-    #                 username=user_input.get(CONF_USERNAME, ""),
-    #                 password=user_input.get(CONF_PASSWORD, ""),
-    #             )
-    #         except Exception as exception:
-    #             errors["base"] = self._map_exception_to_error(exception)
-    #         else:
-    #             return self.async_update_reload_and_abort(
-    #                 entry,
-    #                 data={**entry.data, **user_input},
-    #             )
+        if user_input is not None:
+            try:
+                await validate_credentials(
+                    self.hass,
+                    host=entry.data[CONF_HOST],
+                    port=int(entry.data[CONF_PORT]),
+                    username=user_input.get(CONF_USERNAME, ""),
+                    password=user_input.get(CONF_PASSWORD, ""),
+                )
+            except Exception as exception:  # noqa: BLE001
+                errors["base"] = self._map_exception_to_error(exception)
+            else:
+                return self.async_update_reload_and_abort(
+                    entry,
+                    data={**entry.data, **user_input},
+                )
 
-    #     return self.async_show_form(
-    #         step_id="reauth_confirm",
-    #         data_schema=get_reauth_schema(entry.data.get(CONF_USERNAME, "")),
-    #         errors=errors,
-    #         description_placeholders={
-    #             "username": entry.data.get(CONF_USERNAME, ""),
-    #         },
-    #     )
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=get_reauth_schema(entry.data.get(CONF_USERNAME, "")),
+            errors=errors,
+            description_placeholders={
+                "username": entry.data.get(CONF_USERNAME, ""),
+            },
+        )
 
     def _map_exception_to_error(self, exception: Exception) -> str:
         """

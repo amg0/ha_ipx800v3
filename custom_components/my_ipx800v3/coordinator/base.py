@@ -71,16 +71,11 @@ class MyIPX800V3DataUpdateCoordinator(DataUpdateCoordinator):
             # return await self.config_entry.runtime_data.client.async_get_data(listening_contexts)
             self.names = await self.config_entry.runtime_data.client.async_get_names()
         except MyIPX800V3ApiClientAuthenticationError as exception:
-            LOGGER.warning("Authentication error - %s", exception)
             raise ConfigEntryAuthFailed(
                 translation_domain="my_ipx800v3",
                 translation_key="authentication_failed",
             ) from exception
         except MyIPX800V3ApiClientError as exception:
-            LOGGER.exception("Error communicating with API")
-            # If the API provides rate limit information, you can honor it:
-            # if hasattr(exception, 'retry_after'):
-            #     raise UpdateFailed(retry_after=exception.retry_after) from exception
             raise UpdateFailed(
                 translation_domain="my_ipx800v3",
                 translation_key="update_failed",
@@ -135,13 +130,11 @@ class MyIPX800V3DataUpdateCoordinator(DataUpdateCoordinator):
             return transform_api_data(raw_data)
 
         except MyIPX800V3ApiClientAuthenticationError as exception:
-            LOGGER.warning("Authentication error - %s", exception)
             raise ConfigEntryAuthFailed(
                 translation_domain="my_ipx800v3",
                 translation_key="authentication_failed",
             ) from exception
         except MyIPX800V3ApiClientError as exception:
-            LOGGER.exception("Error communicating with API")
             retry_after: float | None = None
             if self.update_interval:
                 retry_after = max(self.update_interval.total_seconds() / 2, 5.0)

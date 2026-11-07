@@ -8,6 +8,7 @@ https://developers.home-assistant.io/docs/core/integration_diagnostics
 
 from typing import TYPE_CHECKING, Any
 
+from custom_components.my_ipx800v3.const import CONF_WEBHOOK_ID, CONF_WEBHOOK_URL
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers.redact import async_redact_data
@@ -21,10 +22,13 @@ if TYPE_CHECKING:
 TO_REDACT = {
     CONF_PASSWORD,
     CONF_USERNAME,
+    CONF_WEBHOOK_ID,
+    CONF_WEBHOOK_URL,
     "username",
     "password",
     "api_key",
     "token",
+    "config_mac",
 }
 
 
@@ -109,16 +113,12 @@ async def async_get_config_entry_diagnostics(
         "last_exception_type": (type(coordinator.last_exception).__name__ if coordinator.last_exception else None),
     }
 
-    # Current data sample (sanitized)
     data_sample = {}
-    if coordinator.data:
-        if isinstance(coordinator.data, dict):
-            # Include sample data but sanitize sensitive info
-            data_sample = {
-                "title": coordinator.data.get("title"),
-                "body_length": len(coordinator.data.get("body", "")) if coordinator.data.get("body") else 0,
-                "has_user_id": "userId" in coordinator.data,
-            }
+    if coordinator.data and isinstance(coordinator.data, dict):
+        data_sample = {
+            "version": coordinator.data.get("version"),
+            "data": async_redact_data(coordinator.data, TO_REDACT),
+        }
 
     return {
         "entry": entry_info,

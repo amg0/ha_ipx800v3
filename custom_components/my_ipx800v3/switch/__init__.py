@@ -4,14 +4,18 @@
 
 from typing import TYPE_CHECKING, Any
 
-from custom_components.my_ipx800v3.const import CONF_NAME_FROM_IPX, LOGGER
+from custom_components.my_ipx800v3.api import MyIPX800V3ApiClientError
+from custom_components.my_ipx800v3.const import CONF_NAME_FROM_IPX, DOMAIN, LOGGER
 from custom_components.my_ipx800v3.entity import MyIPX800V3Entity
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
+from homeassistant.exceptions import HomeAssistantError
 
 if TYPE_CHECKING:
     from custom_components.my_ipx800v3.data import MyIPX800V3ConfigEntry
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+PARALLEL_UPDATES = 1
 
 
 async def async_setup_entry(
@@ -73,14 +77,14 @@ class MyIPX800V3SwitchEntity(SwitchEntity, MyIPX800V3Entity):
 
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the switch on."""
-        # await self.coordinator.config_entry.runtime_data.client.async_set_relay(
-        #     self._relay_index,
-        #     True,
-        # )
         if not self.is_on:
-            # toggle is preferable to switch because toggle takes into account the IPX configuration Ta Tb
-            await self.coordinator.config_entry.runtime_data.client.async_toggle_relay(self._relay_index)
-            # Optimistically update and write state
+            try:
+                await self.coordinator.config_entry.runtime_data.client.async_toggle_relay(self._relay_index)
+            except MyIPX800V3ApiClientError as err:
+                raise HomeAssistantError(
+                    translation_domain=DOMAIN,
+                    translation_key="switch_turn_on_failed",
+                ) from err
             self.coordinator.data[self._led_key] = "1"
             self.async_write_ha_state()
             LOGGER.info(
@@ -89,14 +93,14 @@ class MyIPX800V3SwitchEntity(SwitchEntity, MyIPX800V3Entity):
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the switch off."""
-        # await self.coordinator.config_entry.runtime_data.client.async_set_relay(
-        #     self._relay_index,
-        #     False,
-        # )
         if self.is_on:
-            # toggle is preferable to switch because toggle takes into account the IPX configuration Ta Tb
-            await self.coordinator.config_entry.runtime_data.client.async_toggle_relay(self._relay_index)
-            # Optimistically update and write state
+            try:
+                await self.coordinator.config_entry.runtime_data.client.async_toggle_relay(self._relay_index)
+            except MyIPX800V3ApiClientError as err:
+                raise HomeAssistantError(
+                    translation_domain=DOMAIN,
+                    translation_key="switch_turn_off_failed",
+                ) from err
             self.coordinator.data[self._led_key] = "0"
             self.async_write_ha_state()
             LOGGER.info(
