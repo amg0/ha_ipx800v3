@@ -4,7 +4,7 @@ Validate source-level architecture guardrails from AGENTS.md.
 The checks focus on idiomatic source patterns that can be identified conservatively without
 importing the integration or requiring Home Assistant to start:
 
-- EntityDescription constructors and subclasses do not hardcode ``name=`` or ``icon=`` values.
+- EntityDescription constructors and subclasses do not set ``name=`` or ``icon=`` directly.
 - The integration does not ship frozen device automation platform files.
 - DeviceRegistry instances use entry-scoped device lookups instead of ``async_get_device()``.
 
@@ -321,14 +321,11 @@ def _metadata_items(call: ast.Call) -> list[tuple[str, ast.expr]]:
 
 
 def _metadata_finding(file: Path, line: int, description: str, field: str, value: ast.expr) -> Finding | None:
-    """Return a finding for hardcoded metadata, allowing dynamic and absent entity names."""
+    """Return a finding for one forbidden metadata field, except literal ``name=None``."""
     if field not in DESCRIPTION_METADATA_FIELDS:
         return None
-    if field == "name":
-        if not isinstance(value, ast.Constant):
-            return None
-        if value.value is None or not isinstance(value.value, str):
-            return None
+    if field == "name" and isinstance(value, ast.Constant) and value.value is None:
+        return None
     hint = "translation_key and icons.json" if field == "icon" else "translation_key"
     return Finding(str(file), line, f"{description} sets `{field}=` directly — use {hint} instead")
 
