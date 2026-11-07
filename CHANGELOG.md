@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.6.1](https://github.com/amg0/ha_ipx800v3/compare/v0.6.0...v0.6.1) (2026-11-07)
+
+
+### Features
+
+* fix dynamic name for binary_sensor, sensor and switch ([a5e892a](https://github.com/amg0/ha_ipx800v3/commit/a5e892a89b96732703349ec004f16548ac228fd3))
+
+
+### Bug Fixes
+
+* change repository name ([ffd4462](https://github.com/amg0/ha_ipx800v3/commit/ffd446204826ed47346b2c53e358bf610be3c4dd))
+* localize Lovelace card labels, guard custom element registration, and update README" ([03e484d](https://github.com/amg0/ha_ipx800v3/commit/03e484dfcd1178da7eb490087d223d19225a3645))
+* resolve input toggle indexing, blocking I/O, and config flow issues ([9f2a6d0](https://github.com/amg0/ha_ipx800v3/commit/9f2a6d0a5f45d3116bb5966cc3d65833ed588e24))
+* update repository reference ([0d15845](https://github.com/amg0/ha_ipx800v3/commit/0d158456a77ea971eeea1dc0adfb271eecaafd6a))
+
 ## [0.6.0](https://github.com/amg0/ha_ipx800v3/compare/v0.1.1...v0.6.0) (2026-11-03)
 
 
