@@ -27,7 +27,15 @@ const editorTranslations = {
     device_exclude: "Device Exclude (comma-separated, e.g., light, temperature)",
     relay_columns: "Relay Columns",
     input_columns: "Input Columns",
-    analog_columns: "Analog Columns"
+    analog_columns: "Analog Columns",
+    section_relays: "Relays (Outputs)",
+    section_inputs: "Digital Inputs",
+    section_analogs: "Analog Inputs",
+    section_counters: "Counters",
+    status_online: "Online",
+    status_offline: "Offline",
+    status_unknown: "Unknown",
+    empty_entities: "No IPX800 entities found."
   },
   fr: {
     title: "Titre de la carte (Optionnel)",
@@ -35,7 +43,15 @@ const editorTranslations = {
     device_exclude: "Exclusion d'appareil (séparé par des virgules, Ex: light, temperature)",
     relay_columns: "Colonnes Relais",
     input_columns: "Colonnes Entrées",
-    analog_columns: "Colonnes Analogiques"
+    analog_columns: "Colonnes Analogiques",
+    section_relays: "Relais (Sorties)",
+    section_inputs: "Entrées numériques",
+    section_analogs: "Entrées analogiques",
+    section_counters: "Compteurs",
+    status_online: "En ligne",
+    status_offline: "Hors ligne",
+    status_unknown: "Inconnu",
+    empty_entities: "Aucune entité IPX800 trouvée."
   }
 };
 
@@ -355,15 +371,18 @@ class IPX800V3Card extends LitElement {
     const counters = entities.filter(e => e.entity_id && e.entity_id.startsWith('sensor.') && e.attributes?.ipx_key && String(e.attributes.ipx_key).startsWith('count'));
     counters.sort((a, b) => this._sortIpxKeys(a.attributes?.ipx_key, b.attributes?.ipx_key));
 
+    const lang = (this.hass.language || 'en').split('-')[0];
+    const t = editorTranslations[lang] || editorTranslations.en;
+
     const connectionEntity = entities.find(e => e.attributes && e.attributes.ipx_key === 'api_connectivity');
     const isOnline = connectionEntity ? connectionEntity.state === 'on' : true;
-    const statusText = connectionEntity ? (isOnline ? "Online" : "Offline") : "Unknown";
+    const statusText = connectionEntity ? (isOnline ? t.status_online : t.status_offline) : t.status_unknown;
 
     const relayColumns = this.config.relay_columns || 4;
     const inputColumns = this.config.input_columns || 4;
     const analogColumns = this.config.analog_columns || 2;
 
-    const cardTitle = this.config.title || (connectionEntity?.attributes?.friendly_name ? connectionEntity.attributes.friendly_name.replace(" API connectivity", "") : "IPX800 V3 Panel");
+    const cardTitle = this.config.title || (connectionEntity?.attributes?.friendly_name ? connectionEntity.attributes.friendly_name.replace(/\s*(API connectivity|API Connection|Connexion API)$/i, "") : "IPX800 V3 Panel");
 
     return html`
       <ha-card style="--relay-columns: ${relayColumns}; --input-columns: ${inputColumns}; --analog-columns: ${analogColumns};">
@@ -379,7 +398,7 @@ class IPX800V3Card extends LitElement {
         </div>
 
         ${relays.length > 0 ? html`
-          <div class="section-title">Relays (Outputs)</div>
+          <div class="section-title">${t.section_relays}</div>
           <div class="grid relay-grid">
             ${relays.map(stateObj => {
               const isOn = stateObj.state === 'on';
@@ -398,7 +417,7 @@ class IPX800V3Card extends LitElement {
         ` : ''}
 
         ${inputs.length > 0 ? html`
-          <div class="section-title">Digital Inputs</div>
+          <div class="section-title">${t.section_inputs}</div>
           <div class="grid input-grid">
             ${inputs.map(stateObj => {
               const isOn = stateObj.state === 'on';
@@ -414,13 +433,13 @@ class IPX800V3Card extends LitElement {
         ` : ''}
 
         ${analogs.length > 0 ? html`
-          <div class="section-title">Analog Inputs</div>
+          <div class="section-title">${t.section_analogs}</div>
           <div class="grid analog-grid">
             ${analogs.map(stateObj => {
               let val = stateObj.state;
               const numVal = parseFloat(val);
               if (!isNaN(numVal)) {
-                val = numVal.toFixed(1);
+                val = Number(numVal.toFixed(2));
               }
 
               const unit = stateObj.attributes?.unit_of_measurement || '';
@@ -443,7 +462,7 @@ class IPX800V3Card extends LitElement {
         ` : ''}
 
         ${counters.length > 0 ? html`
-          <div class="section-title">Counters</div>
+          <div class="section-title">${t.section_counters}</div>
           <div class="counter-container">
             ${counters.map(stateObj => {
               const val = stateObj.state;
@@ -467,7 +486,7 @@ class IPX800V3Card extends LitElement {
 
         ${relays.length === 0 && inputs.length === 0 && analogs.length === 0 && counters.length === 0 ? html`
           <div style="padding: 20px 0; text-align: center; color: var(--secondary-text-color); font-style: italic;">
-            Aucune entité IPX800 trouvée.
+            ${t.empty_entities}
           </div>
         ` : ''}
       </ha-card>
@@ -627,18 +646,21 @@ class IPX800V3CardEditor extends LitElement {
   }
 }
 
-customElements.define('ipx800v3-card', IPX800V3Card);
+if (!customElements.get('ipx800v3-card')) {
+  customElements.define('ipx800v3-card', IPX800V3Card);
+}
 
-// Enregistrement sécurisé de l'éditeur uniquement sur PC/Mobile
-if (customElements.get("ha-form")) {
-  customElements.define("ipx800v3-card-editor", IPX800V3CardEditor);
+if (!customElements.get('ipx800v3-card-editor')) {
+  customElements.define('ipx800v3-card-editor', IPX800V3CardEditor);
 }
 
 window.customCards = window.customCards || [];
-window.customCards.push({
-  type: 'ipx800v3-card',
-  name: 'IPX800 V3 Card',
-  description: 'A dense synthetic card displaying Relays, Digital Inputs, Analogs, and Counters for IPX800 V3 custom integration.',
-  preview: true,
-  documentationURL: 'https://github.com/amg0/ha_ipx800v3'
-});
+if (!window.customCards.some(card => card.type === 'ipx800v3-card')) {
+  window.customCards.push({
+    type: 'ipx800v3-card',
+    name: 'IPX800 V3 Card',
+    description: 'A dense synthetic card displaying Relays, Digital Inputs, Analogs, and Counters for IPX800 V3 custom integration.',
+    preview: true,
+    documentationURL: 'https://github.com/amg0/ha_ipx800v3'
+  });
+}

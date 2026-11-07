@@ -188,7 +188,7 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 uniqueid = self._build_unique_id(data)
                 await self.async_set_unique_id(uniqueid)
                 self._abort_if_unique_id_mismatch()
-                return self.async_update_reload_and_abort(entry, data={**entry.data, **user_input})
+                return self.async_update_reload_and_abort(entry, data_updates=user_input)
 
         webhook_url = entry.data[CONF_WEBHOOK_URL]
         return self.async_show_form(
@@ -253,7 +253,7 @@ class MyIPX800V3ConfigFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             else:
                 return self.async_update_reload_and_abort(
                     entry,
-                    data={**entry.data, **user_input},
+                    data_updates=user_input,
                 )
 
         return self.async_show_form(

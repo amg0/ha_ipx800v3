@@ -241,7 +241,6 @@ async def async_setup_entry(
             LOGGER.warning("Unable to configure automatic push on IPX800 V3: %s", err)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 
     return True
 
@@ -345,26 +344,6 @@ async def async_unload_entry(
                         break
 
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-
-
-async def async_reload_entry(
-    hass: HomeAssistant,
-    entry: MyIPX800V3ConfigEntry,
-) -> None:
-    """
-    Reload config entry.
-
-    This is called when the integration configuration or options have changed.
-    It unloads and then reloads the integration with the new configuration.
-
-    Args:
-        hass: The Home Assistant instance.
-        entry: The config entry being reloaded.
-
-    For more information:
-    https://developers.home-assistant.io/docs/config_entries_index/#reloading-entries
-    """
-    await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_migrate_entry(

@@ -149,13 +149,14 @@ You can use the **Reconfigure** command your board to chose to change the import
 
 ##### During Setup
 
-| Name         | Required | Description                                                             |
-| ------------ | -------- | ----------------------------------------------------------------------- |
-| Host         | Yes      | hostname or IP address                                                  |
-| Post         | Yes      | IPX board port number - defaults to 80                                  |
-| Import Names | Yes      | if ON, it will import the names from the IPX to create the entity names |
-| Username     | No       | Your account username                                                   |
-| Password     | No       | Your account password                                                   |
+| Name           | Required | Description                                                             |
+| -------------- | -------- | ----------------------------------------------------------------------- |
+| Host           | Yes      | hostname or IP address                                                  |
+| Port           | Yes      | IPX board port number - defaults to 80                                  |
+| Import Names   | Yes      | if ON, it will import the names from the IPX to create the entity names |
+| Automatic PUSH | Yes      | if ON, automatically configures the PUSH webhook on the IPX board       |
+| Username       | No       | Your account username                                                   |
+| Password       | No       | Your account password                                                   |
 
 ##### After Setup (Options)
 
@@ -208,7 +209,7 @@ Find all entities in **Settings** → **Devices & Services** → **My IPX800 V3*
 
 Entities have special attributes to keep some interesting information handy for scripting
 
-- **ipx_key** : the unique key on the IPX board ( led0, btn3, counter1, analog2 ... )
+- **ipx_key** : the unique key on the IPX board ( led0, btn3, count0, analog2 ... )
 
 ## 🎨 Lovelace Custom Dashboard Card
 
@@ -352,14 +353,14 @@ If your credentials expire or change, Home Assistant will automatically prompt y
 
 The integration will automatically resume normal operation with the new credentials.
 
-#### Manual Credential Update
+#### Reconfiguring Integration Settings
 
-You can also update credentials at any time without waiting for an error:
+You can update board options (`Copy names from IPX` and `Automatic PUSH configuration`) at any time:
 
 1. Go to **Settings** → **Devices & Services**
 2. Find **My IPX800 V3**
 3. Click the **3 dots menu** → **Reconfigure**
-4. Enter new username/password
+4. Update the desired options
 5. Click Submit
 
 #### Connection Status

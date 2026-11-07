@@ -17,7 +17,7 @@ from custom_components.my_ipx800v3.const import CONF_WEBHOOK_URL
 from homeassistant import config_entries
 
 
-class MyIPX800V3OptionsFlow(config_entries.OptionsFlow):
+class MyIPX800V3OptionsFlow(config_entries.OptionsFlowWithReload):
     """
     Handle options flow for the integration.
 
