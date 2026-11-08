@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/amg0/ha_ipx800v3/compare/v0.6.1...v0.6.2) (2026-11-08)
+
+
+### Bug Fixes
+
+* improve webhook latency and direct coordinator refresh on counter actions ([1ff2372](https://github.com/amg0/ha_ipx800v3/commit/1ff2372d0679f2bd796768f5c6c67a9e86a24527))
+
 ## [0.6.1](https://github.com/amg0/ha_ipx800v3/compare/v0.6.0...v0.6.1) (2026-11-07)
 
 
