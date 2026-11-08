@@ -39,3 +39,38 @@ async def test_reload_data_refreshes_the_target_entry(
     assert mock_api.await_count == 1
     assert mock_api.await_args is not None
     assert mock_api.await_args.kwargs["url"].endswith("/globalstatus.xml")
+
+
+async def test_set_and_adjust_counter_action_refreshes_coordinator(
+    hass: HomeAssistant,
+    init_integration: MockConfigEntry,
+    mock_api: AsyncMock,
+) -> None:
+    """Modifying a counter value requests a refresh on the entry's coordinator."""
+    mock_api.reset_mock()
+    counter_entity_id = _entity_id_for_ipx_key(hass, "count0")
+
+    await hass.services.async_call(
+        DOMAIN,
+        "set_counter_value",
+        {ATTR_ENTITY_ID: counter_entity_id, "value": 50},
+        blocking=True,
+    )
+
+    # 1 call to set counter + 1 call to refresh globalstatus.xml
+    assert mock_api.await_count == 2
+    assert any("/counter1.htm" in call.kwargs["url"] for call in mock_api.await_args_list)
+    assert mock_api.await_args_list[-1].kwargs["url"].endswith("/globalstatus.xml")
+
+    mock_api.reset_mock()
+    await hass.services.async_call(
+        DOMAIN,
+        "adjust_counter_value",
+        {ATTR_ENTITY_ID: counter_entity_id, "offset": 5},
+        blocking=True,
+    )
+
+    # 1 call to adjust counter + 1 call to refresh globalstatus.xml
+    assert mock_api.await_count == 2
+    assert any("/counter1.htm" in call.kwargs["url"] for call in mock_api.await_args_list)
+    assert mock_api.await_args_list[-1].kwargs["url"].endswith("/globalstatus.xml")

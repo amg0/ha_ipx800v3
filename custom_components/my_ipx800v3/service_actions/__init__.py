@@ -17,6 +17,7 @@ from homeassistant.core import ServiceCall, ServiceResponse, SupportsResponse
 from homeassistant.helpers import device_registry as dr, entity_registry as er, target as target_helpers
 
 if TYPE_CHECKING:
+    from custom_components.my_ipx800v3.data import MyIPX800V3ConfigEntry
     from homeassistant.core import HomeAssistant
 
 # Service action names - only used within service_actions module
@@ -94,6 +95,7 @@ async def async_setup_services(hass: HomeAssistant) -> None:  # noqa: C901
         """Handle counter service calls."""
         target_selection = target_helpers.TargetSelection(call.data)
         entity_registry = er.async_get(hass)
+        affected_entries: set[MyIPX800V3ConfigEntry] = set()
 
         for entity_id in target_selection.entity_ids:
             entity_entry = entity_registry.async_get(entity_id)
@@ -125,8 +127,11 @@ async def async_setup_services(hass: HomeAssistant) -> None:  # noqa: C901
             elif call.service == SERVICE_ADJUST_COUNTER_VALUE:
                 await async_handle_change_counter_value(hass, target_config_entry, call, entity_key)
 
-        # changing counter values does not trigger IPX Push so we force a refresh of data
-        await handle_reload_data(call)
+            affected_entries.add(target_config_entry)
+
+        # changing counter values does not trigger IPX Push so we force a refresh on each affected coordinator
+        for config_entry in affected_entries:
+            await config_entry.runtime_data.coordinator.async_refresh()
 
     services = [
         (SERVICE_RELOAD_DATA, handle_reload_data, SupportsResponse.OPTIONAL),
