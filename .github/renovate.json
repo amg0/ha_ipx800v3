@@ -119,7 +119,7 @@
     },
     {
       "description": "Each release tracks one Home Assistant version. A new release train means raising the minimum in hacs.json, which script/ha-version-sync enforces; a pre-release dependency is closed by the HA stability check workflow.",
-      "matchPackageNames": ["pytest-homeassistant-custom-component"],
+      "matchPackageNames": ["pytest-homeassistant"],
       "groupName": "Home Assistant test environment",
       "addLabels": ["home-assistant"]
     },
