@@ -2,7 +2,7 @@
 
 from unittest.mock import AsyncMock
 
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from custom_components.my_ipx800v3.const import DOMAIN
 from homeassistant.config_entries import ConfigEntryState
