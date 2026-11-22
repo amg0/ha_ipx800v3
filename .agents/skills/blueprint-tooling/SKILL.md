@@ -65,6 +65,7 @@ concisely by design, so this only matters for `script/test`, the one command her
 ```bash
 script/develop           # take over Home Assistant on :8123, debugpy on :5678 (see below)
 script/ha                # query and control the running instance (see below)
+script/ha-env            # Home Assistant environments: list, add/remove latest, beta or a pinned custom, use one, refresh
 script/setup/seed-auth   # mint the token script/ha uses — run by script/develop
 script/hassfest          # official HA validation (first run downloads ~27 MB)
 script/test              # integration tests plus synchronized tooling tests
@@ -186,7 +187,7 @@ Two bots share the updates without overlapping — a dependency raised by both w
 | GitHub Actions, npm, dev container features, `requirements_dev.txt` | Dependabot (`.github/dependabot.yml`) | weekly, minor/patch grouped per ecosystem                                             |
 | `mise.toml`, the mise version in workflows and the dev container    | Renovate (`.github/renovate.json`)    | weekly, one `tooling` group                                                           |
 | `manifest.json` + `requirements.txt`                                | Renovate                              | one per package, a major waits for approval; `fix(deps)` only for a security advisory |
-| `pytest-homeassistant-custom-component`                             | Renovate                              | its own; a new release train fails `script/ha-version-sync` until `hacs.json` follows |
+| `pytest-homeassistant`                                              | Renovate                              | its own; a new release train fails `script/ha-version-sync` until `hacs.json` follows |
 
 Renovate needs its GitHub App installed on the repository and does nothing without it: no error, no pull request.
 Dependabot has no mise ecosystem, so without the App the tool pins and the runtime requirements only move by hand;
@@ -219,11 +220,12 @@ Two layers, both sourced by the lifecycle scripts:
 | `.devcontainer/.env`       | ✅ yes             | project defaults for everyone  |
 | `.devcontainer/.env.local` | ❌ no (gitignored) | personal overrides, always win |
 
-| Variable          | Default                  | Effect                                                                               |
-| ----------------- | ------------------------ | ------------------------------------------------------------------------------------ |
-| `HA_VERSION`      | version from `hacs.json` | `latest`, `beta`, `YEAR.MONTH`, or an exact version                                  |
-| `HA_INSTALL_HACS` | `1`                      | `0` skips the HACS install; ignored from 2026.11, which has the Marketplace built in |
-| `APT_UPDATE`      | `0`                      | `1` runs `apt-get update && upgrade` during setup                                    |
+| Variable          | Default   | Effect                                                                                                                                                                     |
+| ----------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HA_VERSION`      | `minimum` | `latest` or `beta`: the environment bootstrap builds and activates instead; one particular release only by hand, `script/ha-env add custom <version>`                      |
+| `HA_ENVS`         | `minimum` | environments bootstrap installs, e.g. `minimum latest beta` — [testing a newer release](../../../docs/development/CUSTOMIZATION.md#testing-against-a-newer-home-assistant) |
+| `HA_INSTALL_HACS` | `1`       | `0` skips the HACS install; ignored from 2026.11, which has the Marketplace built in                                                                                       |
+| `APT_UPDATE`      | `0`       | `1` runs `apt-get update && upgrade` during setup                                                                                                                          |
 
 Changes require **Dev Containers: Rebuild Container**. These files are not visible to devcontainer _features_ or
 `containerEnv` — those are set at image build time and must be edited in `devcontainer.json`.

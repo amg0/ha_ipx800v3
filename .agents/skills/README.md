@@ -15,7 +15,7 @@ any of it in your own repository, see [`../README.md`](../README.md). This file 
 | [`ha-config-flow`](ha-config-flow/SKILL.md)             | config flow, options, reauth, reconfigure, discovery, subentries           |
 | [`ha-coordinator-debug`](ha-coordinator-debug/SKILL.md) | entities unavailable, stale data, setup failures, runtime debugging        |
 | [`ha-translations`](ha-translations/SKILL.md)           | `translations/*.json`, `icons.json`, entity and exception translations     |
-| [`ha-testing`](ha-testing/SKILL.md)                     | writing or fixing tests with `pytest-homeassistant-custom-component`       |
+| [`ha-testing`](ha-testing/SKILL.md)                     | writing or fixing tests with `pytest-homeassistant`                        |
 | [`ha-quality-review`](ha-quality-review/SKILL.md)       | auditing the integration against the Integration Quality Scale             |
 | [`ha-modern-apis`](ha-modern-apis/SKILL.md)             | verifying an API is current, or fixing deprecation warnings                |
 | [`ha-breaking-changes`](ha-breaking-changes/SKILL.md)   | anything that could break existing installs — IDs, entry data, migrations  |
@@ -31,6 +31,15 @@ any of it in your own repository, see [`../README.md`](../README.md). This file 
 
 `blueprint-scaffold` and `blueprint-import` are one-time skills: each ends with a step that removes itself once its
 job is done. Leaving them in place costs context in every later session.
+
+<!-- blueprint-only:start -->
+
+[`blueprint-skill-maintenance`](blueprint-skill-maintenance/SKILL.md) covers maintaining this shipped set — the
+rule-versus-procedure seam, the catalogue duplication, and what to re-verify after a Home Assistant version bump.
+`initialize.sh` removes it when a project is initialised from the template, because it is only meaningful in the
+blueprint repository itself.
+
+<!-- blueprint-only:end -->
 
 ## Naming
 

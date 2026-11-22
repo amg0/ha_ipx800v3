@@ -1,6 +1,6 @@
 # The blueprint's tool pins for every environment. This integration's own tools go in .config/mise/conf.d/project.toml,
 # which template sync leaves alone; personal overrides in the gitignored mise.local.toml.
-min_version = "2026.11.9"
+min_version = "2026.11.12"
 
 # Unset, these fall back to a source build when no precompiled one matches; false makes that an error instead.
 [settings]
@@ -28,7 +28,7 @@ _.python.venv = { path = ".venv" }
 [tasks.renovate-dry-run]
 description = "Show what Renovate would raise, without a pull request"
 # @yarnpkg/libzip 3.2.2, a Renovate dependency, lost the provenance 3.2.1 had, which mise's npm trust policy refuses.
-tools = { node = "24.22.3", "npm:renovate" = { version = "44.251.0", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"] } }
+tools = { node = "24.22.3", "npm:renovate" = { version = "44.257.9", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"] } }
 shell = "bash -c"
 run = '''
 token="${RENOVATE_GITHUB_COM_TOKEN:-$(gh auth token 2>/dev/null)}"
