@@ -125,8 +125,8 @@ Also confirm:
 - Every breaking change has a `BREAKING CHANGE:` footer and a migration note.
 - `docs/user/` and the README match the released behaviour.
 - `hacs.json` → `homeassistant` is still the minimum this release needs
-  ([`ha-marketplace`](../ha-marketplace/SKILL.md#2-hacsjson--when-to-touch-it)); raising it is a breaking change
-  ([`ha-breaking-changes`](../ha-breaking-changes/SKILL.md)).
+  ([`ha-marketplace`](../ha-marketplace/SKILL.md#2-hacsjson--when-to-touch-it)), and a raised one is named in the
+  changelog — it is not a breaking change ([`ha-breaking-changes`](../ha-breaking-changes/SKILL.md#1-recognise-it)).
 - `custom_components/<domain>/brand/icon.png` is the product's icon, not the blueprint's placeholder.
 
 ## Troubleshooting

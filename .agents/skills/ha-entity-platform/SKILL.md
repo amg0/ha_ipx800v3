@@ -125,7 +125,7 @@ For a brand-new platform only:
 1. Add the `Platform.<NAME>` member to the `PLATFORMS` list in `custom_components/<domain>/__init__.py`
    (keep the list alphabetical).
 2. Nothing else — `async_setup_entry` already forwards with `async_forward_entry_setups(entry, PLATFORMS)` and
-   `async_unload_entry` already tears down with `async_unload_platforms(entry, PLATFORMS)`.
+   `async_unload_entry` already tears down with `async_unload_platforms_or_raise(entry, PLATFORMS)`.
 
 ### 4. Device grouping
 

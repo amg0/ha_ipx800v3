@@ -2,12 +2,12 @@
 name: ha-testing
 description: >-
   Write, fix, or extend automated tests for this Home Assistant custom integration using pytest and
-  pytest-homeassistant-custom-component. Use when asked to "add tests", "write a test", "the tests fail", "improve
+  pytest-homeassistant. Use when asked to "add tests", "write a test", "the tests fail", "improve
   coverage", "add a regression test", "test the config flow", "update snapshots", or when a behavioural change
   needs verification before it can be called done. Covers the tests/ layout, the conftest.py fixtures this project
   needs, mocking the API client, config flow and entity test patterns, registry assertions, syrupy snapshots,
   freezing time, and the script/test commands. SYMPTOMS — load this if you are about to: instantiate an entity
-  class directly instead of asserting on `hass.states`; write a test without `enable_custom_integrations`; use
+  class directly instead of asserting on `hass.states`; redefine a fixture `pytest-homeassistant` provides; use
   `time.sleep` instead of `async_fire_time_changed`; silence a DeprecationWarning to make the suite pass; or
   commit a snapshot you have not read.
 ---
@@ -35,17 +35,12 @@ scaffolding and the judgement calls.
 
 Use these by name instead of defining a variant per file — every existing test depends on them:
 
-- `auto_enable_custom_integrations` — autouse; without `enable_custom_integrations` a custom integration does not load
-  in a test at all.
 - `config_entry` — a `MockConfigEntry`, not yet added to `hass`.
 - `mock_api` — the `AsyncMock` that stands in for the data source; set `return_value` or `side_effect` per test.
 - `init_integration` — adds `config_entry`, sets it up with `mock_api` active, and returns the loaded entry.
 
 A library client instead of our own needs a different `mock_api` — see
-[`references/recipes.md`](references/recipes.md#mock_api-for-a-third-party-library-client). Recorded payloads go in
-a `fixtures/` folder: `load_fixture("device.json")` and `load_json_object_fixture("device.json")` resolve against the
-one next to the calling test file. Never pass `DOMAIN` as their second argument — that points at Core's
-`tests/components/<domain>/fixtures/`, which does not exist here.
+[`references/recipes.md`](references/recipes.md#mock_api-for-a-third-party-library-client).
 
 ## Layout
 
