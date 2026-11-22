@@ -6,14 +6,14 @@ For [`ha-marketplace`](../SKILL.md) once the repository is listed or installable
 
 Badge targets from [My Home Assistant](https://my.home-assistant.io/create-link/):
 
-| Link                     | Opens                                                  | Use                                                                       |
-| ------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------- |
-| `hacs_repository`        | HACS before 2026.11, the Marketplace from 2026.11      | ✅ the install badge while `hacs.json` → `homeassistant` is below 2026.11 |
-| `marketplace_repository` | the Marketplace only (HA 2026.11+)                     | once the minimum reaches 2026.11                                          |
-| `config_flow_start`      | the setup of `?domain=<domain>` in the user's instance | the "add the integration" badge, after installation                       |
+| Link                     | Opens                                                  | Use                                                 |
+| ------------------------ | ------------------------------------------------------ | --------------------------------------------------- |
+| `marketplace_repository` | the Marketplace                                        | ✅ the install badge                                |
+| `hacs_repository`        | HACS before 2026.11, the Marketplace from 2026.11      | ❌ only for a minimum below 2026.11                 |
+| `config_flow_start`      | the setup of `?domain=<domain>` in the user's instance | the "add the integration" badge, after installation |
 
 Both repository links take `owner`, `repository` and `category=integration`; with the category, an unknown
-repository is offered as a custom repository first. `README.template.md` already carries `hacs_repository` and
+repository is offered as a custom repository first. `README.template.md` already carries `marketplace_repository` and
 `config_flow_start` — keep their parameters in step with a rename.
 
 ## Releases as users see them

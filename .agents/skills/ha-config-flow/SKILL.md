@@ -91,12 +91,11 @@ Bump `MINOR_VERSION` for additive changes, `VERSION` for restructuring. Read
 Implement `async_migrate_entry()` in `custom_components/<domain>/__init__.py`:
 
 ```python
-async def async_migrate_entry(hass: HomeAssistant, entry: {ClassPrefix}ConfigEntry) -> bool:
+async def async_migrate_entry(hass: HomeAssistant, entry: {ClassPrefix}ConfigEntry) -> None:
     """Migrate an old config entry."""
     if entry.version == 1 and entry.minor_version < 2:
         data = {**entry.data, CONF_PORT: DEFAULT_PORT}
         hass.config_entries.async_update_entry(entry, data=data, minor_version=2)
-    return True
 ```
 
 No downgrade branch and no `return False` — the contract is under

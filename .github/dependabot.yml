@@ -57,7 +57,7 @@ updates:
       # Its version must stay in sync with the "homeassistant" key in hacs.json — update that manually
       # when bumping pytest-homeassistant manually.
       - dependency-name: "homeassistant"
-      # pytest-homeassistant releases track Home Assistant closely.
+      # Each pytest-homeassistant release matches one Home Assistant release.
       # Keep this pinned and bump it manually together with hacs.json "homeassistant".
       - dependency-name: "pytest-homeassistant"
     # Let patch releases settle 3 days, minor releases 7 days before opening a PR
