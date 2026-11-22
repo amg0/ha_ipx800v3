@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.0](https://github.com/amg0/ha_ipx800v3/compare/v0.6.2...v0.7.0) (2026-11-22)
+
+
+### Features
+
+* add antigravity ([fa8aa68](https://github.com/amg0/ha_ipx800v3/commit/fa8aa680fb8e6259bc81218d661092f2a9ddb790))
+* migration HA 2026.11 ([fac2412](https://github.com/amg0/ha_ipx800v3/commit/fac2412602268979e13b97030d639a7058130421))
+* **scope:** move to HA2026.11 ([018c428](https://github.com/amg0/ha_ipx800v3/commit/018c42899926d12e2001abf6a621cbc28f7ff190))
+* tentative to modify workflow to sync template with main branch ([c03ea50](https://github.com/amg0/ha_ipx800v3/commit/c03ea50508eb715ccdcbb0b2d92466f80d165713))
+
+
+### Bug Fixes
+
+* ran ./script/prune-blueprint --apply ([53779c3](https://github.com/amg0/ha_ipx800v3/commit/53779c395b76a4279db9abc13cfa62205e9d320a))
+
 ## [0.6.2](https://github.com/amg0/ha_ipx800v3/compare/v0.6.1...v0.6.2) (2026-11-08)
 
 
