@@ -65,8 +65,7 @@ print_info "Fixing ownership of Docker volume mount points..."
 for _volume_mount in \
     /home/vscode/ha-venv \
     /home/vscode/mise-data \
-    /home/vscode/.claude \
-    /home/vscode/.codex \
+    /home/vscode/.gemini \
     /home/vscode/.opencode \
     /home/vscode/.cache; do
     if [[ -e "$_volume_mount" ]]; then
@@ -77,10 +76,18 @@ unset _volume_mount
 
 # Install agent defaults from the repository. Keeping them versioned here allows project-level customization
 # without modifying this script.
-install_agent_config "Claude Code managed settings" claude-code/managed-settings.json \
-    /etc/claude-code/managed-settings.json
-install_agent_config "Codex system defaults" codex/config.toml /etc/codex/config.toml
 install_agent_config "OpenCode managed settings" opencode/opencode.json /etc/opencode/opencode.json
+
+# Seed Antigravity CLI defaults into the persistent volume on first creation without overwriting user settings.
+if [[ -f "$_devcontainer_dir/antigravity/settings.json" ]]; then
+    _agy_settings="/home/vscode/.gemini/antigravity-cli/settings.json"
+    if [[ ! -f "$_agy_settings" ]]; then
+        print_info "Seeding Antigravity CLI defaults from .devcontainer/antigravity/settings.json..."
+        mkdir -p "$(dirname "$_agy_settings")"
+        install -m 0644 "$_devcontainer_dir/antigravity/settings.json" "$_agy_settings"
+    fi
+    unset _agy_settings
+fi
 
 # OpenCode reads ~/.config/opencode and ~/.local/share/opencode, so its volume is linked there.
 print_info "Setting up symlinks for OpenCode config and data..."

@@ -102,6 +102,17 @@ script/hooks/
 # Both are user-owned; upstream changes would silently revert your pin or docs.
 .devcontainer/.env
 
+# ── Custom DevContainer agent configuration ──────────────────
+# Replaced Claude Code and OpenAI Codex with Antigravity; keep template sync
+# from reverting devcontainer config or re-adding removed agent directories.
+.devcontainer/devcontainer.json
+.devcontainer/devcontainer-lock.json
+.devcontainer/on-create.sh
+.devcontainer/opencode/opencode.json
+.devcontainer/claude-code/
+.devcontainer/codex/
+.devcontainer/antigravity/
+
 # ── Release management ───────────────────────────────────────
 # Release Please configuration is project-specific
 release-please-config.json

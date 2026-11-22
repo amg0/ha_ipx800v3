@@ -2,10 +2,10 @@
   "id": "project-feature",
   "version": "1.0.0",
   "name": "Project requirements",
-  "description": "VS Code extensions this project requires for every contributor; see docs/development/CUSTOMIZATION.md.",
+  "description": "Installs Antigravity CLI (agy) and requires the Antigravity VS Code extension; see docs/development/CUSTOMIZATION.md.",
   "customizations": {
     "vscode": {
-      "extensions": []
+      "extensions": ["Google.google-antigravity"]
     }
   }
 }
