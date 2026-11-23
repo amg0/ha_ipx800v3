@@ -66,6 +66,8 @@ def test_apply_adds_only_missing_sync_ignore_entries(repo: Path) -> None:
     added = (repo / SYNC_IGNORE).read_text(encoding="utf-8").removeprefix(SYNC_IGNORE_BEFORE).splitlines()
     assert [line for line in added if line and not line.startswith("#")] == [
         "script/tests/test_initialize.py",
+        "script/import-overlay",
+        "script/tests/test_import_overlay.py",
         ".devcontainer/project-feature",
     ]
 

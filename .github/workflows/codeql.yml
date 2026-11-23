@@ -51,40 +51,16 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          fetch-depth: 2
 
-      # The `paths` filter above lets through a change that matters to one language only; keep the patterns in line.
-      # A pull request is checked out as a merge commit, so its first parent is the base it is compared with.
-      - name: Check whether this language is affected
-        id: scope
-        env:
-          EVENT: ${{ github.event_name }}
-          LANGUAGE: ${{ matrix.language }}
-        run: |
-          [[ "${EVENT}" == "pull_request" ]] || exit 0
-          case "${LANGUAGE}" in
-            python) pattern='\.py$|^\.github/workflows/codeql\.yml$' ;;
-            actions) pattern='^\.github/(workflows|actions)/' ;;
-            *) exit 0 ;;
-          esac
-          if ! changed=$(git diff --name-only HEAD^1 HEAD); then
-            echo "Cannot compare the pull request with its base — analysing anyway"
-            exit 0
-          fi
-          if ! grep -qE "${pattern}" <<<"${changed}"; then
-            echo "Nothing ${LANGUAGE}-related changed — analysis skipped" >> "${GITHUB_STEP_SUMMARY}"
-            echo "skip=true" >> "${GITHUB_OUTPUT}"
-          fi
-
+      # Every language runs on every pull request: one without an upload has nothing to compare with main, and code
+      # scanning then warns that a configuration of the base branch was not found.
       - name: Initialize CodeQL
-        if: steps.scope.outputs.skip != 'true'
         uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           languages: ${{ matrix.language }}
           build-mode: none
 
       - name: Analyze
-        if: steps.scope.outputs.skip != 'true'
         uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           category: /language:${{ matrix.language }}

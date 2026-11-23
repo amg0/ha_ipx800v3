@@ -21,8 +21,11 @@ repository is offered as a custom repository first. `README.template.md` already
 - **Propagation:** the catalog data is regenerated every 4 hours and the Marketplace reads it every 6 hours, so a
   release can take most of a day to appear. Custom repositories update through the GitHub API every 48 hours, and only
   with a GitHub connection. "The update does not show" within that window is not a bug.
-- **The release body is what users read** — the update entity shows it under **Settings** → **Updates**. Anything the
-  user must do first goes at the top ([`ha-release`](../../ha-release/SKILL.md) owns the notes).
+- **The release body is what users read** — the update entity shows it under **Settings** → **Updates**, joined for
+  every release since the installed one, but only within the last five releases; further behind, a user sees the
+  newest notes alone. Anything the user must do first goes at the top, and a step they must not miss is also a repair
+  issue ([`ha-breaking-changes`](../../ha-breaking-changes/SKILL.md) §5; [`ha-release`](../../ha-release/SKILL.md)
+  owns the notes).
 - **Pre-releases** reach only users who switched on **Pre-release** for the repository, and only while newer than the
   latest regular release.
 - **Keep old releases.** Users roll back by picking one from the repository menu. A deleted release or tag falls back
