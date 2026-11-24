@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.1](https://github.com/amg0/ha_ipx800v3/compare/v0.7.0...v0.7.1) (2026-11-24)
+
+
+### 🎉 What's new
+
+* template sync fixes ([5be7f28](https://github.com/amg0/ha_ipx800v3/commit/5be7f286a9836212dfd82fbd317f5770c353436e))
+* template-sync ([e95cfaf](https://github.com/amg0/ha_ipx800v3/commit/e95cfaff6bfb49ed4cfb03d36700ed3bec5c4bac))
+
 ## [0.7.0](https://github.com/amg0/ha_ipx800v3/compare/v0.6.2...v0.7.0) (2026-11-22)
 
 
