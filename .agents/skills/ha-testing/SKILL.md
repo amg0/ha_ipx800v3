@@ -25,6 +25,10 @@ scaffolding and the judgement calls.
 ## When a test is required
 
 - Behavioural change, bug fix, or regression → add a proportionate test.
+- **The test sits at the seam where the bug occurred** — the coordinator for a parsing bug, `hass.states` for an entity
+  bug. A test at a shallower layer passes while the bug lives on; if no seam can reproduce it, say so as a finding.
+  An existing test that missed the bug sits at the wrong seam — move it rather than add a second. Name the test after
+  the behaviour, not the issue number.
 - **A bug fix starts with a failing test.** Write it, watch it fail for the reported reason, then fix — a test written
   after the fix may never have been able to fail.
 - Documentation-only, formatting-only, or anything that cannot affect runtime → no test needed.

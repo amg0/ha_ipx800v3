@@ -14,7 +14,7 @@ description: >-
 
 # Work on the config flow
 
-The config flow is the only supported way to configure a device or service integration (ADR-0010). Everything the user
+The config flow is the only supported way to configure a device or service integration ([ADR-0010](https://github.com/home-assistant/architecture/blob/master/adr/0010-integration-configuration.md)). Everything the user
 can change lives here, and mistakes here are expensive: `unique_id` and the shape of `entry.data` are effectively
 permanent.
 
@@ -61,7 +61,9 @@ The top-level `config_flow.py` is a thin shim Home Assistant discovers — leave
 2. Add the `CONF_*` key to `const.py`.
 3. Add the field to `schemas/config.py` or `schemas/options.py` with a selector and a default.
 4. Consume it: coordinator reads `entry.options`, client reads `entry.data`.
-5. Add the `data` and `data_description` translation keys ([`ha-translations`](../ha-translations/SKILL.md)).
+5. Add the `data` and `data_description` translation keys ([`ha-translations`](../ha-translations/SKILL.md)). The
+   description says what the option changes. Once the options no longer fit one screen, or an automation should
+   change one, see [`ha-user-experience`](../ha-user-experience/SKILL.md#6-options-that-stay-navigable).
 6. **Handle existing entries** that predate the key — a default at read time, or a `MINOR_VERSION` bump plus migration.
    This is the step that gets forgotten and breaks upgrades.
 

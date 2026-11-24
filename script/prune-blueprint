@@ -29,6 +29,8 @@ PRUNE_PATHS=(
     "docs/blueprint"
     ".agents/skills/blueprint-skill-maintenance"
     "script/tests/test_initialize.py"
+    "script/import-overlay"
+    "script/tests/test_import_overlay.py"
 )
 PROJECT_OWNED_PATHS=(
     ".devcontainer/project-feature"
