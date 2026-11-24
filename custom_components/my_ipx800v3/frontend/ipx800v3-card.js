@@ -35,7 +35,8 @@ const editorTranslations = {
     status_online: "Online",
     status_offline: "Offline",
     status_unknown: "Unknown",
-    empty_entities: "No IPX800 entities found."
+    empty_entities: "No IPX800 entities found.",
+    editor_unavailable: "The editor is not available on this device."
   },
   fr: {
     title: "Titre de la carte (Optionnel)",
@@ -51,7 +52,8 @@ const editorTranslations = {
     status_online: "En ligne",
     status_offline: "Hors ligne",
     status_unknown: "Inconnu",
-    empty_entities: "Aucune entité IPX800 trouvée."
+    empty_entities: "Aucune entité IPX800 trouvée.",
+    editor_unavailable: "L'éditeur n'est pas disponible sur ce périphérique."
   }
 };
 
@@ -382,7 +384,7 @@ class IPX800V3Card extends LitElement {
     const inputColumns = this.config.input_columns || 4;
     const analogColumns = this.config.analog_columns || 2;
 
-    const cardTitle = this.config.title || (connectionEntity?.attributes?.friendly_name ? connectionEntity.attributes.friendly_name.replace(/\s*(API connectivity|API Connection|Connexion API)$/i, "") : "IPX800 V3 Panel");
+    const cardTitle = this.config.title || (connectionEntity?.attributes?.friendly_name ? connectionEntity.attributes.friendly_name.replace(/\s*(API connectivity|API Connection|Conne(?:ct|x)ion API)$/i, "") : "IPX800 V3 Panel");
 
     return html`
       <ha-card style="--relay-columns: ${relayColumns}; --input-columns: ${inputColumns}; --analog-columns: ${analogColumns};">
@@ -548,7 +550,7 @@ class IPX800V3Card extends LitElement {
 
   setConfig(config) {
     if (!config) {
-      throw new Error("Configuration invalide");
+      throw new Error("Invalid configuration");
     }
     this.config = config;
   }
@@ -587,7 +589,9 @@ class IPX800V3CardEditor extends LitElement {
     }
 
     if (!customElements.get("ha-form")) {
-      return html`<div>L'éditeur n'est pas disponible sur cet appareil.</div>`;
+      const lang = (this.hass.language || 'en').split('-')[0];
+      const t = editorTranslations[lang] || editorTranslations.en;
+      return html`<div>${t.editor_unavailable}</div>`;
     }
 
     const schema = [

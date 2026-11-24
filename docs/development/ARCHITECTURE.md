@@ -196,7 +196,7 @@ For working with AI coding agents in this repository, see [`AI_AGENTS.md`](./AI_
 
 ## Key Design Decisions
 
-See [DECISIONS.md](./DECISIONS.md) for architectural and design decisions made during development.
+See [docs/development/decisions/](decisions/README.md) for architectural and design decisions made during development.
 
 ## Extension Points
 

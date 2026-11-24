@@ -27,8 +27,13 @@ Releases are managed with [release-please](https://github.com/googleapis/release
         ↓
 4. Developer merges the PR (intentionally, when ready)
         ↓
-5. release-please creates the GitHub Release + Git tag
+5. release-please creates the Git tag and the GitHub Release as a draft
    manifest.json version is already updated in the merged PR
+        ↓
+6. The release-asset job builds the ZIP with script/build (plus any
+   script/hooks/build.*.sh), attaches it as the file named by `filename` in
+   hacs.json (zip_release: true), and publishes the release — users install
+   from that asset
 ```
 
 The Home Assistant Marketplace offers users the tag of the latest **published** GitHub Release —
@@ -60,7 +65,7 @@ This project is pre-1.0.0. Version bumps follow these rules:
 | Commit type                   | Version change                      |
 | ----------------------------- | ----------------------------------- |
 | `feat`                        | patch bump (e.g. `0.1.0` → `0.1.1`) |
-| `fix`, `perf`                 | patch bump                          |
+| `fix`, `perf`, `build`        | patch bump                          |
 | `feat!` or `BREAKING CHANGE:` | minor bump (e.g. `0.1.0` → `0.2.0`) |
 
 Once the project reaches `1.0.0`, standard SemVer applies (`feat` → minor, `fix` → patch, breaking → major).
@@ -69,12 +74,13 @@ Once the project reaches `1.0.0`, standard SemVer applies (`feat` → minor, `fi
 
 Only user-facing changes appear in the public CHANGELOG:
 
-| Type                                      | Visible        |
-| ----------------------------------------- | -------------- |
-| `feat`                                    | ✅ Features    |
-| `fix`                                     | ✅ Bug Fixes   |
-| `perf`                                    | ✅ Performance |
-| `refactor`, `chore`, `docs`, `test`, `ci` | hidden         |
+| Type                                      | Visible                    |
+| ----------------------------------------- | -------------------------- |
+| `feat`                                    | ✅ 🎉 What's new           |
+| `fix`                                     | ✅ 🐛 Fixed                |
+| `perf`                                    | ✅ ⚡ More reliable        |
+| `build`                                   | ✅ 📦 Updated dependencies |
+| `refactor`, `chore`, `docs`, `test`, `ci` | hidden                     |
 
 ## Developer Scripts
 

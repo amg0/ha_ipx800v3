@@ -63,15 +63,15 @@ agent that implements it. If yours does not, read the `SKILL.md` before starting
 | config flow, options, reauth, reconfigure, discovery   | [`ha-config-flow`](.agents/skills/ha-config-flow/SKILL.md)             | `blueprint.config_flow`                                |
 | the coordinator, the API client, runtime debugging     | [`ha-coordinator-debug`](.agents/skills/ha-coordinator-debug/SKILL.md) | `blueprint.coordinator`                                |
 | translations, `icons.json`                             | [`ha-translations`](.agents/skills/ha-translations/SKILL.md)           | `blueprint.translations`                               |
+| what users see: states, attributes, options, help text | [`ha-user-experience`](.agents/skills/ha-user-experience/SKILL.md)     | —                                                      |
 | tests                                                  | [`ha-testing`](.agents/skills/ha-testing/SKILL.md)                     | `blueprint.tests`                                      |
 | repair issues and flows                                | [`ha-breaking-changes`](.agents/skills/ha-breaking-changes/SKILL.md)   | `blueprint.repairs`                                    |
 | anything that could break existing installs            | [`ha-breaking-changes`](.agents/skills/ha-breaking-changes/SKILL.md)   | —                                                      |
 | a Quality Scale audit or pre-release review            | [`ha-quality-review`](.agents/skills/ha-quality-review/SKILL.md)       | —                                                      |
 | deprecation warnings, verifying an API is current      | [`ha-modern-apis`](.agents/skills/ha-modern-apis/SKILL.md)             | —                                                      |
-| a request whose requirements are not settled yet       | [`ha-grill`](.agents/skills/ha-grill/SKILL.md)                         | —                                                      |
-| planning a large change, recording a decision          | [`ha-planning`](.agents/skills/ha-planning/SKILL.md)                   | —                                                      |
+| recording or superseding an architectural decision     | [`blueprint-decisions`](.agents/skills/blueprint-decisions/SKILL.md)   | —                                                      |
+| lessons from bugs and corrections, project skills      | [`blueprint-lessons`](.agents/skills/blueprint-lessons/SKILL.md)       | —                                                      |
 | commit messages, versioning, changelog, release notes  | [`ha-release`](.agents/skills/ha-release/SKILL.md)                     | `blueprint.commit-message`                             |
-| triaging or fixing a backlog of GitHub issues          | [`ha-issue-triage`](.agents/skills/ha-issue-triage/SKILL.md)           | —                                                      |
 | publishing through HACS and the Marketplace            | [`ha-marketplace`](.agents/skills/ha-marketplace/SKILL.md)             | —                                                      |
 | validation scripts, dependencies, hooks, template sync | [`blueprint-tooling`](.agents/skills/blueprint-tooling/SKILL.md)       | `blueprint.shell`                                      |
 | blueprint changes the template sync cannot deliver     | [`blueprint-update`](.agents/skills/blueprint-update/SKILL.md)         | —                                                      |
@@ -85,6 +85,32 @@ Two one-time skills exist for a fresh repository and remove themselves as their 
 device) and [`blueprint-import`](.agents/skills/blueprint-import/SKILL.md) (migrate an existing integration in).
 
 Skills are validated by `script/skills-check` (part of `script/lint-check`, so CI enforces it).
+
+### Agent plugins
+
+Working habits that a developer may want to turn off ship as plugins from
+[ha-custom-integration-skills](https://github.com/jpawlowski/ha-custom-integration-skills), pinned to one tag in
+`.claude/settings.json`, `.github/copilot/settings.json` and `.codex/config.toml`; `script/setup/bootstrap` installs
+them. Interviewing and planning are `haci-grill` and `haci-planning` (plugin `haci-plan`), the review pass is
+`haci-change-review` (`haci-review`), and backlog triage is `haci-issue-triage` with the autonomous `haci-issues`
+run (`haci-triage`, off by default). A plugin that is turned off leaves its task to the developer's own way of doing
+it. Those skills know no repository; this one gives them:
+
+| They ask for                | Here                                                                                                     |
+| --------------------------- | -------------------------------------------------------------------------------------------------------- |
+| the gates                   | `script/lint`, `script/type-check`, `script/test`, `script/hassfest`; check mode `script/check`          |
+| a second review             | `script/second-review --brief <the skill's references/reviewer-brief.md>`                                |
+| the scratch directory       | `.agents/scratch/` — gitignored, plans in `.agents/scratch/plans/`                                       |
+| decision records            | `docs/development/decisions/`, with [`blueprint-decisions`](.agents/skills/blueprint-decisions/SKILL.md) |
+| what counts as breaking     | _Breaking changes — warn before implementing_ below                                                      |
+| rules for posting on GitHub | _Posting on the developer's behalf_ below, and [`AI_POLICY.md`](AI_POLICY.md)                            |
+
+**Critical files**, where a review miss costs most: everything on the breaking-changes list and the config entry's
+`VERSION` and migration; the config flow's auth and reauth steps, diagnostics and their redaction, anything that logs a
+payload; `manifest.json` → `requirements`; `.agents/hooks/`, the agent settings, `.devcontainer/`,
+`.vscode/tasks.json`, `.pre-commit-config.yaml`, `.github/workflows/`, `.github/actions/`, `script/push-gate`, the
+release scripts and `release-please-config.json`; and text that governs what an agent may do — this file, `CLAUDE.md`,
+`AI_POLICY.md`.
 
 ## Contracts that hold everywhere
 
@@ -103,13 +129,13 @@ These are the ones an agent typically breaks _before_ it realises a skill or ins
   it with `format_mac()`; reading the ARP cache (`getmac` and friends) does not work in every supported network setup
   and is not acceptable.
 - **Entity metadata comes from `EntityDescription` + `translation_key`** — never a hardcoded `name=` or `icon=`. The
-  one exception is a name the device or its library supplies, or a proper noun.
+  narrow exceptions are listed in `blueprint.entities`.
 - **Coordinator failures raise**: `ConfigEntryAuthFailed` (triggers reauth), `UpdateFailed` (retry),
   `ConfigEntryNotReady` during setup (retry later), or `ConfigEntryError` when the failure will not resolve on its own
   — a closed account, unsupported firmware — which stops the retry loop instead of spinning forever. Do not log
   `ConfigEntryNotReady` manually; HA already logs it at debug level.
 - **Diagnostics must call `async_redact_data()`** for credentials, tokens, location and personal data.
-- **YAML configuration is deprecated** for integrations talking to devices or services (ADR-0010) — config flow only.
+- **YAML configuration is deprecated** for integrations talking to devices or services ([ADR-0010](https://github.com/home-assistant/architecture/blob/master/adr/0010-integration-configuration.md)) — config flow only.
 - **Changing the shape of `entry.data`** requires a `VERSION`/`MINOR_VERSION` bump and `async_migrate_entry()`.
 - **While Home Assistant runs, ask it — do not read `config/.storage/`.** Those files are written 1–180 seconds after
   the change they describe and hold no live state at all, so `script/ha` is the source of truth. With Home Assistant
@@ -355,17 +381,26 @@ bot or app speaks as itself on the developer's behalf instead of pretending that
 The Community AI policy's restriction on posting to Open Home Foundation repositories still applies; see
 [`AI_POLICY.md`](AI_POLICY.md) for the disclosure policy this section operationalizes.
 
-### Commits
+### Commits, branches and pull requests
 
 - **Never commit automatically** — only on an explicit request. A previous request is not standing permission; each
   commit needs a fresh instruction.
-- **Never ask about pushing** — the developer handles `git push` themselves.
+- **Push only when asked** — for a push or a pull request. Otherwise never ask about pushing; the developer handles
+  `git push`.
+- **One branch per change**, named `<type>/<short-kebab>` (`feat/release-zip-asset`), branched from current `main`;
+  never commit on `main`. Do not rename a branch whose pull request is open, and do not reuse one after it was merged.
+- **One logical change per pull request.** An unrelated fix, a drive-by refactor or a dependency bump is a pull request
+  of its own: a squash merge makes each pull request one changelog line and one unit to revert.
+- **Force push only with `--force-with-lease`**, only on your own branch that nobody else has pulled, and only when
+  the developer asked for the push.
 - **Work reaches `main` through a pull request**, where `script/setup/github` applied the `main` ruleset. Squash is
   the default, and the pull request's title becomes the commit, so it follows the same format as a commit subject.
   Rebase only a pull request whose commits each pass the _Check each commit_ step, and only when the developer asks.
 - **A pull request still being worked on is a draft** (`gh pr create --draft`). CI skips drafts, so pushes to it cost
   no Actions minutes; mark it ready (`gh pr ready`) once `script/lint`, `script/type-check` and `script/test` pass
   locally — that is what starts the checks.
+- Updating a branch from `main`, conflicts, splitting mixed work and stacked pull requests:
+  [`ha-release/references/branches-and-pull-requests.md`](.agents/skills/ha-release/references/branches-and-pull-requests.md).
 - When a task completes and the developer moves on, offer a commit message based on the work done.
 - Format: [Conventional Commits](https://www.conventionalcommits.org/), enforced by the commitlint hook — see
   `.agents/instructions/blueprint.commit-message.instructions.md`.
@@ -374,13 +409,17 @@ The Community AI policy's restriction on posting to Open Home Foundation reposit
 
 - **One logical feature or fix:** implement it completely, even across 5–8 files.
 - **Several independent features:** one at a time, offering a commit between them.
-- **More than ~10 files or an architectural change:** propose a plan and get confirmation first
-  ([`ha-planning`](.agents/skills/ha-planning/SKILL.md)).
+- **More than ~10 files or an architectural change:** propose a plan and get confirmation first (`haci-planning`,
+  where the plugin is on).
 
 **Tests:** for behavioural changes, bug fixes and regressions, add proportionate automated tests where they verify
 something meaningful; if you omit them deliberately, say why and what risk remains. Documentation- and
 formatting-only changes need none. Automated tests supplement rather than replace human review and real-device
 testing.
+
+**A fixed bug stays fixed.** Name its class, look for the same mistake elsewhere — other platforms, entities, paths —
+and fix those in the same change or list them; the commit body names the root cause. Where the lesson goes so the next
+agent cannot repeat it: [`blueprint-lessons`](.agents/skills/blueprint-lessons/SKILL.md).
 
 **Translations:** update `en.json` only, and only when asked or at a feature milestone. **Never** touch another
 language file without asking — code works without translations, so business logic comes first.
@@ -399,7 +438,7 @@ Record it with a `BREAKING CHANGE:` footer either way.
 **Before `1.0.0`, breaking is usually the right answer** — the goal is a settled code base, not compatibility code
 wrapped around a shape nobody has committed to yet. What still needs asking is whether to build the **migration**:
 never write `async_migrate_entry` or bump `VERSION` / `MINOR_VERSION` unprompted, and do not log each break in
-`DECISIONS.md`. After `1.0.0`, prefer a migration path over a break.
+a decision record. After `1.0.0`, prefer a migration path over a break.
 Procedure: [`ha-breaking-changes`](.agents/skills/ha-breaking-changes/SKILL.md).
 
 ### Code that predates the current rules
@@ -411,8 +450,7 @@ only ever applied to new code never reaches the old code. Bound it to what you a
 - ✅ The function, class or block you are editing, and file-wide changes a tool verifies for you — an import ban, a
   renamed API, a formatting rule.
 - ❌ The rest of the file, and other files with the same deviation. That is a migration in its own right: name it,
-  and offer it as the next piece of work ([`ha-planning`](.agents/skills/ha-planning/SKILL.md) once it passes ~10
-  files).
+  and offer it as the next piece of work (as a plan once it passes ~10 files).
 - ❌ Anything on the breaking-changes list above, however plainly the current rules forbid the old shape. Unique IDs,
   entity IDs, entry data, state values and action signatures reach users, so they take the warn-first route through
   [`ha-breaking-changes`](.agents/skills/ha-breaking-changes/SKILL.md) instead.
@@ -426,7 +464,9 @@ rule nobody follows.
 ### When instructions conflict with a request
 
 Say which instruction the request contradicts and restate what you understood, then follow the developer's decision.
-If it reflects a permanent change of approach, offer to update the instruction file — and propose updates whenever you
+If it reflects a permanent change of approach — a correction given a second time, or with "always", "never" or "from
+now on" — offer to record it in the repository, never only in your own memory, which a parallel session or another
+agent would not see ([`blueprint-lessons`](.agents/skills/blueprint-lessons/SKILL.md)). Propose updates whenever you
 notice repeated deviations, stale rules, or a new pattern worth standardising.
 
 ### Leaving a task unfinished
@@ -456,6 +496,11 @@ or `docs/user/` (end user). Use `.agents/scratch/` for temporary notes; it is ne
 - ✅ Ask before creating permanent documentation
 - ✅ Prefer a module docstring over a separate markdown file
 
+**Decisions** are records in `docs/development/decisions/`, one file each. Read its `README.md` index before a choice
+that is hard to reverse, and a record only when its decision is the one at hand — never load the records by a glob or
+an import. What a decision obliges lives as a rule in an instructions file or here, ending in a `Source:` line
+([`blueprint-decisions`](.agents/skills/blueprint-decisions/SKILL.md)).
+
 ## Custom Integration Flexibility
 
 **This is a custom integration, not a Core one.** It follows Core patterns for quality, but implementation decisions
@@ -464,7 +509,7 @@ have more room.
 **Third-party library or own client?** Prefer a maintained PyPI library that fits. Write a client instead when the
 device speaks a simple REST or GraphQL API, or when the available libraries are unmaintained, bloated or badly
 designed. Evaluate maintenance, async support, documentation and dependency footprint; complex OAuth2 and standards
-like MQTT argue for a library. Record the outcome in [`docs/development/DECISIONS.md`](docs/development/DECISIONS.md).
+like MQTT argue for a library. Record the outcome as a decision record in [`docs/development/decisions/`](docs/development/decisions/README.md).
 
 **Aim for Silver or Gold on the Quality Scale.** Always implement type hints, async I/O, proper error handling,
 actions registered in `async_setup()`, redacted diagnostics and device info. Add config flow validation, reauth,
